@@ -53,7 +53,7 @@ function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">
-                  Totle Customer
+                  Total Customer
                 </p>
                 <p className="text-2xl font-semibold text-gray-800">
                   {dashboardData.totleCustomer}
@@ -70,7 +70,7 @@ function Dashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">
-                  Totle Servises{" "}
+                  Total Servises{" "}
                 </p>
                 <p className="text-2xl font-semibold text-gray-800">
                   {dashboardData.totleServise}

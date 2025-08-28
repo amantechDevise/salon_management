@@ -1,4 +1,4 @@
-const { Booking, Customer, User, Service } = require('../models');
+const { Booking, Customer, User, Service, sequelize } = require('../models');
 
 module.exports = {
     getBookings: async (req, res) => {
@@ -24,7 +24,7 @@ module.exports = {
                 order: [['createdAt', 'DESC']]
             });
 
-            
+
             res.status(200).json({ message: 'Get all Bookings', data: bookings });
 
         } catch (error) {
@@ -58,7 +58,13 @@ module.exports = {
     getAll: async (req, res) => {
         try {
             const service = await Service.findAll()
-            const customer = await Customer.findAll()
+            const customer = await Customer.findAll({
+                attributes: [
+                    'email',
+                    [sequelize.fn('MIN', sequelize.col('name')), 'name'] 
+                ],
+                group: ['email']
+            });
             const Staff = await User.findAll({
                 where: { role: 2 }
             })
