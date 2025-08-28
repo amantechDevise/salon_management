@@ -21,6 +21,9 @@ import ListServices from "./pages/StaffDashboard/services/ListServices";
 import Listing from "./pages/Services/Listing";
 import AddServices from "./pages/Services/AddServices";
 import ViewStaff from "./pages/Staff/ViewStaff";
+import ViewCustomer from "./pages/customers/ViewCustomer";
+import ListBooking from "./pages/Bookings/Listing";
+import AddBooking from "./pages/Bookings/AddBooking";
 
 function App() {
   return (
@@ -28,7 +31,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/admin/login" element={<Login />} />
-        
+
           <Route
             path="/admin"
             element={
@@ -44,31 +47,31 @@ function App() {
             <Route path="staff" element={<ListStaff />} />
             <Route path="staff/add" element={<AddStaff />} />
             <Route path="staff/:id" element={<ViewStaff />} />
-              <Route path="customer" element={<ListCustomer />} />
+            <Route path="customer" element={<ListCustomer />} />
             <Route path="customer/add" element={<AddCustomer />} />
+            <Route path="view/:id" element={<ViewCustomer />} />
             <Route path="services" element={<Listing />} />
-                      <Route path="services/add" element={<AddServices />} />
+            <Route path="services/add" element={<AddServices />} />
+            <Route path="bookings" element={<ListBooking />} />
+            <Route path="bookings/add" element={<AddBooking />} />
+            
           </Route>
 
-            <Route path="/admin/staff-login" element={<StaffLogin />} />
-        
+          <Route path="/admin/staff-login" element={<StaffLogin />} />
+
           <Route
             path="/staffadmin"
             element={
               <StaffPrivateRoute>
-             
                 <StaffLayouts />
               </StaffPrivateRoute>
             }
           >
             <Route path="dashboard" element={<StaffDashboard />} />
             <Route path="services" element={<ListServices />} />
-              <Route path="customer" element={<ListStaffCustomer />} />
+            <Route path="customer" element={<ListStaffCustomer />} />
             <Route path="customer/add" element={<AddstaffCustomer />} />
           </Route>
-
-
-
         </Routes>
         <ToastContainer />
       </BrowserRouter>

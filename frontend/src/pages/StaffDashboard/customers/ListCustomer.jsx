@@ -64,8 +64,8 @@ const ListStaffCustomer = () => {
             <th className="px-6 py-3">Name</th>
             <th className="px-6 py-3">Email</th>
             <th className="px-6 py-3">Phone No</th>
+            <th className="px-6 py-3">Visit Count</th>
             <th className="px-6 py-3">Image</th>
-            {/* <th className="px-6 py-3">Description</th> */}
             <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
@@ -94,6 +94,7 @@ const ListStaffCustomer = () => {
 
                 <td className="px-6 py-4">{product.email}</td>
                 <td className="px-6 py-4">{product.phone}</td>
+                <td className="px-6 py-4">{product.visit_count}</td>
                 <td className="px-6 py-4">
                   {product.image ? (
                     <img

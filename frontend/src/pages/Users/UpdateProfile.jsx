@@ -67,7 +67,7 @@ const UpdateProfile = () => {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/api/update-profile`, data, {
+      await axios.put(`${API_BASE_URL}/admin/update-profile`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",

@@ -1,40 +1,33 @@
 const Sequelize = require('sequelize');
 module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('customer_services', {
+    return sequelize.define('recurring_booking', {
         id: {
             autoIncrement: true,
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true
         },
-        customer_id: {
+
+        booking_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1
         },
-        service_id: {
+        frequency: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1
+            defaultValue: 1,
+            comment: '	1=>weekly2=>monthly	'
         },
-         staff_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1
-        },
-        status: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1
-        },
-        date: {
+        endDate: {
             type: DataTypes.DATE,
             allowNull: false
         },
 
+
     }, {
         sequelize,
-        tableName: 'customer_services',
+        tableName: 'recurring_booking',
         timestamps: true,
         indexes: [
             {

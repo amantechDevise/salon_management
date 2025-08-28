@@ -4,6 +4,7 @@ const servicesController = require('../Controller/servicesController');
 const dashboardController = require('../Controller/dashboardController');
 const customerController = require('../Controller/customerController');
 const authenticateToken = require('../middleware/verifyToken');
+const bookingController = require('../Controller/bookingController');
 
 var router = express.Router();
 
@@ -40,13 +41,16 @@ router.delete('/services/:id',authenticateToken,servicesController.deleteService
 // ----------------------customerController---------------
 router.get('/customer',authenticateToken,customerController.getCustomers)
 router.post('/customer/add',authenticateToken,customerController.addCustomers)
+router.get('/customerDetails/:id',authenticateToken,customerController.getCustomerDetails)
 
 
 
 
-// ----------------------customer_servicesController---------------
+// ----------------------bookingsController---------------
 
-
+router.get('/bookings',authenticateToken,bookingController.getBookings)
+router.get('/getAll',authenticateToken,bookingController.getAll)
+router.post('/bookings/add',authenticateToken,bookingController.addBooking)
 
 
 

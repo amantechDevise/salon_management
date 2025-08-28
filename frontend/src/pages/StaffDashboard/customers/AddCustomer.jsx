@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,10 +14,27 @@ function AddstaffCustomer() {
     phone: "",
     dob: "",
     address: "",
-    service_id: "",
+    service_id: [], // store as array
   });
 
   const [image, setImage] = useState(null);
+
+  // Dropdown open state
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle input change
   const handleChange = (e) => {
@@ -33,13 +50,42 @@ function AddstaffCustomer() {
     setImage(e.target.files[0]);
   };
 
+  // Handle checkbox toggle for services
+  const toggleService = (id) => {
+    setFormData((prev) => {
+      const selected = prev.service_id;
+      if (selected.includes(id.toString())) {
+        // Remove
+        return {
+          ...prev,
+          service_id: selected.filter((sid) => sid !== id.toString()),
+        };
+      } else {
+        // Add
+        return {
+          ...prev,
+          service_id: [...selected, id.toString()],
+        };
+      }
+    });
+  };
+
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (formData.service_id.length === 0) {
+      toast.error("Please select at least one service");
+      return;
+    }
+
     const data = new FormData();
     Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
+      if (key === "service_id") {
+        data.append(key, formData.service_id.join(","));
+      } else {
+        data.append(key, formData[key]);
+      }
     });
 
     if (image) {
@@ -64,7 +110,7 @@ function AddstaffCustomer() {
         phone: "",
         dob: "",
         address: "",
-        service_id: "",
+        service_id: [],
       });
       setImage(null);
     } catch (error) {
@@ -91,6 +137,12 @@ function AddstaffCustomer() {
   useEffect(() => {
     fetchServices();
   }, []);
+
+  // Helper to show selected service names in dropdown label
+  const selectedServicesNames = services
+    .filter((s) => formData.service_id.includes(s.id.toString()))
+    .map((s) => s.title)
+    .join(", ");
 
   return (
     <div className="flex items-center justify-center p-12">
@@ -167,25 +219,41 @@ function AddstaffCustomer() {
             </div>
 
             {/* Services */}
-            <div className="w-full px-3 sm:w-1/2">
+            <div className="w-full px-3 sm:w-1/2 relative" ref={dropdownRef}>
               <div className="mb-5">
                 <label className="mb-3 block text-base font-medium text-[#07074D]">
                   Services
                 </label>
-                <select
-                  name="service_id"
-                  value={formData.service_id}
-                  onChange={handleChange}
+                <div
                   className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 
-                  text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                  text-base text-[#6B7280] outline-none cursor-pointer select-none"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  <option value="">Select a service</option>
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.title}
-                    </option>
-                  ))}
-                </select>
+                  {selectedServicesNames || "Select services"}
+                </div>
+
+                {dropdownOpen && (
+                  <div
+                    className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg"
+                    style={{ maxHeight: "180px" }}
+                  >
+                    {services.map((service) => (
+                      <label
+                        key={service.id}
+                        className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          value={service.id}
+                          checked={formData.service_id.includes(service.id.toString())}
+                          onChange={() => toggleService(service.id)}
+                          className="mr-3"
+                        />
+                        {service.title}
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -207,22 +275,6 @@ function AddstaffCustomer() {
                 />
               </div>
             </div>
-
-            {/* Image Upload (optional) */}
-            {/* <div className="w-full px-3 sm:w-1/2">
-              <div className="mb-5">
-                <label className="mb-3 block text-base font-medium text-[#07074D]">
-                  Image
-                </label>
-                <input
-                  type="file"
-                  name="image"
-                  onChange={handleImageChange}
-                  className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 
-                  text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                />
-              </div>
-            </div> */}
           </div>
 
           {/* Action buttons */}

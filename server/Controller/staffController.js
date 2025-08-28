@@ -33,16 +33,36 @@ module.exports = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
-  getStaff: async (req, res) => {
-    try {
-      const staffMembers = await User.findAll({ where: { role: 2 }, order: [['createdAt', 'DESC']] });
+getStaff: async (req, res) => {
+  const { page = 1, limit = 10 } = req.query; 
 
-      res.status(201).json({ message: 'Get all Staff', data: staffMembers });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  },
+  try {
+    const offset = (page - 1) * limit;
+
+    const { rows, count } = await User.findAndCountAll({
+      where: { role: 2 }, 
+      order: [['createdAt', 'DESC']],
+      offset: offset, 
+      limit: parseInt(limit), 
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      message: 'Get all Staff',
+      data: rows,
+      meta: {
+        totalRecords: count,
+        totalPages: totalPages,
+        currentPage: parseInt(page),
+        perPage: parseInt(limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching staff members:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+},
 
   addStaff: async (req, res) => {
     try {
