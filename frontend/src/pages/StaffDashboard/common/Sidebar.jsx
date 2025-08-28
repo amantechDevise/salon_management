@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import {
+  FaTachometerAlt,
+  FaClipboardList ,
+  FaUsers,
+  FaConciergeBell,
+} from "react-icons/fa"; 
 function StaffSidebar({ userData }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,7 +21,7 @@ function StaffSidebar({ userData }) {
           to={"/staffadmin/dashboard"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md bg-blue-700 text-white"
         >
-          <i className="fas fa-tachometer-alt mr-3" />
+          <FaTachometerAlt className="mr-3" />
           Dashboard
         </Link>
         {/* <Link
@@ -30,7 +35,7 @@ function StaffSidebar({ userData }) {
           to={"/staffadmin/customer"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
         >
-          <i className="fas fa-bed mr-3" />
+           <FaUsers className="mr-3" />
           All Customers
         </Link>
       
@@ -38,8 +43,16 @@ function StaffSidebar({ userData }) {
           to={"/staffadmin/services"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
         >
-          <i className="fas fa-concierge-bell mr-3" />
+          <FaConciergeBell className="mr-3" />
           Services
+        </Link>
+          <Link
+          to={"/staffadmin/bookings"}
+          className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
+        >
+             <FaClipboardList className="mr-3" />
+
+          Bookings
         </Link>
         {/* <a
           href="#"

@@ -1,4 +1,4 @@
-const { User, Customer, Service, sequelize } = require("../models");
+const { User, Customer, Service, sequelize, Booking } = require("../models");
 const { Op } = require('sequelize');
 module.exports = {
 
@@ -225,4 +225,92 @@ module.exports = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
+
+
+
+
+   getBookings: async (req, res) => {
+  try {
+    const userId = req.staff.id;
+    const bookings = await Booking.findAll({
+    //   where: { staff_id: userId },
+    });
+
+    console.log(bookings);
+    
+    res.status(200).json({
+      message: 'Bookings for this staff member',
+      data: bookings,
+    });
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({
+      error: 'An error occurred while fetching bookings.',
+    });
+  }
+},
+
+    
+    
+        addBooking: async (req, res) => {
+            try {
+                const { customer_id, staff_id, service_id, date, time } = req.body;
+     const userId = req.staff.id;
+                const serviceIds = service_id.split(',').map(id => id.trim());
+    
+                const bookingRecords = [];
+    
+               
+                    for (const svcId of serviceIds) {
+                        bookingRecords.push({
+                            customer_id,  // should be numeric ID
+                            staff_id: userId,
+                            service_id: svcId,
+                            date,
+                            time
+                        });
+                    }
+    
+                const createdBookings = await Booking.bulkCreate(bookingRecords, { returning: true });
+    
+    
+                res.status(201).json({
+                    message: 'Booking(s) added successfully',
+                    data: createdBookings
+                });
+    
+            } catch (error) {
+                console.error('Error adding bookings:', error);
+                res.status(500).json({
+                    error: 'An error occurred while adding bookings.',
+                });
+            }
+        },
+    
+    
+    
+        getAll: async (req, res) => {
+            try {
+                const service = await Service.findAll()
+                const customer = await Customer.findAll({
+                    attributes: [
+                        [sequelize.fn('MIN', sequelize.col('id')), 'id'],   // 👈 id bhi aa jayega
+                        [sequelize.fn('MIN', sequelize.col('name')), 'name'],
+                        'email'
+                    ],
+                    group: ['email']
+                });
+          
+                return res.status(200).json({
+                    data: { service, customer, Staff }
+    
+                });
+    
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+                res.status(500).json({
+                    error: 'An error occurred while fetching bookings.',
+                });
+            }
+        },
 }

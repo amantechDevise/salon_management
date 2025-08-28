@@ -4,6 +4,7 @@ import {
   FaTachometerAlt,
   FaCalendarCheck,
   FaUsers,
+  FaClipboardList,
   FaConciergeBell,
 } from "react-icons/fa"; // ✅ Import only the icons you need
 
@@ -57,7 +58,7 @@ function AdminSidebar({ userData }) {
               to={"/admin/bookings"}
               className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
             >
-              <FaConciergeBell className="mr-3" />
+              <FaClipboardList className="mr-3" />
               Bookings
             </Link>
           </nav>

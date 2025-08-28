@@ -24,6 +24,8 @@ import ViewStaff from "./pages/Staff/ViewStaff";
 import ViewCustomer from "./pages/customers/ViewCustomer";
 import ListBooking from "./pages/Bookings/Listing";
 import AddBooking from "./pages/Bookings/AddBooking";
+import BookingList from "./pages/StaffDashboard/Bookings/BookingList";
+import BookingAdd from "./pages/StaffDashboard/Bookings/BookingAdd";
 
 function App() {
   return (
@@ -71,6 +73,8 @@ function App() {
             <Route path="services" element={<ListServices />} />
             <Route path="customer" element={<ListStaffCustomer />} />
             <Route path="customer/add" element={<AddstaffCustomer />} />
+               <Route path="bookings" element={<BookingList />} />
+            <Route path="bookings/add" element={<BookingAdd />} />
           </Route>
         </Routes>
         <ToastContainer />

@@ -3,14 +3,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 
-function AddBooking() {
+function BookingAdd() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
   const [formData, setFormData] = useState({
     customer_id: "",
-    staff_id: [], // array me store hoga
+
     service_id: [], // array me store hoga
     date: "",
     time: "",
@@ -39,14 +39,14 @@ const handleChange = (e) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/admin/getAll`, {
+        const res = await axios.get(`${API_BASE_URL}/staffadmin/getAll`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
           },
         });
         setDropdownData({
           customers: res.data.data.customer || [],
-          staff: res.data.data.Staff || [],
+       
           services: res.data.data.service || [],
         });
       } catch (error) {
@@ -57,15 +57,7 @@ const handleChange = (e) => {
     fetchData();
   }, [API_BASE_URL]);
 
-  // Toggle staff selection
-  const toggleStaff = (id) => {
-    setFormData((prev) => {
-      const staffArr = prev.staff_id.includes(id.toString())
-        ? prev.staff_id.filter((sid) => sid !== id.toString())
-        : [...prev.staff_id, id.toString()];
-      return { ...prev, staff_id: staffArr };
-    });
-  };
+
 
   // Toggle service selection
   const toggleService = (id) => {
@@ -88,14 +80,14 @@ const handleChange = (e) => {
         service_id: formData.service_id.join(","),
       };
 
-      await axios.post(`${API_BASE_URL}/admin/bookings/add`, payload, {
+      await axios.post(`${API_BASE_URL}/staffadmin/bookings/add`, payload, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
 
       toast.success("Booking added successfully!");
-      navigate("/admin/bookings");
+      navigate("/staffadmin/bookings");
     } catch (error) {
       toast.error("Failed to add booking");
       console.error(error);
@@ -129,44 +121,7 @@ const handleChange = (e) => {
               </select>
             </div>
 
-            {/* Staff Multi-select */}
-            <div className="w-full sm:w-1/2 px-3 mb-5 relative">
-              <label className="mb-3 block text-base font-medium text-[#07074D]">
-                Staff
-              </label>
-              <div
-                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
-                onClick={() => setStaffDropdownOpen(!staffDropdownOpen)}
-              >
-                {formData.staff_id.length > 0
-                  ? dropdownData.staff
-                      .filter((s) =>
-                        formData.staff_id.includes(s.id.toString())
-                      )
-                      .map((s) => s.name)
-                      .join(", ")
-                  : "Select staff"}
-              </div>
-              {staffDropdownOpen && (
-                <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-                  {dropdownData.staff.map((s) => (
-                    <label
-                      key={s.id}
-                      className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        value={s.id}
-                        checked={formData.staff_id.includes(s.id.toString())}
-                        onChange={() => toggleStaff(s.id)}
-                        className="mr-3"
-                      />
-                      {s.name}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
+   
           </div>
 
           {/* Service Multi-select */}
@@ -260,4 +215,4 @@ const handleChange = (e) => {
   );
 }
 
-export default AddBooking;
+export default BookingAdd;
