@@ -110,6 +110,7 @@ const ListStaff = () => {
             <th className="px-6 py-3">Email</th>
             <th className="px-6 py-3">Phone No</th>
             <th className="px-6 py-3">Status</th>
+            <th className="px-6 py-3">Attendance</th>
             <th className="px-6 py-3">Image</th>
             <th className="px-6 py-3">Action</th>
           </tr>
@@ -138,6 +139,15 @@ const ListStaff = () => {
                     {staffMember.status === 1 ? "Active" : "Inactive"}
                   </button>
                 </td>
+                 <td className="px-6 py-4">
+  <Link
+    to={`/admin/attendance/${staffMember.id}`}
+    className="inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-600 hover:text-white transition duration-200"
+  >
+    List Attendance
+  </Link>
+</td>
+
                 <td className="px-6 py-4">
                   {staffMember.image ? (
                     <img
@@ -150,12 +160,12 @@ const ListStaff = () => {
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  <Link
+                  {/* <Link
                     to={`/admin/staff/edit/${staffMember.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
                   >
                     Edit
-                  </Link>
+                  </Link> */}
                   <Link
                     to={`/admin/staff/${staffMember.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"

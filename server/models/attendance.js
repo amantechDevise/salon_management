@@ -7,23 +7,23 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
             primaryKey: true
         },
-    
-     staff_id: {
+
+        staff_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1
         },
-              date: {
-            type: DataTypes.DATE,
-            allowNull: false
+        date: {
+            type: DataTypes.DATEONLY,
+            allowNull: true
         },
         checkIn: {
             type: DataTypes.TIME,
-            allowNull: false
+            allowNull: true
         },
-         checkOut: {
+        checkOut: {
             type: DataTypes.TIME,
-            allowNull: false
+            allowNull: true
         },
 
     }, {

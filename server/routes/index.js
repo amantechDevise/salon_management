@@ -26,6 +26,8 @@ router.get('/staff/:id',authenticateToken,staffController.getStaffById)
 router.put('/staff/:id',authenticateToken,staffController.updateStaff)
 router.delete('/staff/:id',authenticateToken,staffController.deleteStaff)
 router.patch('/staff/:id/status',authenticateToken, staffController.updateStaffStatus);
+router.get("/staff/:id/attendance",authenticateToken, staffController.getStaffByAttendance);
+router.get("/staff/:id/range",authenticateToken, staffController.range);
 
 // ----------------------servicesController---------------
 router.get('/services',authenticateToken,servicesController.getServices)

@@ -5,6 +5,7 @@ import {
   FaClipboardList ,
   FaUsers,
   FaConciergeBell,
+  FaRegCalendarCheck 
 } from "react-icons/fa"; 
 function StaffSidebar({ userData }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,7 +19,7 @@ function StaffSidebar({ userData }) {
     <div className="flex flex-col flex-grow px-4 py-4 overflow-y-auto">
       <nav className="flex-1 space-y-2">
         <Link
-          to={"/staffadmin/dashboard"}
+          to={"/staff-Admin/dashboard"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md bg-blue-700 text-white"
         >
           <FaTachometerAlt className="mr-3" />
@@ -32,7 +33,7 @@ function StaffSidebar({ userData }) {
          All Staff
         </Link> */}
         <Link
-          to={"/staffadmin/customer"}
+          to={"/staff-Admin/customer"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
         >
            <FaUsers className="mr-3" />
@@ -40,19 +41,27 @@ function StaffSidebar({ userData }) {
         </Link>
       
         <Link
-          to={"/staffadmin/services"}
+          to={"/staff-Admin/services"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
         >
           <FaConciergeBell className="mr-3" />
           Services
         </Link>
           <Link
-          to={"/staffadmin/bookings"}
+          to={"/staff-Admin/bookings"}
           className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
         >
              <FaClipboardList className="mr-3" />
 
           Bookings
+        </Link>
+              <Link
+          to={"/staff-Admin/attendance"}
+          className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-blue-700 text-white"
+        >
+             <FaRegCalendarCheck  className="mr-3" />
+
+          Attendances
         </Link>
         {/* <a
           href="#"

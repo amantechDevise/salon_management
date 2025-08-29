@@ -87,63 +87,63 @@ module.exports = {
 
 
 
-  addCustomers: async (req, res) => {
-    try {
-      const {
-        staff_id,      // e.g., "1,2"
-        service_id,    // e.g., "5,6"
-        name,
-        email,
-        dob,
-        address,
-        phone,
-        status
-      } = req.body;
+    addCustomers: async (req, res) => {
+      try {
+        const {
+          staff_id,      // e.g., "1,2"
+          service_id,    // e.g., "5,6"
+          name,
+          email,
+          dob,
+          address,
+          phone,
+          status
+        } = req.body;
 
-      const imageFile = req.files ? req.files.image : null;
-      let imagePath = null;
+        const imageFile = req.files ? req.files.image : null;
+        let imagePath = null;
 
-      if (imageFile) {
-        imagePath = await uploadImage(imageFile);
-      }
-
-      const staffIds = staff_id.split(',').map(id => id.trim());
-      const serviceIds = service_id.split(',').map(id => id.trim());
-
-      let visitCount = await Customer.count({ where: { email } }); // current count
-
-      const customerRecords = [];
-
-      for (const sId of staffIds) {
-        for (const svcId of serviceIds) {
-          visitCount++; // increment per new record
-          customerRecords.push({
-            staff_id: sId,
-            service_id: svcId,
-            name,
-            email,
-            dob,
-            address,
-            image: imagePath || "",
-            phone,
-            status: status || 1,
-            visit_count: visitCount
-          });
+        if (imageFile) {
+          imagePath = await uploadImage(imageFile);
         }
+
+        const staffIds = staff_id.split(',').map(id => id.trim());
+        const serviceIds = service_id.split(',').map(id => id.trim());
+
+        let visitCount = await Customer.count({ where: { email } }); // current count
+
+        const customerRecords = [];
+
+        for (const sId of staffIds) {
+          for (const svcId of serviceIds) {
+            visitCount++; // increment per new record
+            customerRecords.push({
+              staff_id: sId,
+              service_id: svcId,
+              name,
+              email,
+              dob,
+              address,
+              image: imagePath || "",
+              phone,
+              status: status || 1,
+              visit_count: visitCount
+            });
+          }
+        }
+
+        const createdCustomers = await Customer.bulkCreate(customerRecords);
+
+        res.status(201).json({
+          message: 'Customer visits recorded successfully',
+          data: createdCustomers
+        });
+
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
       }
-
-      const createdCustomers = await Customer.bulkCreate(customerRecords);
-
-      res.status(201).json({
-        message: 'Customer visits recorded successfully',
-        data: createdCustomers
-      });
-
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  },
+    },
 
 
 getCustomerDetails: async (req, res) => {

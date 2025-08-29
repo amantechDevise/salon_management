@@ -11,15 +11,21 @@ staffrouter.put('/update-profile',stafauthenticateToken,staffDashBoardController
 staffrouter.get('/customer',stafauthenticateToken,staffDashBoardController.getCustomers)
 staffrouter.post('/customer/add',stafauthenticateToken,staffDashBoardController.addCustomers)
 staffrouter.get('/services',stafauthenticateToken,staffDashBoardController.getServices)
+staffrouter.get('/booking',stafauthenticateToken,staffDashBoardController.allBooking)
+staffrouter.get('/getAll',stafauthenticateToken,staffDashBoardController.allGet)
+staffrouter.post('/booking/add',stafauthenticateToken,staffDashBoardController.bookingAdd)
+
+staffrouter.get('/attendance',stafauthenticateToken,staffDashBoardController.getAllAttendance)
+staffrouter.post('/attendance/add',stafauthenticateToken,staffDashBoardController.createAttendance)
+staffrouter.get('/range',stafauthenticateToken,staffDashBoardController.getAttendanceByDate)
+
 
  // ----------------------ratingController---------------
  staffrouter.post("/generate",stafauthenticateToken, ratingController.generateFeedbackLink);
 staffrouter.get("/:token",stafauthenticateToken, ratingController.getFeedbackByToken);
 staffrouter.post("/:token",stafauthenticateToken, ratingController.submitFeedback);
 
-// ----------------------bookingsController---------------
 
-staffrouter.get('/bookings',stafauthenticateToken,staffDashBoardController.getBookings)
-staffrouter.get('/getAll',stafauthenticateToken,staffDashBoardController.getAll)
-staffrouter.post('/bookings/add',stafauthenticateToken,staffDashBoardController.addBooking)
+
+
 module.exports = staffrouter;

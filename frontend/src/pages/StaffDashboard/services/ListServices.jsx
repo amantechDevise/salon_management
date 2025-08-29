@@ -9,7 +9,7 @@ const ListServices = () => {
   // Fetch services
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffadmin/services`, {
+      const response = await axios.get(`${API_BASE_URL}/staffAdmin/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`, // staff token required
         },

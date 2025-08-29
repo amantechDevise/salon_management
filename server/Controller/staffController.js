@@ -1,10 +1,14 @@
-const { User, Customer, Service } = require("../models");
+const { User, Customer, Service, Attendance } = require("../models");
 const { uploadImage } = require("../uilts/imageUplord");
+const { Op } = require('sequelize');
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 module.exports = {
+
+
+// -------------------------Login Api 
 
   stafflogin: async (req, res) => {
     try {
@@ -33,6 +37,8 @@ module.exports = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+  // -------------------------Get All Api 
 getStaff: async (req, res) => {
   const { page = 1, limit = 10 } = req.query; 
 
@@ -64,6 +70,7 @@ getStaff: async (req, res) => {
   }
 },
 
+// -------------------------Add Staff Api 
   addStaff: async (req, res) => {
     try {
       const { name, email, phone, password } = req.body;
@@ -100,6 +107,7 @@ getStaff: async (req, res) => {
   },
 
 
+  // -------------------------get by id staff Api 
 getStaffById: async (req, res) => {
   try {
     const { id } = req.params;
@@ -136,8 +144,81 @@ getStaffById: async (req, res) => {
     console.error("Error fetching staff by ID:", error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
-,
+},
+
+// -------------------------getStaffByAttendance
+
+   getStaffByAttendance: async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const records = await User.findOne({
+            where: { id, role: 2 },
+            include: [
+                {
+                    model: Attendance,
+                    as: 'attendance',
+                    order: [['date', 'DESC']],
+                },
+            ],
+        });
+
+        if (!records) {
+            return res.status(404).json({ message: 'Staff not found' });
+        }
+
+        res.status(200).json({ 
+            message: 'Attendance records fetched successfully', 
+            data: records 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+},
+
+
+range: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate } = req.query;
+
+    const records = await User.findOne({
+      where: { id, role: 2 },
+      attributes: ["id", "name", "email"],
+      include: [
+        {
+          model: Attendance,
+          as: "attendance",
+          where:
+            startDate && endDate
+              ? { date: { [Op.between]: [startDate, endDate] } }
+              : {},
+          required: false,
+        },
+      ],
+      order: [[{ model: Attendance, as: "attendance" }, "date", "DESC"]],
+    });
+
+     
+    if (!records) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+
+    res.status(200).json({
+      message: "Attendance records fetched successfully",
+      data: {
+        ...records.toJSON(),
+        attendance: records.attendance || [], // force empty array if none
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+},
+
+
   updateStaff: async (req, res) => {
     try {
       const { id } = req.params;
@@ -170,6 +251,8 @@ getStaffById: async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+
   updateStaffStatus: async (req, res) => {
   try {
     const { id } = req.params;

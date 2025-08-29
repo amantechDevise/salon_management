@@ -93,7 +93,7 @@ function AddstaffCustomer() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/staffadmin/customer/add`, data, {
+      await axios.post(`${API_BASE_URL}/staffAdmin/customer/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
@@ -101,7 +101,7 @@ function AddstaffCustomer() {
       });
 
       toast.success("Customer added successfully!");
-      navigate("/staffadmin/customer");
+      navigate("/staff-Admin/customer");
 
       // Reset form
       setFormData({
@@ -122,7 +122,7 @@ function AddstaffCustomer() {
   // Fetch services list
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffadmin/services`, {
+      const response = await axios.get(`${API_BASE_URL}/staffAdmin/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -280,7 +280,7 @@ function AddstaffCustomer() {
           {/* Action buttons */}
           <div className="flex justify-between items-center mt-6">
             <Link
-              to="/staffadmin/customer"
+              to="/staff-Admin/customer"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
               Back

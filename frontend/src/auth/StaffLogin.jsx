@@ -20,7 +20,7 @@ function StaffLogin() {
       const { token } = response.data;
       localStorage.setItem('staffToken', token);
       alert('Signup successful');
-      navigate('/staffadmin/dashboard');
+      navigate('/staff-Admin/dashboard');
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);

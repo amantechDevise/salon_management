@@ -63,14 +63,14 @@ const StaffNavbar = ({ userData }) => {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50 transition-all duration-300">
               <Link
-                to="/admin/profile"
+                to="/staff-Admin/profile"
                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
               >
                 Profile
               </Link>
               <button
                 onClick={() => {
-                  localStorage.removeItem("adminToken");
+                  localStorage.removeItem("staffToken");
                   window.location.href = "/admin/staff-login";
                 }}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"

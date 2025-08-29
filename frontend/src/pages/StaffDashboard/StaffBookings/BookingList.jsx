@@ -10,11 +10,13 @@ const BookingList = () => {
   // Fetch all bookings
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffadmin/bookings`, {
+      const response = await axios.get(`${API_BASE_URL}/staffAdmin/booking`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
+      console.log(response);
+
       setBookings(response.data.data || []);
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -49,7 +51,7 @@ const BookingList = () => {
     const newStatus = booking.status === 1 ? 0 : 1;
     try {
       await axios.patch(
-        `${API_BASE_URL}/admin/staffadmin/${booking.id}/status`,
+        `${API_BASE_URL}/staffadmin/${booking.id}/status`,
         { status: newStatus },
         {
           headers: {
@@ -70,7 +72,7 @@ const BookingList = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Bookings</h2>
         <Link
-          to="/admin/bookings/add"
+          to="/staff-Admin/bookings/add"
           className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
         >
           Add Booking

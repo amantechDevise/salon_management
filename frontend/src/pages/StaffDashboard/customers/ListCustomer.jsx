@@ -10,7 +10,7 @@ const ListStaffCustomer = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffadmin/customer`, {
+      const response = await axios.get(`${API_BASE_URL}/staffAdmin/customer`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`, // if auth required
         },
@@ -49,7 +49,7 @@ const ListStaffCustomer = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Customer</h2>
         <Link
-          to="/staffadmin/customer/add"
+          to="/staff-Admin/customer/add"
           className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
           style={{ whiteSpace: "nowrap" }}
         >

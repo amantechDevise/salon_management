@@ -39,7 +39,7 @@ const handleChange = (e) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/staffadmin/getAll`, {
+        const res = await axios.get(`${API_BASE_URL}/staffAdmin/getAll`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
           },
@@ -80,14 +80,14 @@ const handleChange = (e) => {
         service_id: formData.service_id.join(","),
       };
 
-      await axios.post(`${API_BASE_URL}/staffadmin/bookings/add`, payload, {
+      await axios.post(`${API_BASE_URL}/staffAdmin/bookings/add`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
 
       toast.success("Booking added successfully!");
-      navigate("/staffadmin/bookings");
+      navigate("/staff-Admin/bookings");
     } catch (error) {
       toast.error("Failed to add booking");
       console.error(error);
@@ -197,7 +197,7 @@ const handleChange = (e) => {
           {/* Actions */}
           <div className="flex justify-between items-center mt-6">
             <Link
-              to="/admin/bookings"
+              to="/staff-Admin/bookings"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
               Back

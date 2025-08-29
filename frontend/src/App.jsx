@@ -24,8 +24,12 @@ import ViewStaff from "./pages/Staff/ViewStaff";
 import ViewCustomer from "./pages/customers/ViewCustomer";
 import ListBooking from "./pages/Bookings/Listing";
 import AddBooking from "./pages/Bookings/AddBooking";
-import BookingList from "./pages/StaffDashboard/Bookings/BookingList";
-import BookingAdd from "./pages/StaffDashboard/Bookings/BookingAdd";
+import BookingList from "./pages/StaffDashboard/StaffBookings/BookingList";
+import BookingAdd from "./pages/StaffDashboard/StaffBookings/BookingAdd";
+import UpdatestaffProfile from "./pages/StaffDashboard/Users/UpdateProfile";
+import UserstaffProfile from "./pages/StaffDashboard/Users/UserProfile";
+import ListAttendance from "./pages/StaffDashboard/Attendance/ListAttendance";
+import AttendanceList from "./pages/Staff/AttendanceList";
 
 function App() {
   return (
@@ -56,13 +60,13 @@ function App() {
             <Route path="services/add" element={<AddServices />} />
             <Route path="bookings" element={<ListBooking />} />
             <Route path="bookings/add" element={<AddBooking />} />
-            
+            <Route path="attendance/:id" element={<AttendanceList />} />
           </Route>
 
           <Route path="/admin/staff-login" element={<StaffLogin />} />
 
           <Route
-            path="/staffadmin"
+            path="/staff-Admin"
             element={
               <StaffPrivateRoute>
                 <StaffLayouts />
@@ -70,11 +74,14 @@ function App() {
             }
           >
             <Route path="dashboard" element={<StaffDashboard />} />
+            <Route path="profile" element={<UserstaffProfile />} />
+            <Route path="update-profile" element={<UpdatestaffProfile />} />
             <Route path="services" element={<ListServices />} />
             <Route path="customer" element={<ListStaffCustomer />} />
             <Route path="customer/add" element={<AddstaffCustomer />} />
-               <Route path="bookings" element={<BookingList />} />
+            <Route path="bookings" element={<BookingList />} />
             <Route path="bookings/add" element={<BookingAdd />} />
+            <Route path="attendance" element={<ListAttendance />} />
           </Route>
         </Routes>
         <ToastContainer />

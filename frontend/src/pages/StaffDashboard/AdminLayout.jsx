@@ -20,7 +20,7 @@ useEffect(() => {
 
  const fetchDashboardData = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/staffadmin/dashboard`, {
+      const res = await axios.get(`${API_BASE_URL}/staffAdmin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

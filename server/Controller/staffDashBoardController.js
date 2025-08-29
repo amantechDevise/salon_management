@@ -1,5 +1,6 @@
-const { User, Customer, Service, sequelize, Booking } = require("../models");
+const { User, Customer, Service, sequelize, Booking, Attendance } = require("../models");
 const { Op } = require('sequelize');
+const { uploadImage } = require("../uilts/imageUplord");
 module.exports = {
 
     dashboard: async (req, res) => {
@@ -229,88 +230,256 @@ module.exports = {
 
 
 
-   getBookings: async (req, res) => {
-  try {
-    const userId = req.staff.id;
-    const bookings = await Booking.findAll({
-    //   where: { staff_id: userId },
-    });
+    allBooking: async (req, res) => {
+        try {
+            const userId = req.staff.id;
 
-    console.log(bookings);
-    
-    res.status(200).json({
-      message: 'Bookings for this staff member',
-      data: bookings,
-    });
-  } catch (error) {
-    console.error('Error fetching bookings:', error);
-    res.status(500).json({
-      error: 'An error occurred while fetching bookings.',
-    });
-  }
-},
-
-    
-    
-        addBooking: async (req, res) => {
-            try {
-                const { customer_id, staff_id, service_id, date, time } = req.body;
-     const userId = req.staff.id;
-                const serviceIds = service_id.split(',').map(id => id.trim());
-    
-                const bookingRecords = [];
-    
-               
-                    for (const svcId of serviceIds) {
-                        bookingRecords.push({
-                            customer_id,  // should be numeric ID
-                            staff_id: userId,
-                            service_id: svcId,
-                            date,
-                            time
-                        });
+            const bookings = await Booking.findAll({
+                include: [
+                    {
+                        model: Customer,
+                        as: 'customer',
+                    },
+                    {
+                        model: Service,
+                        as: 'service',
+                        attributes: ['id', 'title', 'price']
                     }
-    
-                const createdBookings = await Booking.bulkCreate(bookingRecords, { returning: true });
-    
-    
-                res.status(201).json({
-                    message: 'Booking(s) added successfully',
-                    data: createdBookings
-                });
-    
-            } catch (error) {
-                console.error('Error adding bookings:', error);
-                res.status(500).json({
-                    error: 'An error occurred while adding bookings.',
-                });
-            }
-        },
-    
-    
-    
-        getAll: async (req, res) => {
-            try {
-                const service = await Service.findAll()
-                const customer = await Customer.findAll({
-                    attributes: [
-                        [sequelize.fn('MIN', sequelize.col('id')), 'id'],   // 👈 id bhi aa jayega
-                        [sequelize.fn('MIN', sequelize.col('name')), 'name'],
-                        'email'
-                    ],
-                    group: ['email']
-                });
-          
-                return res.status(200).json({
-                    data: { service, customer, Staff }
-    
-                });
-    
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                res.status(500).json({
-                    error: 'An error occurred while fetching bookings.',
+                ],
+                where: { staff_id: userId },
+            });
+
+
+            res.status(200).json({
+                message: 'Bookings for this staff member',
+                data: bookings,
+            });
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+            res.status(500).json({
+                error: 'An error occurred while fetching bookings.',
+            });
+        }
+    },
+
+
+
+    bookingAdd: async (req, res) => {
+        try {
+            const { customer_id, staff_id, service_id, date, time } = req.body;
+            const userId = req.staff.id;
+            const serviceIds = service_id.split(',').map(id => id.trim());
+
+            const bookingRecords = [];
+
+
+            for (const svcId of serviceIds) {
+                bookingRecords.push({
+                    customer_id,  // should be numeric ID
+                    staff_id: userId,
+                    service_id: svcId,
+                    date,
+                    time
                 });
             }
-        },
+
+            const createdBookings = await Booking.bulkCreate(bookingRecords, { returning: true });
+
+
+            res.status(201).json({
+                message: 'Booking(s) added successfully',
+                data: createdBookings
+            });
+
+        } catch (error) {
+            console.error('Error adding bookings:', error);
+            res.status(500).json({
+                error: 'An error occurred while adding bookings.',
+            });
+        }
+    },
+
+
+
+    allGet: async (req, res) => {
+        try {
+            const service = await Service.findAll()
+            const customer = await Customer.findAll({
+                attributes: [
+                    [sequelize.fn('MIN', sequelize.col('id')), 'id'],   // 👈 id bhi aa jayega
+                    [sequelize.fn('MIN', sequelize.col('name')), 'name'],
+                    'email'
+                ],
+                group: ['email']
+            });
+
+            return res.status(200).json({
+                data: { service, customer, Staff }
+
+            });
+
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+            res.status(500).json({
+                error: 'An error occurred while fetching bookings.',
+            });
+        }
+    },
+
+
+    // --------------------------------------Create a new attendance record
+    createAttendance: async (req, res) => {
+        try {
+            const userId = req.staff.id;
+            const today = new Date().toISOString().split("T")[0];
+
+            let record = await Attendance.findOne({
+                where: { staff_id: userId, date: today },
+            });
+
+            const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true, // ✅ AM/PM format
+            });
+
+            if (!record) {
+                // ✅ First Check-In
+                record = await Attendance.create({
+                    staff_id: userId,
+                    date: today,
+                    checkIn: currentTime,
+                    checkOut: null,
+                });
+
+                return res
+                    .status(201)
+                    .json({ message: "Checked In successfully", data: record });
+            }
+
+            if (!record.checkOut) {
+                // ✅ First Check-Out
+                record.checkOut = currentTime;
+                await record.save();
+
+                return res
+                    .status(200)
+                    .json({ message: "Checked Out successfully", data: record });
+            }
+
+            // ✅ Already checked out → allow re-check-in (update checkIn, reset checkOut)
+            record.checkIn = currentTime;
+            record.checkOut = null;
+            await record.save();
+
+            return res
+                .status(200)
+                .json({ message: "Re-Checked In successfully", data: record });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Internal server error" });
+        }
+    },
+
+
+
+    // Get all attendance records
+    getAllAttendance: async (req, res) => {
+        try {
+            const userId = req.staff.id;
+            const records = await Attendance.findAll({
+                include: [
+                    {
+                        model: User,
+                        as: 'staffId',
+                    }],
+                where: { staff_id: userId },
+                order: [['date', 'DESC']],
+            });
+
+            res.status(200).json({ message: 'Attendance records fetched', data: records });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+    // Get attendance by staff ID
+    getAttendanceByStaff: async (req, res) => {
+        try {
+            const { staff_id } = req.params;
+            const records = await Attendance.findAll({
+                where: { staff_id },
+                order: [['date', 'DESC']]
+            });
+            res.status(200).json({ message: `Attendance for staff ${staff_id}`, data: records });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+    // Update an attendance record by ID
+    updateAttendance: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const userId = req.staff.id;
+            const { staff_id, date, checkIn, checkOut } = req.body;
+
+            const record = await Attendance.findByPk(id);
+            if (!record) {
+                return res.status(404).json({ message: 'Attendance record not found' });
+            }
+
+            await record.update({ staff_id: userId, date, checkIn, checkOut });
+            res.status(200).json({ message: 'Attendance updated successfully', data: record });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+    // Delete an attendance record by ID
+    deleteAttendance: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const record = await Attendance.findByPk(id);
+            if (!record) {
+                return res.status(404).json({ message: 'Attendance record not found' });
+            }
+
+            await record.destroy();
+            res.status(200).json({ message: 'Attendance deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+    // Optional: Get attendance for a date range
+    getAttendanceByDate: async (req, res) => {
+        try {
+            const { startDate, endDate } = req.query;
+            const records = await Attendance.findAll({
+                include: [
+                    {
+                        model: User,
+                        as: "staffId",
+                        attributes: ["id", "name", "email"],
+                    },
+                ],
+                where: {
+                    date: {
+                        [Op.between]: [startDate, endDate]
+                    }
+                },
+                order: [['date', 'DESC']]
+            });
+            res.status(200).json({ message: 'Attendance records fetched', data: records });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }

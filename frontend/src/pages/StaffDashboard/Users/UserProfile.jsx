@@ -15,7 +15,7 @@ const UserstaffProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("staffToken");
-        const res = await axios.get(`${API_BASE_URL}/staffadmin/get-profile`, {
+        const res = await axios.get(`${API_BASE_URL}/staffAdmin/get-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.data);
@@ -49,7 +49,7 @@ const UserstaffProfile = () => {
       // if (data.phone) formData.append("phone", data.phone);
 
       const res = await axios.put(
-        `${API_BASE_URL}/staffadmin/update-profile`,
+        `${API_BASE_URL}/staffAdmin/update-profile`,
         formData,
         {
           headers: {
@@ -120,7 +120,7 @@ const UserstaffProfile = () => {
             {/* Buttons */}
             <div className="flex gap-4">
               <button
-                onClick={() => navigate("/admin/update-profile")}
+                onClick={() => navigate("/staff-Admin/update-profile")}
                 className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md shadow-md transition"
               >
                 <i className="ri-edit-2-line" /> Edit Profile

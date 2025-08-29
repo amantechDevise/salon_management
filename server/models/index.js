@@ -57,6 +57,9 @@ db.Rating = require("./ratings")(sequelize, Sequelize);
 db.User.hasMany(db.Customer, { foreignKey: 'staff_id', as: 'customers' });
 db.Customer.belongsTo(db.User, { foreignKey: 'staff_id', as: 'staff' });
 
+db.User.hasMany(db.Attendance, { foreignKey: 'staff_id', as: 'attendance' });
+db.Attendance.belongsTo(db.User, { foreignKey: 'staff_id', as: 'staffId' });
+
 // SERVICE ↔ CUSTOMER
 db.Service.hasMany(db.Customer, { foreignKey: 'service_id', as: 'customers' });
 db.Customer.belongsTo(db.Service, { foreignKey: 'service_id', as: 'service' });

@@ -18,7 +18,7 @@ const UpdatestaffProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("staffToken");
-        const res = await axios.get(`${API_BASE_URL}/staffadmin/get-profile`, {
+        const res = await axios.get(`${API_BASE_URL}/staffAdmin/get-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -67,13 +67,13 @@ const UpdatestaffProfile = () => {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/staffadmin/update-profile`, data, {
+      await axios.put(`${API_BASE_URL}/staffAdmin/update-profile`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
       });
-      navigate("/staffadmin/profile"); 
+      navigate("/staff-Admin/profile"); 
     } catch (err) {
       console.error("Error updating profile:", err);
     }
@@ -144,7 +144,7 @@ const UpdatestaffProfile = () => {
 
           <div className="flex justify-between items-center mt-6">
             <Link
-              to="/staffadmin/profile"
+              to="/staff-Admin/profile"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
               Back
