@@ -15,8 +15,6 @@ const BookingList = () => {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
-      console.log(response);
-
       setBookings(response.data.data || []);
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -88,7 +86,7 @@ const BookingList = () => {
             <th className="px-6 py-3">Date</th>
             <th className="px-6 py-3">Time</th>
             {/* <th className="px-6 py-3">Status</th> */}
-            <th className="px-6 py-3">Action</th>
+            {/* <th className="px-6 py-3">Action</th> */}
           </tr>
         </thead>
 
@@ -138,7 +136,7 @@ const BookingList = () => {
                     : "N/A"}
                 </td>
 
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <Link
                     to={`/admin/bookings/edit/${booking.id}`}
                     className="text-blue-600 hover:underline mr-4"
@@ -151,7 +149,7 @@ const BookingList = () => {
                   >
                     Delete
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           )}

@@ -3,74 +3,95 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const ListStaff = () => {
   const [staff, setStaff] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     perPage: 10,
     totalRecords: 0,
   });
+
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchStaff = async (page = 1) => {
+  // Fetch staff from API
+  const fetchStaff = async (page = 1, search = "") => {
     try {
       const response = await axios.get(`${API_BASE_URL}/admin/staff`, {
         params: {
-          page: page, 
-          limit: pagination.perPage, // Limit results per page
+          page: search ? 1 : page, // if searching, always get first page
+          limit: search ? 10000 : pagination.perPage, // large number to get all for search
+          search: search || undefined, // send search query if present
         },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
 
-      // Set staff and pagination info
       setStaff(response.data.data);
-      setPagination({
-        currentPage: response.data.meta.currentPage,
-        totalPages: response.data.meta.totalPages,
-        perPage: response.data.meta.perPage,
-        totalRecords: response.data.meta.totalRecords,
-      });
+      if (!search) {
+        setPagination({
+          currentPage: response.data.meta.currentPage,
+          totalPages: response.data.meta.totalPages,
+          perPage: response.data.meta.perPage,
+          totalRecords: response.data.meta.totalRecords,
+        });
+      }
     } catch (error) {
       console.error("Error fetching staff:", error);
     }
   };
 
   useEffect(() => {
-    fetchStaff(); // Fetch staff for the initial page
+    fetchStaff(); // initial load
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this staff?")) return;
-
-    try {
-      await axios.delete(`${API_BASE_URL}/admin/staff/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
-
-      toast.success("Staff deleted successfully!");
-      fetchStaff(pagination.currentPage); // Refresh the current page
-    } catch (error) {
-      console.error("Delete failed:", error);
-      toast.error("Failed to delete staff");
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This staff record will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`${API_BASE_URL}/admin/staff/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          });
+          toast.success("Staff deleted successfully!");
+          fetchStaff(pagination.currentPage, searchTerm);
+          Swal.fire("Deleted!", "Staff has been deleted.", "success");
+        } catch (error) {
+          console.error("Delete failed:", error);
+          toast.error("Failed to delete staff");
+          Swal.fire("Error!", "Failed to delete staff.", "error");
+        }
+      }
+    });
   };
 
   const handleToggleStatus = async (staffMember) => {
-    const newStatus = staffMember.status === 1 ? 0 : 1; // Toggle status
+    const newStatus = staffMember.status === 1 ? 0 : 1;
     try {
       await axios.patch(
         `${API_BASE_URL}/admin/staff/${staffMember.id}/status`,
         { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
       );
       toast.success("Status updated successfully");
-      fetchStaff(pagination.currentPage); // Refresh list after status update
+      fetchStaff(pagination.currentPage, searchTerm);
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update status");
@@ -78,7 +99,13 @@ const ListStaff = () => {
   };
 
   const handlePageChange = (newPage) => {
-    fetchStaff(newPage); // Fetch data for the new page
+    fetchStaff(newPage, searchTerm);
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    fetchStaff(1, value); // search always fetches from first page
   };
 
   return (
@@ -88,6 +115,8 @@ const ListStaff = () => {
         <div className="relative w-full max-w-xs">
           <input
             type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
             placeholder="Search staffs..."
             className="pl-10 pr-4 py-2 w-full rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-600"
           />
@@ -115,96 +144,103 @@ const ListStaff = () => {
             <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
-        <tbody>
-          {staff.length === 0 ? (
-            <tr>
-              <td colSpan="7" className="text-center py-4">
-                <img src="/oder.jpg" alt="" className="inline-block w-70 h-70" />
-              </td>
-            </tr>
+     <tbody>
+  {staff.length === 0 ? (
+    <tr>
+      <td colSpan="8" className="text-center py-4">
+        {searchTerm ? (
+          <span className="text-gray-500 text-lg">No staff found for "{searchTerm}"</span>
+        ) : (
+          <img
+            src="/oder.jpg"
+            alt=""
+            className="inline-block w-70 h-70"
+          />
+        )}
+      </td>
+    </tr>
+  ) : (
+    staff.map((staffMember, index) => (
+      <tr
+        key={staffMember.id}
+        className="odd:bg-white even:bg-gray-50 border-b"
+      >
+        <td className="px-6 py-4">{index + 1}</td>
+        <td className="px-6 py-4">{staffMember.name}</td>
+        <td className="px-6 py-4">{staffMember.email}</td>
+        <td className="px-6 py-4">{staffMember.phone}</td>
+        <td className="px-6 py-4">
+          <button
+            onClick={() => handleToggleStatus(staffMember)}
+            className={`px-3 py-1 rounded ${
+              staffMember.status === 1 ? "bg-green-500" : "bg-red-500"
+            } text-white`}
+          >
+            {staffMember.status === 1 ? "Active" : "Inactive"}
+          </button>
+        </td>
+        <td className="px-6 py-4">
+          <Link
+            to={`/admin/attendance/${staffMember.id}`}
+            className="inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-600 hover:text-white transition duration-200"
+          >
+            List Attendance
+          </Link>
+        </td>
+        <td className="px-6 py-4">
+          {staffMember.image ? (
+            <img
+              src={`${API_BASE_URL}${staffMember.image}`}
+              alt={staffMember.name}
+              className="w-16 h-16 object-cover rounded"
+            />
           ) : (
-            staff.map((staffMember, index) => (
-              <tr key={staffMember.id} className="odd:bg-white even:bg-gray-50 border-b">
-                <td className="px-6 py-4">{index + 1}</td>
-                <td className="px-6 py-4">{staffMember.name}</td>
-                <td className="px-6 py-4">{staffMember.email}</td>
-                <td className="px-6 py-4">{staffMember.phone}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleToggleStatus(staffMember)}
-                    className={`px-3 py-1 rounded ${
-                      staffMember.status === 1 ? "bg-green-500" : "bg-red-500"
-                    } text-white`}
-                  >
-                    {staffMember.status === 1 ? "Active" : "Inactive"}
-                  </button>
-                </td>
-                 <td className="px-6 py-4">
-  <Link
-    to={`/admin/attendance/${staffMember.id}`}
-    className="inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-600 hover:text-white transition duration-200"
-  >
-    List Attendance
-  </Link>
-</td>
-
-                <td className="px-6 py-4">
-                  {staffMember.image ? (
-                    <img
-                      src={`${API_BASE_URL}${staffMember.image}`}
-                      alt={staffMember.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  ) : (
-                    "No Image"
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  {/* <Link
-                    to={`/admin/staff/edit/${staffMember.id}`}
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                  >
-                    Edit
-                  </Link> */}
-                  <Link
-                    to={`/admin/staff/${staffMember.id}`}
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                  >
-                    View
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(staffMember.id)}
-                    className="text-red-500 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
+            "No Image"
           )}
-        </tbody>
+        </td>
+        <td className="px-6 py-4">
+          <Link
+            to={`/admin/staff/${staffMember.id}`}
+            className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
+          >
+            View
+          </Link>
+          <button
+            onClick={() => handleDelete(staffMember.id)}
+            className="text-red-500 hover:underline"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
+
       </table>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => handlePageChange(pagination.currentPage - 1)}
-          disabled={pagination.currentPage === 1}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <span>
-          Page {pagination.currentPage} of {pagination.totalPages}
-        </span>
-        <button
-          onClick={() => handlePageChange(pagination.currentPage + 1)}
-          disabled={pagination.currentPage === pagination.totalPages}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      {/* Pagination Controls (hide if searching) */}
+      {!searchTerm && (
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => handlePageChange(pagination.currentPage - 1)}
+            disabled={pagination.currentPage === 1}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(pagination.currentPage + 1)}
+            disabled={pagination.currentPage === pagination.totalPages}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

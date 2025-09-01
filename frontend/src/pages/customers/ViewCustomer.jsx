@@ -9,6 +9,7 @@ function ViewCustomer() {
 
   const [staff, setStaff] = useState(null);
   const [visits, setVisits] = useState([]);
+  const [totalVisits, setTotalVisits] = useState(0);
 
   const fetchStaff = async () => {
     try {
@@ -35,10 +36,13 @@ function ViewCustomer() {
           data.specificCustomer.staff?.email || data.specificCustomer.email,
         phone:
           data.specificCustomer.staff?.phone || data.specificCustomer.phone,
+           visit_count :
+          data.specificCustomer.staff?.visit_count  || data.specificCustomer.visit_count,
       });
 
       // Set visits list from allVisits
       setVisits(data.allVisits || [data.specificCustomer]);
+      setTotalVisits(data.allVisits?.length || 1);
     } catch (err) {
       console.error("Error fetching staff details:", err);
       toast.error("Failed to load staff details");
@@ -61,7 +65,7 @@ function ViewCustomer() {
     <>
       <div className="flex items-center justify-center p-12">
         <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-semibold mb-6">Staff Details</h2>
+          <h2 className="text-2xl font-semibold mb-6">Customer Details</h2>
 
           <div className="-mx-3 flex flex-wrap">
             <div className="w-full px-3 sm:w-1/2 mb-5">
@@ -77,14 +81,18 @@ function ViewCustomer() {
               <p className="font-medium text-[#07074D] mb-1">Phone:</p>
               <p className="text-[#6B7280]">{staff.phone}</p>
             </div>
+            <div className="w-full px-3 sm:w-1/2 mb-5">
+              <p className="font-medium text-[#07074D] mb-1">Total Visits:</p>
+              <p className="text-[#6B7280]">{staff.visit_count }</p>
+            </div>
           </div>
 
           <div className="flex justify-between items-center mt-6">
             <Link
-              to="/admin/staff"
+              to="/admin/customer"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
-              ← Back to Staff
+              ← Back 
             </Link>
           </div>
         </div>
@@ -93,46 +101,47 @@ function ViewCustomer() {
       {/* Customers Visit History */}
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-5">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Customer Visit History</h2>
+          <h2 className="text-2xl font-semibold"> Visit History</h2>
         </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">Phone</th>
-              <th className="px-6 py-3">Service</th>
-              {/* <th className="px-6 py-3">Visit Count</th> */}
+              <th className="px-6 py-3">SR.NO</th>
+              <th className="px-6 py-3">Staff Name</th>
+              <th className="px-6 py-3">Service Name</th>
               <th className="px-6 py-3">Date</th>
             </tr>
           </thead>
-          <tbody>
-            {visits.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="text-center py-4">
-                  No visits found for this customer.
-                </td>
-              </tr>
-            ) : (
-              visits.map((visit, index) => (
-                <tr
-                  key={visit.id}
-                  className="bg-white border-b hover:bg-gray-100"
-                >
-                  <td className="px-6 py-4">{index + 1}</td>
-                  <td className="px-6 py-4">{visit.name}</td>
-                  <td className="px-6 py-4">{visit.email}</td>
-                  <td className="px-6 py-4">{visit.phone}</td>
-                  <td className="px-6 py-4">{visit.service?.title || "N/A"}</td>
-                  {/* <td className="px-6 py-4">{visit.visit_count || 0}</td> */}
-                  <td className="px-6 py-4">
-                    {new Date(visit.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+       <tbody>
+  {visits.length === 0 ? (
+    <tr>
+      <td colSpan="4" className="text-center py-4">
+        No visits found for this customer.
+      </td>
+    </tr>
+  ) : (
+    visits.map((visit, index) =>
+      visit.customerServices.length > 0 ? (
+        visit.customerServices.map((cs, csIndex) => (
+          <tr key={`${visit.id}-${csIndex}`} className="bg-white border-b hover:bg-gray-100">
+            <td className="px-6 py-4">{csIndex + 1}</td>
+            <td className="px-6 py-4">{cs.staff?.name || "N/A"}</td>
+            <td className="px-6 py-4">{cs.service?.title || "N/A"}</td>
+            <td className="px-6 py-4">{new Date(visit.createdAt).toLocaleDateString()}</td>
+          </tr>
+        ))
+      ) : (
+        <tr key={visit.id} className="bg-white border-b hover:bg-gray-100">
+          <td className="px-6 py-4">{index + 1}</td>
+          <td className="px-6 py-4">N/A</td>
+          <td className="px-6 py-4">N/A</td>
+          <td className="px-6 py-4">{new Date(visit.createdAt).toLocaleDateString()}</td>
+        </tr>
+      )
+    )
+  )}
+</tbody>
+
         </table>
       </div>
     </>

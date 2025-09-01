@@ -34,7 +34,6 @@ router.get('/services',authenticateToken,servicesController.getServices)
 router.post('/services/add',authenticateToken,servicesController.addService)
 router.get('/services/:id',authenticateToken,servicesController.getServiceById)
 router.put('/services/:id',authenticateToken,servicesController.updateService)
-router.put('/services/:id',authenticateToken,servicesController.updateService)
 router.patch('/services/:id/status',authenticateToken, servicesController.updateServiceStatus);
 router.delete('/services/:id',authenticateToken,servicesController.deleteService)
 
@@ -44,9 +43,6 @@ router.delete('/services/:id',authenticateToken,servicesController.deleteService
 router.get('/customer',authenticateToken,customerController.getCustomers)
 router.post('/customer/add',authenticateToken,customerController.addCustomers)
 router.get('/customerDetails/:id',authenticateToken,customerController.getCustomerDetails)
-
-
-
 
 // ----------------------bookingsController---------------
 

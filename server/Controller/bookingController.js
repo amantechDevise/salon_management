@@ -1,49 +1,49 @@
 const { Booking, Customer, User, Service, sequelize } = require('../models');
 
 module.exports = {
-getBookings: async (req, res) => {
-    try {
-        const bookings = await Booking.findAll({
-            include: [
-                {
-                    model: Customer,
-                    as: 'customer',
-                    attributes: [
-                        'email',
-                        [sequelize.fn('MIN', sequelize.col('customer.id')), 'id'],
-                        [sequelize.fn('MIN', sequelize.col('customer.name')), 'name'],
-                        [sequelize.fn('MIN', sequelize.col('customer.phone')), 'phone'],
-                    ]
-                },
-                {
-                    model: User,
-                    as: 'staff',
-                    attributes: ['id', 'name', 'email']
-                },
-                {
-                    model: Service,
-                    as: 'service',
-                    attributes: ['id', 'title', 'price']
-                }
-            ],
-            attributes: [
-                [sequelize.fn('MIN', sequelize.col('Booking.id')), 'id'],
-                [sequelize.fn('MIN', sequelize.col('Booking.date')), 'date'],   // 👈 your date field
-                [sequelize.fn('MIN', sequelize.col('Booking.time')), 'time']    // 👈 your time field
-            ],
-            group: ['customer.email'],
-            order: [[sequelize.fn('MIN', sequelize.col('Booking.date')), 'DESC']]
-        });
+    getBookings: async (req, res) => {
+        try {
+            const bookings = await Booking.findAll({
+                include: [
+                    {
+                        model: Customer,
+                        as: 'customer',
+                        attributes: [
+                            'email',
+                            [sequelize.fn('MIN', sequelize.col('customer.id')), 'id'],
+                            [sequelize.fn('MIN', sequelize.col('customer.name')), 'name'],
+                            [sequelize.fn('MIN', sequelize.col('customer.phone')), 'phone'],
+                        ]
+                    },
+                    {
+                        model: User,
+                        as: 'staff',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: Service,
+                        as: 'service',
+                        attributes: ['id', 'title', 'price']
+                    }
+                ],
+                attributes: [
+                    [sequelize.fn('MIN', sequelize.col('Booking.id')), 'id'],
+                    [sequelize.fn('MIN', sequelize.col('Booking.date')), 'date'],   // 👈 your date field
+                    [sequelize.fn('MIN', sequelize.col('Booking.time')), 'time']    // 👈 your time field
+                ],
+                group: ['customer.email'],
+                order: [[sequelize.fn('MIN', sequelize.col('Booking.date')), 'DESC']]
+            });
 
-        res.status(200).json({ message: 'Unique email wise Bookings', data: bookings });
+            res.status(200).json({ message: 'Unique email wise Bookings', data: bookings });
 
-    } catch (error) {
-        console.error('Error fetching bookings:', error);
-        res.status(500).json({
-            error: 'An error occurred while fetching bookings.',
-        });
-    }
-},
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+            res.status(500).json({
+                error: 'An error occurred while fetching bookings.',
+            });
+        }
+    },
 
 
     addBooking: async (req, res) => {
@@ -62,7 +62,8 @@ getBookings: async (req, res) => {
                         staff_id: sId,
                         service_id: svcId,
                         date,
-                        time
+                        time,
+                        status: 1 //panding
                     });
                 }
             }
@@ -111,4 +112,7 @@ getBookings: async (req, res) => {
             });
         }
     },
+
+
+
 };

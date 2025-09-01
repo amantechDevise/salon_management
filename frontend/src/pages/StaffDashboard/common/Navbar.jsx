@@ -2,10 +2,11 @@
 import React, { useState, useRef } from "react";
 import { FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const StaffNavbar = ({ userData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const timeoutRef = useRef(null);
 
   const defaultImage = "https://randomuser.me/api/portraits/women/11.jpg";
@@ -20,6 +21,24 @@ const StaffNavbar = ({ userData }) => {
     timeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 200);
+  };
+
+  // logout confirmation
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("staffToken");
+        window.location.href = "/admin/staff-login";
+      }
+    });
   };
 
   return (
@@ -50,11 +69,11 @@ const StaffNavbar = ({ userData }) => {
           <button className="flex items-center focus:outline-none">
             <img
               className="w-9 h-9 rounded-full"
-                  src={
-                  (userData?.image
-                    ? `${API_BASE_URL}${userData.image}`
-                    : defaultImage)
-                }
+              src={
+                userData?.image
+                  ? `${API_BASE_URL}${userData.image}`
+                  : defaultImage
+              }
               alt="User"
             />
           </button>
@@ -69,10 +88,7 @@ const StaffNavbar = ({ userData }) => {
                 Profile
               </Link>
               <button
-                onClick={() => {
-                  localStorage.removeItem("staffToken");
-                  window.location.href = "/admin/staff-login";
-                }}
+                onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >
                 Logout

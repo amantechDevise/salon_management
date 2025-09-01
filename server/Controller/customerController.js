@@ -1,4 +1,4 @@
-const { Service, User, Customer, sequelize } = require("../models");
+const { Service, User, Customer, sequelize, CustomerService } = require("../models");
 const { uploadImage } = require("../uilts/imageUplord");
 const { Op } = require('sequelize');
 module.exports = {
@@ -87,82 +87,106 @@ module.exports = {
 
 
 
-    addCustomers: async (req, res) => {
-      try {
-        const {
-          staff_id,      // e.g., "1,2"
-          service_id,    // e.g., "5,6"
-          name,
-          email,
-          dob,
-          address,
-          phone,
-          status
-        } = req.body;
+addCustomers: async (req, res) => {
+  try {
+    const {
+      staff_id,
+      service_id,
+      name,
+      email,
+      dob,
+      address,
+      phone,
+      status
+    } = req.body;
 
-        const imageFile = req.files ? req.files.image : null;
-        let imagePath = null;
+    const imageFile = req.files ? req.files.image : null;
+    let imagePath = null;
 
-        if (imageFile) {
-          imagePath = await uploadImage(imageFile);
-        }
+    if (imageFile) {
+      imagePath = await uploadImage(imageFile);
+    }
 
-        const staffIds = staff_id.split(',').map(id => id.trim());
-        const serviceIds = service_id.split(',').map(id => id.trim());
+    const staffIds = staff_id.split(',').map(id => id.trim());
+    const serviceIds = service_id.split(',').map(id => id.trim());
 
-        let visitCount = await Customer.count({ where: { email } }); // current count
-
-        const customerRecords = [];
-
-        for (const sId of staffIds) {
-          for (const svcId of serviceIds) {
-            visitCount++; // increment per new record
-            customerRecords.push({
-              staff_id: sId,
-              service_id: svcId,
-              name,
-              email,
-              dob,
-              address,
-              image: imagePath || "",
-              phone,
-              status: status || 1,
-              visit_count: visitCount
-            });
-          }
-        }
-
-        const createdCustomers = await Customer.bulkCreate(customerRecords);
-
-        res.status(201).json({
-          message: 'Customer visits recorded successfully',
-          data: createdCustomers
-        });
-
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+    // Find or create the main customer record
+    const [customer, created] = await Customer.findOrCreate({
+      where: { email },
+      defaults: {
+        name,
+        email,
+        staff_id,
+        service_id,
+        dob,
+        address,
+        image: imagePath || "",
+        phone,
+        status: status || 1,
+        visit_count: 1
       }
-    },
+    });
+
+    // If customer already exists, update visit count
+    if (!created) {
+      customer.visit_count += 1;
+      await customer.save();
+    }
+
+    // Create customer-service-staff relationships
+    const customerServices = [];
+    
+    for (const sId of staffIds) {
+      for (const svcId of serviceIds) {
+        customerServices.push({
+          customer_id: customer.id,
+          staff_id: sId,
+          service_id: svcId
+        });
+      }
+    }
+
+    // Assuming you have a CustomerService model for the relationships
+    const createdRelationships = await CustomerService.bulkCreate(customerServices);
+
+    res.status(201).json({
+      message: 'Customer services recorded successfully',
+      data: {
+        customer,
+        services: createdRelationships
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+},
 
 
 getCustomerDetails: async (req, res) => {
   try {
     const customerId = req.params.id;
 
-    // Step 1: Get specific customer by ID
     const specificCustomer = await Customer.findOne({
       where: { id: customerId },
       include: [
+        
         {
-          model: User,
-          as: 'staff',
-          attributes: ['id', 'name', 'email', 'phone'],
-        },
-        {
-          model: Service,
-          as: 'service',
-          attributes: ['id', 'title', 'description', 'image', 'price'],
+          model: CustomerService,
+          as: 'customerServices',
+          include: [
+            {
+              model: User,
+              as: 'staff',
+              attributes: ['id', 'name'],
+            },
+            {
+              model: Service,
+              as: 'service',
+              attributes: ['id', 'title'],
+            },
+          ],
         },
       ],
     });
@@ -171,24 +195,33 @@ getCustomerDetails: async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    // Step 2: Fetch all entries with the same email as specificCustomer's email
+    console.log(specificCustomer,"specificCustomerspecificCustomer");
+    
     const allVisits = await Customer.findAll({
       where: { email: specificCustomer.email },
       include: [
+        
         {
-          model: User,
-          as: 'staff',
-          attributes: ['id', 'name', 'email', 'phone'],
-        },
-        {
-          model: Service,
-          as: 'service',
-          attributes: ['id', 'title', 'description', 'image', 'price'],
+          model: CustomerService,
+          as: 'customerServices',
+          include: [
+            {
+              model: User,
+              as: 'staff',
+              attributes: ['id', 'name'],
+            },
+            {
+              model: Service,
+              as: 'service',
+              attributes: ['id', 'title'],
+            },
+          ],
         },
       ],
       order: [['createdAt', 'DESC']],
     });
-
+ 
+  
     return res.status(200).json({
       message: "Customer visits fetched successfully",
       data: {
@@ -202,6 +235,7 @@ getCustomerDetails: async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 }
+
 
 
 

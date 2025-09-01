@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function StaffLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,25 +11,39 @@ function StaffLogin() {
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_BASE_URL}/admin/staffLogin`, {
-        email,
-        password,
-      });
-      const { token } = response.data;
-      localStorage.setItem('staffToken', token);
-      alert('Signup successful');
+const handleSignup = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post(`${API_BASE_URL}/admin/staffLogin`, {
+      email,
+      password,
+    });
+
+    const { token } = response.data;
+    localStorage.setItem('staffToken', token);
+
+    toast.success('Login successful 🎉', {
+      position: 'top-right',
+      autoClose: 2000,
+    });
+
+    setTimeout(() => {
       navigate('/staff-Admin/dashboard');
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Something went wrong');
-      }
+    }, 1500);
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.message) {
+      toast.error(err.response.data.message, {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } else {
+      toast.error('Something went wrong', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">

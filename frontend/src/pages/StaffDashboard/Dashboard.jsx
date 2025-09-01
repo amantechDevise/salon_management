@@ -3,7 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import Swal from "sweetalert2";
 import Avtar from "/avtar.jpg";
-
+import { FaUsers, FaUserTie, FaCogs, FaDollarSign } from "react-icons/fa";
 function StaffDashboard() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [attendance, setAttendance] = useState([]);
@@ -33,24 +33,24 @@ function StaffDashboard() {
     fetchDashboardData();
   }, []);
 
-const fetchAttendance = async () => {
-  try {
-    const token = localStorage.getItem("staffToken");
-    const res = await axios.get(`${API_BASE_URL}/staffAdmin/attendance`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const fetchAttendance = async () => {
+    try {
+      const token = localStorage.getItem("staffToken");
+      const res = await axios.get(`${API_BASE_URL}/staffAdmin/attendance`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const sorted = res.data.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = res.data.data.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
 
-    const lastThree = sorted.slice(0, 3);
+      const lastThree = sorted.slice(0, 3);
 
-    setAttendance(lastThree);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-
+      setAttendance(lastThree);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     fetchAttendance();
@@ -101,11 +101,11 @@ const fetchAttendance = async () => {
   return (
     <>
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-              <i className="fas fa-bed text-xl" />
+              <FaUsers className="text-2xl" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
@@ -120,7 +120,7 @@ const fetchAttendance = async () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-green-100 text-green-600">
-              <i className="fas fa-calendar-check text-xl" />
+              <FaCogs className="text-2xl" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
@@ -216,12 +216,16 @@ const fetchAttendance = async () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {moment(a.date).format("DD MMM YYYY")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {a.checkIn ? moment(a.checkIn, "hh:mm A").format("hh:mm A") : "--"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {a.checkOut ? moment(a.checkOut, "hh:mm A").format("hh:mm A") : "--"}
-                    </td>
+                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+  {a.checkIn
+    ? moment(a.checkIn, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
+    : "--"}
+</td>
+<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+  {a.checkOut
+    ? moment(a.checkOut, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
+    : "--"}
+</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {a.checkOut ? (
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -244,7 +248,7 @@ const fetchAttendance = async () => {
           </div>
         </div>
 
-      {/* Room Status */}
+        {/* Room Status */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-800">Room Status</h2>

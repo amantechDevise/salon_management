@@ -7,21 +7,23 @@ import { FaSearch } from "react-icons/fa";
 
 const ListCustomer = () => {
   const [products, setProducts] = useState([]);
-  const [meta, setMeta] = useState({}); // For pagination metadata
+  const [meta, setMeta] = useState({}); 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // controlled input
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchProducts = async (page = 1) => {
+  const fetchProducts = async (page = 1, search = "") => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/admin/customer?page=${page}&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/admin/customer`, {
+        params: {
+          page: page,
+          limit: search ? 10000 : 10, // large limit when searching
+          search: search || undefined,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
 
       setProducts(response.data.data || []);
       setMeta(response.data.meta || {});
@@ -32,37 +34,27 @@ const [searchQuery, setSearchQuery] = useState("");
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this customer?")) return;
-
-    try {
-      await axios.delete(`${API_BASE_URL}/admin/customer/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
-
-      toast.success("Customer deleted successfully!");
-      fetchProducts(currentPage); // Refresh list on same page
-    } catch (error) {
-      console.error("Delete failed:", error);
-      toast.error("Failed to delete customer");
-    }
-  };
-
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    fetchProducts(1, value); // always search from page 1
+  };
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
       <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
         <h2 className="text-2xl font-semibold">All Customers</h2>
 
-        {/* Search Input with Icon */}
+        {/* Search Input */}
         <div className="relative w-full max-w-xs">
           <input
             type="text"
+            value={searchQuery || ""} // ensure controlled input
+            onChange={handleSearchChange}
             placeholder="Search customers..."
             className="pl-10 pr-4 py-2 w-full rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-600"
           />
@@ -96,7 +88,13 @@ const [searchQuery, setSearchQuery] = useState("");
           {products.length === 0 ? (
             <tr>
               <td colSpan="9" className="text-center py-4">
-                <img src="/oder.jpg" alt="Empty" className="inline-block w-70 h-70" />
+                {searchQuery ? (
+                  <span className="text-gray-500 text-lg">
+                    No customers found for "{searchQuery}"
+                  </span>
+                ) : (
+                  <img src="/oder.jpg" alt="Empty" className="inline-block w-70 h-70" />
+                )}
               </td>
             </tr>
           ) : (
@@ -123,23 +121,11 @@ const [searchQuery, setSearchQuery] = useState("");
                 </td>
                 <td className="px-6 py-4">
                   <Link
-                    to={`/admin/products/edit/${product.id}`}
-                    className="text-blue-600 hover:underline mr-2"
-                  >
-                    Edit
-                  </Link>
-                  <Link
                     to={`/admin/view/${product.id}`}
                     className="text-blue-600 hover:underline mr-2"
                   >
                     View
                   </Link>
-                  {/* <button
-                    onClick={() => handleDelete(product.id)}
-                    className="text-red-500 hover:underline"
-                  >
-                    Delete
-                  </button> */}
                 </td>
               </tr>
             ))
@@ -147,8 +133,8 @@ const [searchQuery, setSearchQuery] = useState("");
         </tbody>
       </table>
 
-      {/* Pagination Controls */}
-      {meta.totalPages > 1 && (
+      {/* Pagination Controls (hide when searching) */}
+      {!searchQuery && meta.totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
           <button
             onClick={() => fetchProducts(currentPage - 1)}

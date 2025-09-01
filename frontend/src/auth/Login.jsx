@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const handleLogin = async () => {
+ const handleLogin = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/admin/login`, {
         email,
@@ -17,14 +18,26 @@ function Login() {
 
       const { token } = response.data;
       localStorage.setItem('adminToken', token);
-      alert('Login successful');
 
-      navigate('/admin/dashboard'); 
+      toast.success('Login successful 🎉', {
+        position: 'top-right',
+        autoClose: 2000,
+      });
+
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 1500);
     } catch (err) {
       if (err.response) {
-        setError(err.response.data.message);
+        toast.error(err.response.data.message, {
+          position: 'top-right',
+          autoClose: 2000,
+        });
       } else {
-        setError('Something went wrong');
+        toast.error('Something went wrong', {
+          position: 'top-right',
+          autoClose: 2000,
+        });
       }
     }
   };

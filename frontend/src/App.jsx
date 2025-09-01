@@ -30,6 +30,7 @@ import UpdatestaffProfile from "./pages/StaffDashboard/Users/UpdateProfile";
 import UserstaffProfile from "./pages/StaffDashboard/Users/UserProfile";
 import ListAttendance from "./pages/StaffDashboard/Attendance/ListAttendance";
 import AttendanceList from "./pages/Staff/AttendanceList";
+import EditServices from "./pages/Services/EditServices";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
             <Route path="view/:id" element={<ViewCustomer />} />
             <Route path="services" element={<Listing />} />
             <Route path="services/add" element={<AddServices />} />
+            <Route path="services/:id" element={<EditServices />} />
             <Route path="bookings" element={<ListBooking />} />
             <Route path="bookings/add" element={<AddBooking />} />
             <Route path="attendance/:id" element={<AttendanceList />} />

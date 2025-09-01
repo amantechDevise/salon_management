@@ -6,12 +6,14 @@ import { Link, useNavigate } from "react-router-dom";
 function AddBooking() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
+  
+  const staffRef = useRef(null);
+  const serviceRef = useRef(null);
 
   const [formData, setFormData] = useState({
     customer_id: "",
-    staff_id: [], // array me store hoga
-    service_id: [], // array me store hoga
+    staff_id: [],
+    service_id: [],
     date: "",
     time: "",
   });
@@ -26,14 +28,13 @@ function AddBooking() {
   const [serviceDropdownOpen, setServiceDropdownOpen] = useState(false);
 
   // 🔹 Common input handler
-const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  setFormData((prev) => ({
-    ...prev,
-    [name]: name === "customer_id" ? Number(value) : value, // 🔹 convert to integer
-  }));
-};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "customer_id" ? Number(value) : value,
+    }));
+  };
 
   // Fetch dropdown data
   useEffect(() => {
@@ -77,23 +78,34 @@ const handleChange = (e) => {
     });
   };
 
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (staffRef.current && !staffRef.current.contains(event.target)) {
+        setStaffDropdownOpen(false);
+      }
+      if (serviceRef.current && !serviceRef.current.contains(event.target)) {
+        setServiceDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const payload = {
         ...formData,
-        staff_id: formData.staff_id.join(","), // backend expects CSV
+        staff_id: formData.staff_id.join(","), 
         service_id: formData.service_id.join(","),
       };
-
       await axios.post(`${API_BASE_URL}/admin/bookings/add`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
-
       toast.success("Booking added successfully!");
       navigate("/admin/bookings");
     } catch (error) {
@@ -130,7 +142,7 @@ const handleChange = (e) => {
             </div>
 
             {/* Staff Multi-select */}
-            <div className="w-full sm:w-1/2 px-3 mb-5 relative">
+            <div className="w-full sm:w-1/2 px-3 mb-5 relative" ref={staffRef}>
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Staff
               </label>
@@ -140,9 +152,7 @@ const handleChange = (e) => {
               >
                 {formData.staff_id.length > 0
                   ? dropdownData.staff
-                      .filter((s) =>
-                        formData.staff_id.includes(s.id.toString())
-                      )
+                      .filter((s) => formData.staff_id.includes(s.id.toString()))
                       .map((s) => s.name)
                       .join(", ")
                   : "Select staff"}
@@ -170,7 +180,7 @@ const handleChange = (e) => {
           </div>
 
           {/* Service Multi-select */}
-          <div className="w-full px-3 mb-5 relative">
+          <div className="w-full px-3 mb-5 relative" ref={serviceRef}>
             <label className="mb-3 block text-base font-medium text-[#07074D]">
               Services
             </label>
@@ -180,9 +190,7 @@ const handleChange = (e) => {
             >
               {formData.service_id.length > 0
                 ? dropdownData.services
-                    .filter((s) =>
-                      formData.service_id.includes(s.id.toString())
-                    )
+                    .filter((s) => formData.service_id.includes(s.id.toString()))
                     .map((s) => s.title)
                     .join(", ")
                 : "Select services"}

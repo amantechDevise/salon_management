@@ -113,12 +113,12 @@ const ListStaffCustomer = () => {
 
                 {/* <td className="px-6 py-4 max-w-xs truncate">{product.description || "-"}</td> */}
                 <td className="px-6 py-4">
-                  <Link
+                  {/* <Link
                     to={`/admin/products/edit/${product.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
                   >
                     Edit
-                  </Link>
+                  </Link> */}
                   {/* <Link
                     to={`/admin/products/view/${product.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"

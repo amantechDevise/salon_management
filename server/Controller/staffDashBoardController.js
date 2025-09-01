@@ -1,4 +1,4 @@
-const { User, Customer, Service, sequelize, Booking, Attendance } = require("../models");
+const { User, Customer, Service, sequelize, Booking, Attendance, CustomerService } = require("../models");
 const { Op } = require('sequelize');
 const { uploadImage } = require("../uilts/imageUplord");
 module.exports = {
@@ -139,74 +139,149 @@ module.exports = {
             res.status(500).json({ error: "An error occurred while fetching customers." });
         }
     },
-    addCustomers: async (req, res) => {
-        try {
-            const {
-                service_id,
-                name,
-                email,
-                dob,
-                address,
-                phone,
-                status
-            } = req.body;
 
-            // Check if service_id is provided
-            if (!service_id) {
-                return res.status(400).json({ message: "service_id is required" });
-            }
+    // addCustomers: async (req, res) => {
+    //     try {
+    //         const {
+    //             service_id,
+    //             name,
+    //             email,
+    //             dob,
+    //             address,
+    //             phone,
+    //             status
+    //         } = req.body;
 
-            const imageFile = req.files ? req.files.image : null;
-            let imagePath = null;
+    //         // Check if service_id is provided
+    //         if (!service_id) {
+    //             return res.status(400).json({ message: "service_id is required" });
+    //         }
 
-            if (imageFile) {
-                imagePath = await uploadImage(imageFile);
-            }
+    //         const imageFile = req.files ? req.files.image : null;
+    //         let imagePath = null;
 
-            // Split service_id string into array, trim spaces
-            const serviceIds = service_id.split(',').map(id => id.trim()).filter(id => id !== '');
+    //         if (imageFile) {
+    //             imagePath = await uploadImage(imageFile);
+    //         }
 
-            if (serviceIds.length === 0) {
-                return res.status(400).json({ message: "At least one valid service_id is required" });
-            }
+    //         // Split service_id string into array, trim spaces
+    //         const serviceIds = service_id.split(',').map(id => id.trim()).filter(id => id !== '');
 
-            // Use the logged in staff id from token/session (not from req.body)
-            const userId = req.staff.id;
+    //         if (serviceIds.length === 0) {
+    //             return res.status(400).json({ message: "At least one valid service_id is required" });
+    //         }
 
-            // Count current visits by this email (for visit_count tracking)
-            let visitCount = await Customer.count({ where: { email } });
+    //         // Use the logged in staff id from token/session (not from req.body)
+    //         const userId = req.staff.id;
 
-            const customerRecords = [];
+    //         // Count current visits by this email (for visit_count tracking)
+    //         let visitCount = await Customer.count({ where: { email } });
 
-            for (const svcId of serviceIds) {
-                visitCount++; // increment for each new record
-                customerRecords.push({
-                    staff_id: userId,
-                    service_id: svcId,
-                    name,
-                    email,
-                    dob,
-                    address,
-                    image: imagePath || "",
-                    phone,
-                    status: status || 1,
-                    visit_count: visitCount
-                });
-            }
+    //         const customerRecords = [];
 
-            // Bulk insert all customer visit records
-            const createdCustomers = await Customer.bulkCreate(customerRecords);
+    //         for (const svcId of serviceIds) {
+    //             visitCount++; // increment for each new record
+    //             customerRecords.push({
+    //                 staff_id: userId,
+    //                 service_id: svcId,
+    //                 name,
+    //                 email,
+    //                 dob,
+    //                 address,
+    //                 image: imagePath || "",
+    //                 phone,
+    //                 status: status || 1,
+    //                 visit_count: visitCount
+    //             });
+    //         }
 
-            res.status(201).json({
-                message: 'Customer visits recorded successfully',
-                data: createdCustomers
-            });
+    //         // Bulk insert all customer visit records
+    //         const createdCustomers = await Customer.bulkCreate(customerRecords);
 
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    },
+    //         res.status(201).json({
+    //             message: 'Customer visits recorded successfully',
+    //             data: createdCustomers
+    //         });
+
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).json({ message: 'Internal server error' });
+    //     }
+    // },
+
+
+addCustomers: async (req, res) => {
+  try {
+    const {
+      service_id,
+      name,
+      email,
+      dob,
+      address,
+      phone,
+      status
+    } = req.body;
+
+    const imageFile = req.files ? req.files.image : null;
+    let imagePath = null;
+
+    if (imageFile) {
+      imagePath = await uploadImage(imageFile);
+    }
+
+    const userId = req.staff.id; // single staff id
+    const serviceIds = service_id.split(',').map(id => id.trim());
+
+    // Find or create the main customer record
+    const [customer, created] = await Customer.findOrCreate({
+      where: { email },
+      defaults: {
+        name,
+        email,
+        staff_id: userId,
+        service_id,
+        dob,
+        address,
+        image: imagePath || "",
+        phone,
+        status: status || 1,
+        visit_count: 1
+      }
+    });
+
+    // If customer already exists, update visit count
+    if (!created) {
+      customer.visit_count += 1;
+      await customer.save();
+    }
+
+    // Create customer-service-staff relationships
+    const customerServices = [];
+    
+    for (const svcId of serviceIds) {
+      customerServices.push({
+        customer_id: customer.id,
+        staff_id: userId,
+        service_id: svcId
+      });
+    }
+
+    // Assuming you have a CustomerService model for the relationships
+    const createdRelationships = await CustomerService.bulkCreate(customerServices);
+
+    res.status(201).json({
+      message: 'Customer services recorded successfully',
+      data: {
+        customer,
+        services: createdRelationships
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+},
 
     // -------------------end customer ------------
 
@@ -266,7 +341,9 @@ module.exports = {
 
     bookingAdd: async (req, res) => {
         try {
-            const { customer_id, staff_id, service_id, date, time } = req.body;
+             console.log(req.body);
+             
+            const { customer_id, service_id, date, time } = req.body;
             const userId = req.staff.id;
             const serviceIds = service_id.split(',').map(id => id.trim());
 
@@ -303,10 +380,12 @@ module.exports = {
 
     allGet: async (req, res) => {
         try {
+             console.log(req.body);
+             
             const service = await Service.findAll()
             const customer = await Customer.findAll({
                 attributes: [
-                    [sequelize.fn('MIN', sequelize.col('id')), 'id'],   // 👈 id bhi aa jayega
+                    [sequelize.fn('MIN', sequelize.col('id')), 'id'],  
                     [sequelize.fn('MIN', sequelize.col('name')), 'name'],
                     'email'
                 ],
@@ -314,7 +393,7 @@ module.exports = {
             });
 
             return res.status(200).json({
-                data: { service, customer, Staff }
+                data: { service, customer, }
 
             });
 
@@ -328,59 +407,67 @@ module.exports = {
 
 
     // --------------------------------------Create a new attendance record
-    createAttendance: async (req, res) => {
-        try {
-            const userId = req.staff.id;
-            const today = new Date().toISOString().split("T")[0];
+  createAttendance: async (req, res) => {
+  try {
+    const userId = req.staff.id;
 
-            let record = await Attendance.findOne({
-                where: { staff_id: userId, date: today },
-            });
+    // Today’s date in YYYY-MM-DD
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // e.g., "2025-09-01"
 
-            const currentTime = new Date().toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true, // ✅ AM/PM format
-            });
+    // Find today's attendance record
+    let record = await Attendance.findOne({
+      where: { staff_id: userId, date: today },
+    });
 
-            if (!record) {
-                // ✅ First Check-In
-                record = await Attendance.create({
-                    staff_id: userId,
-                    date: today,
-                    checkIn: currentTime,
-                    checkOut: null,
-                });
+    // Current time in IST with AM/PM
+    const currentTime = new Intl.DateTimeFormat("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Kolkata", // ✅ ensure correct timezone
+    }).format(new Date());
 
-                return res
-                    .status(201)
-                    .json({ message: "Checked In successfully", data: record });
-            }
+    if (!record) {
+      // First Check-In
+      record = await Attendance.create({
+        staff_id: userId,
+        date: today,
+        checkIn: currentTime,
+        checkOut: null,
+      });
 
-            if (!record.checkOut) {
-                // ✅ First Check-Out
-                record.checkOut = currentTime;
-                await record.save();
+      return res.status(201).json({
+        message: "Checked In successfully",
+        data: record,
+      });
+    }
 
-                return res
-                    .status(200)
-                    .json({ message: "Checked Out successfully", data: record });
-            }
+    if (!record.checkOut) {
+      // First Check-Out
+      record.checkOut = currentTime;
+      await record.save();
 
-            // ✅ Already checked out → allow re-check-in (update checkIn, reset checkOut)
-            record.checkIn = currentTime;
-            record.checkOut = null;
-            await record.save();
+      return res.status(200).json({
+        message: "Checked Out successfully",
+        data: record,
+      });
+    }
 
-            return res
-                .status(200)
-                .json({ message: "Re-Checked In successfully", data: record });
+    // Already checked out → allow re-check-in
+    record.checkIn = currentTime;
+    record.checkOut = null;
+    await record.save();
 
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: "Internal server error" });
-        }
-    },
+    return res.status(200).json({
+      message: "Re-Checked In successfully",
+      data: record,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+},
+
 
 
 

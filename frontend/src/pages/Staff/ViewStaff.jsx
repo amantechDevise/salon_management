@@ -97,9 +97,9 @@ function ViewStaff() {
                   className="bg-white border-b hover:bg-gray-100"
                 >
                   <td className="px-6 py-4">{index + 1}</td>
-                  <td className="px-6 py-4">{cust.name}</td>
-                  <td className="px-6 py-4">{cust.email}</td>
-                  <td className="px-6 py-4">{cust.phone}</td>
+                  <td className="px-6 py-4">{cust.name || "N/A"}</td>
+                  <td className="px-6 py-4">{cust.email || "N/A"}</td>
+                  <td className="px-6 py-4">{cust.phone || "N/A"}</td>
                   <td className="px-6 py-4">{cust.service?.title || "N/A"}</td>
                   <td className="px-6 py-4">{cust.visit_count}</td>
                   <td className="px-6 py-4">

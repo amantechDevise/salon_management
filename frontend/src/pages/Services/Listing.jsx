@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Listing = () => {
   const [services, setServices] = useState([]);
@@ -27,19 +28,34 @@ const Listing = () => {
   }, []);
 
   // Delete service
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
-    try {
-      await axios.delete(`${API_BASE_URL}/admin/services/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
-      });
-      toast.success("Service deleted successfully");
-      fetchServices(); // refresh list
-    } catch (error) {
-      console.error("Error deleting service:", error);
-      toast.error("Failed to delete service");
+// Delete service
+const handleDelete = async (id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${API_BASE_URL}/admin/services/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+        });
+        toast.success("Service deleted successfully");
+        fetchServices(); // refresh list
+        Swal.fire("Deleted!", "Your service has been deleted.", "success");
+      } catch (error) {
+        console.error("Error deleting service:", error);
+        toast.error("Failed to delete service");
+        Swal.fire("Error!", "Failed to delete the service.", "error");
+      }
     }
-  };
+  });
+};
+
 
   // Toggle status
   const handleToggleStatus = async (service) => {
@@ -118,7 +134,7 @@ const Listing = () => {
                 </td>
                 <td className="px-6 py-4">
                   <Link
-                    to={`/admin/products/edit/${service.id}`}
+                    to={`/admin/services/${service.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
                   >
                     Edit
