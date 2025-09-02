@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Allowed origins for CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",") 
-  : ["https://web.salon.com", "https://web.salon.com"];
+  : ["https://salon.techdevise.com/", "https://salon.techdevise.com/"];
 // const allowedOrigins = process.env.ALLOWED_ORIGINS
 //   ? process.env.ALLOWED_ORIGINS.split(",") 
 //   : ["http://localhost:3200", "http://localhost:3200"];
