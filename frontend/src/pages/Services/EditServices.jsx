@@ -11,6 +11,7 @@ function EditServices() {
   const [formData, setFormData] = useState({
     title: "",
     price: "",
+    duration: "",
     status: 1, // default active
   });
 
@@ -30,6 +31,7 @@ function EditServices() {
           title: res.data.data.title,
           price: res.data.data.price,
           status: res.data.data.status,
+          duration: res.data.data.duration,
         });
       } catch (error) {
         toast.error("Failed to fetch service");
@@ -60,6 +62,7 @@ function EditServices() {
     data.append("title", formData.title);
     data.append("price", formData.price);
     data.append("status", formData.status);
+    data.append("duration", formData.duration);
 
     if (image) {
       data.append("image", image);
@@ -112,6 +115,18 @@ function EditServices() {
                 type="number"
                 name="price"
                 value={formData.price}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              />
+            </div>
+              <div className="mb-5">
+              <label className="mb-3 block text-base font-medium text-[#07074D]">
+              Duration
+              </label>
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
                 onChange={handleChange}
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />

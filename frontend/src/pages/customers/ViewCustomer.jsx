@@ -11,6 +11,10 @@ function ViewCustomer() {
   const [visits, setVisits] = useState([]);
   const [totalVisits, setTotalVisits] = useState(0);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const fetchStaff = async () => {
     try {
       const res = await axios.get(
@@ -29,18 +33,17 @@ function ViewCustomer() {
         return;
       }
 
-      // Set staff details from specificCustomer
       setStaff({
         name: data.specificCustomer.staff?.name || data.specificCustomer.name,
         email:
           data.specificCustomer.staff?.email || data.specificCustomer.email,
         phone:
           data.specificCustomer.staff?.phone || data.specificCustomer.phone,
-           visit_count :
-          data.specificCustomer.staff?.visit_count  || data.specificCustomer.visit_count,
+        visit_count:
+          data.specificCustomer.staff?.visit_count ||
+          data.specificCustomer.visit_count,
       });
 
-      // Set visits list from allVisits
       setVisits(data.allVisits || [data.specificCustomer]);
       setTotalVisits(data.allVisits?.length || 1);
     } catch (err) {
@@ -52,6 +55,11 @@ function ViewCustomer() {
   useEffect(() => {
     if (id) fetchStaff();
   }, [id]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(totalVisits / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentVisits = visits.slice(startIndex, startIndex + itemsPerPage);
 
   if (!staff) {
     return (
@@ -83,7 +91,7 @@ function ViewCustomer() {
             </div>
             <div className="w-full px-3 sm:w-1/2 mb-5">
               <p className="font-medium text-[#07074D] mb-1">Total Visits:</p>
-              <p className="text-[#6B7280]">{staff.visit_count }</p>
+              <p className="text-[#6B7280]">{staff.visit_count}</p>
             </div>
           </div>
 
@@ -92,16 +100,16 @@ function ViewCustomer() {
               to="/admin/customer"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
-              ← Back 
+              ← Back
             </Link>
           </div>
         </div>
       </div>
 
       {/* Customers Visit History */}
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-5">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-12">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold"> Visit History</h2>
+          <h2 className="text-2xl font-semibold">Visit History</h2>
         </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
@@ -112,37 +120,73 @@ function ViewCustomer() {
               <th className="px-6 py-3">Date</th>
             </tr>
           </thead>
-       <tbody>
-  {visits.length === 0 ? (
-    <tr>
-      <td colSpan="4" className="text-center py-4">
-        No visits found for this customer.
-      </td>
-    </tr>
-  ) : (
-    visits.map((visit, index) =>
-      visit.customerServices.length > 0 ? (
-        visit.customerServices.map((cs, csIndex) => (
-          <tr key={`${visit.id}-${csIndex}`} className="bg-white border-b hover:bg-gray-100">
-            <td className="px-6 py-4">{csIndex + 1}</td>
-            <td className="px-6 py-4">{cs.staff?.name || "N/A"}</td>
-            <td className="px-6 py-4">{cs.service?.title || "N/A"}</td>
-            <td className="px-6 py-4">{new Date(visit.createdAt).toLocaleDateString()}</td>
-          </tr>
-        ))
-      ) : (
-        <tr key={visit.id} className="bg-white border-b hover:bg-gray-100">
-          <td className="px-6 py-4">{index + 1}</td>
-          <td className="px-6 py-4">N/A</td>
-          <td className="px-6 py-4">N/A</td>
-          <td className="px-6 py-4">{new Date(visit.createdAt).toLocaleDateString()}</td>
-        </tr>
-      )
-    )
-  )}
-</tbody>
-
+          <tbody>
+            {currentVisits.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  No visits found for this customer.
+                </td>
+              </tr>
+            ) : (
+              currentVisits.map((visit, index) =>
+                visit.customerServices.length > 0 ? (
+                  visit.customerServices.map((cs, csIndex) => (
+                    <tr
+                      key={`${visit.id}-${csIndex}`}
+                      className="bg-white border-b hover:bg-gray-100"
+                    >
+                      <td className="px-6 py-4">
+                        {startIndex + csIndex + 1}
+                      </td>
+                      <td className="px-6 py-4">{cs.staff?.name || "N/A"}</td>
+                      <td className="px-6 py-4">
+                        {cs.service?.title || "N/A"}
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Date(visit.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr
+                    key={visit.id}
+                    className="bg-white border-b hover:bg-gray-100"
+                  >
+                    <td className="px-6 py-4">{startIndex + index + 1}</td>
+                    <td className="px-6 py-4">N/A</td>
+                    <td className="px-6 py-4">N/A</td>
+                    <td className="px-6 py-4">
+                      {new Date(visit.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                )
+              )
+            )}
+          </tbody>
         </table>
+
+        {/* Pagination controls */}
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </>
   );

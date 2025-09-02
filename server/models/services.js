@@ -17,6 +17,11 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
             defaultValue: 1
         },
+         duration: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            defaultValue: 0
+        },
          description: {
             type: DataTypes.TEXT,
             allowNull: true

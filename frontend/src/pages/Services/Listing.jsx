@@ -28,34 +28,35 @@ const Listing = () => {
   }, []);
 
   // Delete service
-// Delete service
-const handleDelete = async (id) => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(`${API_BASE_URL}/admin/services/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
-        });
-        toast.success("Service deleted successfully");
-        fetchServices(); // refresh list
-        Swal.fire("Deleted!", "Your service has been deleted.", "success");
-      } catch (error) {
-        console.error("Error deleting service:", error);
-        toast.error("Failed to delete service");
-        Swal.fire("Error!", "Failed to delete the service.", "error");
+  // Delete service
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`${API_BASE_URL}/admin/services/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+          });
+          toast.success("Service deleted successfully");
+          fetchServices(); // refresh list
+          Swal.fire("Deleted!", "Your service has been deleted.", "success");
+        } catch (error) {
+          console.error("Error deleting service:", error);
+          toast.error("Failed to delete service");
+          Swal.fire("Error!", "Failed to delete the service.", "error");
+        }
       }
-    }
-  });
-};
-
+    });
+  };
 
   // Toggle status
   const handleToggleStatus = async (service) => {
@@ -64,7 +65,11 @@ const handleDelete = async (id) => {
       await axios.patch(
         `${API_BASE_URL}/admin/services/${service.id}/status`,
         { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
       );
       toast.success("Status updated successfully");
       fetchServices(); // refresh list
@@ -93,6 +98,7 @@ const handleDelete = async (id) => {
             <th className="px-6 py-3">SR.NO</th>
             <th className="px-6 py-3">Title</th>
             <th className="px-6 py-3">Price</th>
+            <th className="px-6 py-3">Duration</th>
             <th className="px-6 py-3">Status</th>
             <th className="px-6 py-3">Action</th>
           </tr>
@@ -120,6 +126,7 @@ const handleDelete = async (id) => {
                   {service.title}
                 </td>
                 <td className="px-6 py-4">{service.price}</td>
+                <td className="px-6 py-4">{service.duration}</td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleToggleStatus(service)}

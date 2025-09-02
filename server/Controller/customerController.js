@@ -195,7 +195,7 @@ getCustomerDetails: async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    console.log(specificCustomer,"specificCustomerspecificCustomer");
+
     
     const allVisits = await Customer.findAll({
       where: { email: specificCustomer.email },

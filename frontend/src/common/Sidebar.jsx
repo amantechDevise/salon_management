@@ -1,4 +1,5 @@
-import { useState } from "react";
+// src/pages/admin/common/Sidebar.jsx
+import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   FaTachometerAlt,
@@ -8,8 +9,7 @@ import {
   FaConciergeBell,
 } from "react-icons/fa";
 
-function AdminSidebar({ userData }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+function AdminSidebar({ userData, isOpen, onClose }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const navLinkClass = ({ isActive }) =>
@@ -18,15 +18,28 @@ function AdminSidebar({ userData }) {
     }`;
 
   return (
-    <div className="hidden md:flex md:flex-shrink-0 h">
-      <div className="flex flex-col w-64 bg-blue-800 text-white">
+    <>
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0  z-30 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed md:relative z-40 w-64 h-full bg-blue-800 text-white transform 
+        transition-transform duration-300 
+        ${isOpen ? "translate-x-0" : "-translate-x-64"} 
+        md:translate-x-0`}
+      >
         <div className="flex items-center justify-center h-16 px-4 bg-blue-900">
           <span className="text-xl font-bold uppercase">Salon Management</span>
         </div>
 
         <div className="flex flex-col flex-grow px-4 py-4 overflow-y-auto">
           <nav className="flex-1 space-y-2">
-
             <NavLink to="/admin/dashboard" className={navLinkClass}>
               <FaTachometerAlt className="mr-3" />
               Dashboard
@@ -74,7 +87,7 @@ function AdminSidebar({ userData }) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

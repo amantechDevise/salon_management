@@ -34,7 +34,7 @@ module.exports = {
   // Add new service
   addService: async (req, res) => {
     try {
-      const { title, price, status,description } = req.body;
+      const { title, price, status,description ,duration} = req.body;
       const imageFile = req.files ? req.files.image : null;
 
       let imagePath = "";
@@ -42,6 +42,7 @@ module.exports = {
 
       const newService = await Service.create({
         title,
+        duration,
         description,
         price: price || 0.00,
         status: status || 1,
@@ -59,7 +60,7 @@ module.exports = {
   updateService: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, price, status } = req.body;
+      const { title, price, status,duration } = req.body;
       const imageFile = req.files ? req.files.image : null;
 
       const service = await Service.findOne({ where: { id } });
@@ -75,6 +76,7 @@ module.exports = {
       }
 
       service.title = title || service.title;
+      service.duration = duration || service.duration;
       service.price = price !== undefined ? price : service.price;
       service.status = status !== undefined ? status : service.status;
 

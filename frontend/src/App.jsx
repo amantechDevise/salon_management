@@ -31,6 +31,7 @@ import UserstaffProfile from "./pages/StaffDashboard/Users/UserProfile";
 import ListAttendance from "./pages/StaffDashboard/Attendance/ListAttendance";
 import AttendanceList from "./pages/Staff/AttendanceList";
 import EditServices from "./pages/Services/EditServices";
+import Feedlisting from "./pages/StaffDashboard/Feedback/Feedlisting";
 
 function App() {
   return (
@@ -85,6 +86,7 @@ function App() {
             <Route path="bookings/add" element={<BookingAdd />} />
             <Route path="attendance" element={<ListAttendance />} />
           </Route>
+              <Route path="/staff-Admin/feedback/:staffName/:token" element={<Feedlisting />} />
         </Routes>
         <ToastContainer />
       </BrowserRouter>

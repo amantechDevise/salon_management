@@ -20,7 +20,7 @@ module.exports = function (sequelize, DataTypes) {
         rating: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1
+            defaultValue: 0
         },
         unique_token: {
             type: DataTypes.STRING(70),

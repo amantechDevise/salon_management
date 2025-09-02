@@ -22,8 +22,14 @@ staffrouter.get('/range',stafauthenticateToken,staffDashBoardController.getAtten
 
  // ----------------------ratingController---------------
  staffrouter.post("/generate",stafauthenticateToken, ratingController.generateFeedbackLink);
-staffrouter.get("/:token",stafauthenticateToken, ratingController.getFeedbackByToken);
-staffrouter.post("/:token",stafauthenticateToken, ratingController.submitFeedback);
+staffrouter.get(
+  "/feedback/:staffName/:token",
+  ratingController.getFeedbackByToken
+);
+staffrouter.post(
+  "/feedback/:staffName/:token",
+  ratingController.submitFeedback
+);
 
 
 

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FaTachometerAlt,
@@ -8,19 +7,30 @@ import {
   FaRegCalendarCheck,
 } from "react-icons/fa";
 
-function StaffSidebar({ userData }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+function StaffSidebar({ userData, isOpen, onClose }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Common navLink styling function
   const navLinkClass = ({ isActive }) =>
     `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
       isActive ? "bg-blue-700 text-white" : "hover:bg-blue-700 text-white"
     }`;
 
   return (
-    <div className="hidden md:flex md:flex-shrink-0">
-      <div className="flex flex-col w-64 bg-blue-800 text-white">
+    <>
+      {/* Transparent Overlay for Mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-blue-800 text-white transform 
+        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+        transition-transform duration-300 ease-in-out md:static md:translate-x-0`}
+      >
         {/* Header */}
         <div className="flex items-center justify-center h-16 px-4 bg-blue-900">
           <span className="text-xl font-bold uppercase">Salon Management</span>
@@ -69,15 +79,15 @@ function StaffSidebar({ userData }) {
               alt="User"
             />
             <div className="ml-3">
-              <p className="text-sm font-medium">{userData?.name || "Admin"}</p>
+              <p className="text-sm font-medium">{userData?.name || "Staff"}</p>
               <p className="text-xs text-blue-200">
-                {userData?.email || "admin@example.com"}
+                {userData?.email || "staff@example.com"}
               </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

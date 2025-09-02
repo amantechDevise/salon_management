@@ -74,8 +74,8 @@ const ListCustomer = () => {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th className="px-6 py-3">SR.NO</th>
-            <th className="px-6 py-3">Service Name</th>
-            <th className="px-6 py-3">Staff Name</th>
+            {/* <th className="px-6 py-3">Service Name</th>
+            <th className="px-6 py-3">Staff Name</th> */}
             <th className="px-6 py-3">Name</th>
             <th className="px-6 py-3">Email</th>
             <th className="px-6 py-3">Phone No</th>
@@ -104,8 +104,8 @@ const ListCustomer = () => {
                 className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
               >
                 <td className="px-6 py-4">{(currentPage - 1) * 10 + index + 1}</td>
-                <td className="px-6 py-4">{product.service?.title || "N/A"}</td>
-                <td className="px-6 py-4">{product.staff?.name || "N/A"}</td>
+                {/* <td className="px-6 py-4">{product.service?.title || "N/A"}</td>
+                <td className="px-6 py-4">{product.staff?.name || "N/A"}</td> */}
                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                   {product.name}
                 </td>

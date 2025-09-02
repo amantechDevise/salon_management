@@ -1,4 +1,4 @@
-const { User, Customer, Service, Attendance } = require("../models");
+const { User, Customer, Service, Attendance, Rating } = require("../models");
 const { uploadImage } = require("../uilts/imageUplord");
 const { Op } = require('sequelize');
 const fs = require("fs");
@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
 
 
-// -------------------------Login Api 
+  // -------------------------Login Api 
 
   stafflogin: async (req, res) => {
     try {
@@ -21,9 +21,9 @@ module.exports = {
       if (user.role !== 2) {
         return res.status(403).json({ message: 'Access denied: not an staff' });
       }
-       if (user.status !== 1) {
-      return res.status(403).json({ message: 'Access denied: inactive staff' });
-    }
+      if (user.status !== 1) {
+        return res.status(403).json({ message: 'Access denied: inactive staff' });
+      }
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: 'Invalid credentials' });
@@ -39,38 +39,38 @@ module.exports = {
   },
 
   // -------------------------Get All Api 
-getStaff: async (req, res) => {
-  const { page = 1, limit = 10 } = req.query; 
+  getStaff: async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
 
-  try {
-    const offset = (page - 1) * limit;
+    try {
+      const offset = (page - 1) * limit;
 
-    const { rows, count } = await User.findAndCountAll({
-      where: { role: 2 }, 
-      order: [['createdAt', 'DESC']],
-      offset: offset, 
-      limit: parseInt(limit), 
-    });
+      const { rows, count } = await User.findAndCountAll({
+        where: { role: 2 },
+        order: [['createdAt', 'DESC']],
+        offset: offset,
+        limit: parseInt(limit),
+      });
 
-    const totalPages = Math.ceil(count / limit);
+      const totalPages = Math.ceil(count / limit);
 
-    res.status(200).json({
-      message: 'Get all Staff',
-      data: rows,
-      meta: {
-        totalRecords: count,
-        totalPages: totalPages,
-        currentPage: parseInt(page),
-        perPage: parseInt(limit),
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching staff members:", error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-},
+      res.status(200).json({
+        message: 'Get all Staff',
+        data: rows,
+        meta: {
+          totalRecords: count,
+          totalPages: totalPages,
+          currentPage: parseInt(page),
+          perPage: parseInt(limit),
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching staff members:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
 
-// -------------------------Add Staff Api 
+  // -------------------------Add Staff Api 
   addStaff: async (req, res) => {
     try {
       const { name, email, phone, password } = req.body;
@@ -108,115 +108,128 @@ getStaff: async (req, res) => {
 
 
   // -------------------------get by id staff Api 
-getStaffById: async (req, res) => {
-  try {
-    const { id } = req.params;
+  getStaffById: async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    const staff = await User.findOne({
-      where: { id, role: 2 },
-      include: [
-        {
-          model: Customer,
-          as: 'customers',
+      const staff = await User.findOne({
+        where: { id, role: 2 },
+        include: [
+          {
+            model: Customer,
+            as: 'customers',
+            include: [
+              {
+                model: Service,
+                as: 'service',
+                attributes: ['id', 'title', 'description', 'image', 'price']
+              },
+
+            ],
+            order: [['createdAt', 'DESC']] // 👈 customers ko latest first
+          },
+           {
+          model: Rating,
+          as: "ratingsReceived",
           include: [
             {
-              model: Service,
-              as: 'service',
-              attributes: ['id', 'title', 'description', 'image', 'price']
-            }
+              model: Customer,
+              as: "customer",
+              attributes: ["id", "name", "email"], // 👈 to show who gave feedback
+            },
           ],
-          order: [['createdAt', 'DESC']] // 👈 customers ko latest first
-        }
-      ],
-      attributes: ['id', 'name', 'email']
-    });
-
-    if (!staff) {
-      return res.status(404).json({ message: 'Staff not found' });
-    }
-
-    res.status(200).json({
-      message: 'Staff details',
-      data: staff
-    });
-
-  } catch (error) {
-    console.error("Error fetching staff by ID:", error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-},
-
-// -------------------------getStaffByAttendance
-
-   getStaffByAttendance: async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const records = await User.findOne({
-            where: { id, role: 2 },
-            include: [
-                {
-                    model: Attendance,
-                    as: 'attendance',
-                    order: [['date', 'DESC']],
-                },
-            ],
-        });
-
-        if (!records) {
-            return res.status(404).json({ message: 'Staff not found' });
-        }
-
-        res.status(200).json({ 
-            message: 'Attendance records fetched successfully', 
-            data: records 
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-},
-
-
-range: async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { startDate, endDate } = req.query;
-
-    const records = await User.findOne({
-      where: { id, role: 2 },
-      attributes: ["id", "name", "email"],
-      include: [
-        {
-          model: Attendance,
-          as: "attendance",
-          where:
-            startDate && endDate
-              ? { date: { [Op.between]: [startDate, endDate] } }
-              : {},
-          required: false,
         },
-      ],
-      order: [[{ model: Attendance, as: "attendance" }, "date", "DESC"]],
-    });
+        ],
+        attributes: ['id', 'name', 'email']
+      });
 
-     
-    if (!records) {
-      return res.status(404).json({ message: "Staff not found" });
+
+      if (!staff) {
+        return res.status(404).json({ message: 'Staff not found' });
+      }
+
+      res.status(200).json({
+        message: 'Staff details',
+        data: staff
+      });
+
+    } catch (error) {
+      console.error("Error fetching staff by ID:", error);
+      res.status(500).json({ message: 'Internal server error' });
     }
+  },
 
-    res.status(200).json({
-      message: "Attendance records fetched successfully",
-      data: {
-        ...records.toJSON(),
-        attendance: records.attendance || [], // force empty array if none
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-},
+  // -------------------------getStaffByAttendance
+
+  getStaffByAttendance: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const records = await User.findOne({
+        where: { id, role: 2 },
+        include: [
+          {
+            model: Attendance,
+            as: 'attendance',
+            order: [['date', 'DESC']],
+          },
+        ],
+      });
+
+      if (!records) {
+        return res.status(404).json({ message: 'Staff not found' });
+      }
+
+      res.status(200).json({
+        message: 'Attendance records fetched successfully',
+        data: records
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
+
+  range: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { startDate, endDate } = req.query;
+
+      const records = await User.findOne({
+        where: { id, role: 2 },
+        attributes: ["id", "name", "email"],
+        include: [
+          {
+            model: Attendance,
+            as: "attendance",
+            where:
+              startDate && endDate
+                ? { date: { [Op.between]: [startDate, endDate] } }
+                : {},
+            required: false,
+          },
+        ],
+        order: [[{ model: Attendance, as: "attendance" }, "date", "DESC"]],
+      });
+
+
+      if (!records) {
+        return res.status(404).json({ message: "Staff not found" });
+      }
+
+      res.status(200).json({
+        message: "Attendance records fetched successfully",
+        data: {
+          ...records.toJSON(),
+          attendance: records.attendance || [], // force empty array if none
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 
 
   updateStaff: async (req, res) => {
@@ -254,23 +267,23 @@ range: async (req, res) => {
 
 
   updateStaffStatus: async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body; 
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
 
-    const staff = await User.findOne({ where: { id } });
-    if (!staff) return res.status(404).json({ message: 'Staff not found' });
+      const staff = await User.findOne({ where: { id } });
+      if (!staff) return res.status(404).json({ message: 'Staff not found' });
 
-    // Update status
-    staff.status = status;
-    await staff.save();
+      // Update status
+      staff.status = status;
+      await staff.save();
 
-    res.status(200).json({ message: 'Staff status updated successfully', data: staff });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-},
+      res.status(200).json({ message: 'Staff status updated successfully', data: staff });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
   deleteStaff: async (req, res) => {
     try {
       const { id } = req.params;

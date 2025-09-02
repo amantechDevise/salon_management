@@ -9,6 +9,7 @@ function AddServices() {
   const [formData, setFormData] = useState({
     title: "",
     price: "",
+    duration: "",
   });
 
   const [image, setImage] = useState(null);
@@ -31,6 +32,7 @@ function AddServices() {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("price", formData.price);
+    data.append("duration", formData.duration);
 
     if (image) {
       data.append("image", image);
@@ -50,6 +52,7 @@ function AddServices() {
       setFormData({
         title: "",
         price: "",
+        duration: "",
       });
       setImage(null);
     } catch (error) {
@@ -99,7 +102,23 @@ function AddServices() {
                   />
                 </div>
               </div>
-
+              <div className="w-full px-3 w-full">
+                <div className="mb-5">
+                  <label
+                    htmlFor="name"
+                    className="mb-3 block text-base font-medium text-[#07074D]"
+                  >
+                    Duration
+                  </label>
+                  <input
+                    type="text"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                  />
+                </div>
+              </div>
               {/* <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
                   <label

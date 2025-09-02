@@ -4,7 +4,7 @@ import { FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const AdminNavbar = ({ userData }) => {
+const AdminNavbar = ({ userData, onToggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const timeoutRef = useRef(null);
@@ -23,7 +23,6 @@ const AdminNavbar = ({ userData }) => {
     }, 200);
   };
 
-  // logout confirmation
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -45,7 +44,10 @@ const AdminNavbar = ({ userData }) => {
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
       {/* Left Side */}
       <div className="flex items-center">
-        <button className="md:hidden text-gray-500 focus:outline-none">
+        <button
+          className="md:hidden text-gray-500 focus:outline-none"
+          onClick={onToggleSidebar}
+        >
           <FaBars className="text-2xl" />
         </button>
         <h1 className="text-xl font-semibold text-gray-800 ml-4">Dashboard</h1>
@@ -60,7 +62,7 @@ const AdminNavbar = ({ userData }) => {
           <i className="fas fa-envelope" />
         </button>
 
-        {/* Profile Image + Dropdown */}
+        {/* Profile Dropdown */}
         <div
           className="relative"
           onMouseEnter={handleMouseEnter}
@@ -78,7 +80,6 @@ const AdminNavbar = ({ userData }) => {
             />
           </button>
 
-          {/* Dropdown */}
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50 transition-all duration-300">
               <Link
