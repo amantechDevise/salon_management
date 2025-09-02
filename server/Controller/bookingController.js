@@ -1,4 +1,4 @@
-const { Booking, Customer, User, Service, sequelize } = require('../models');
+const { Booking, Customer, User, Service, sequelize, RecurringBooking,BookingService } = require('../models');
 
 module.exports = {
     getBookings: async (req, res) => {
@@ -8,12 +8,7 @@ module.exports = {
                     {
                         model: Customer,
                         as: 'customer',
-                        attributes: [
-                            'email',
-                            [sequelize.fn('MIN', sequelize.col('customer.id')), 'id'],
-                            [sequelize.fn('MIN', sequelize.col('customer.name')), 'name'],
-                            [sequelize.fn('MIN', sequelize.col('customer.phone')), 'phone'],
-                        ]
+                       
                     },
                     {
                         model: User,
@@ -26,13 +21,7 @@ module.exports = {
                         attributes: ['id', 'title', 'price']
                     }
                 ],
-                attributes: [
-                    [sequelize.fn('MIN', sequelize.col('Booking.id')), 'id'],
-                    [sequelize.fn('MIN', sequelize.col('Booking.date')), 'date'],   // 👈 your date field
-                    [sequelize.fn('MIN', sequelize.col('Booking.time')), 'time']    // 👈 your time field
-                ],
-                group: ['customer.email'],
-                order: [[sequelize.fn('MIN', sequelize.col('Booking.date')), 'DESC']]
+            
             });
 
             res.status(200).json({ message: 'Unique email wise Bookings', data: bookings });
@@ -46,43 +35,63 @@ module.exports = {
     },
 
 
-    addBooking: async (req, res) => {
-        try {
-            const { customer_id, staff_id, service_id, date, time } = req.body;
+addBooking: async (req, res) => {
+  try {
+    const { customer_id, staff_id, service_id, date, time, isRecurring, frequency, endDate } = req.body;
 
-            const staffIds = staff_id.split(',').map(id => id.trim());
-            const serviceIds = service_id.split(',').map(id => id.trim());
-
-            const bookingRecords = [];
-
-            for (const sId of staffIds) {
-                for (const svcId of serviceIds) {
-                    bookingRecords.push({
-                        customer_id,  // should be numeric ID
-                        staff_id: sId,
-                        service_id: svcId,
-                        date,
-                        time,
-                        status: 1 //panding
-                    });
-                }
-            }
-
-            const createdBookings = await Booking.bulkCreate(bookingRecords, { returning: true });
+    const staffIds = staff_id.split(',').map(id => id.trim());
+    const serviceIds = service_id.split(',').map(id => id.trim());
 
 
-            res.status(201).json({
-                message: 'Booking(s) added successfully',
-                data: createdBookings
-            });
+    const booking = await Booking.create({
+      customer_id,
+      date,
+      staff_id,
+      service_id,
+      time,
+      status: 1
+    });
 
-        } catch (error) {
-            console.error('Error adding bookings:', error);
-            res.status(500).json({
-                error: 'An error occurred while adding bookings.',
-            });
-        }
-    },
+    const bookingServiceRecords = [];
+    for (const sId of staffIds) {
+      for (const svcId of serviceIds) {
+        bookingServiceRecords.push({
+          booking_id: booking.id,
+          customer_id,
+          staff_id: sId,
+          service_id: svcId,
+        });
+      }
+    }
+
+    await BookingService.bulkCreate(bookingServiceRecords);
+
+    // 3️⃣ If recurring → create recurrence record
+    if (isRecurring) {
+      await RecurringBooking.create({
+        booking_id: booking.id,
+        frequency,
+        endDate
+      });
+    }
+
+    res.status(201).json({
+      message: isRecurring
+        ? 'Recurring booking added successfully with services'
+        : 'Booking added successfully with services',
+      data: {
+        booking,
+        bookingServices: bookingServiceRecords
+      }
+    });
+
+  } catch (error) {
+    console.error('Error adding booking:', error);
+    res.status(500).json({
+      error: 'An error occurred while adding booking.',
+    });
+  }
+},
 
 
 

@@ -47,6 +47,8 @@ db.Service = require("./services")(sequelize, Sequelize);
 db.Customer = require("./customers")(sequelize, Sequelize);
 db.Attendance = require("./attendance")(sequelize, Sequelize);
 db.Booking = require("./bookings")(sequelize, Sequelize);
+db.BookingService = require("./bookingService")(sequelize, Sequelize);
+db.RecurringBooking = require("./recurring_booking")(sequelize, Sequelize);
 db.Rating = require("./ratings")(sequelize, Sequelize);
 db.ServicePackages = require("./service_packages")(sequelize, Sequelize);
 db.PackageServices = require("./package_services")(sequelize, Sequelize);
@@ -81,6 +83,24 @@ db.Service.hasMany(db.CustomerService, { foreignKey: 'service_id', as: 'customer
 db.CustomerService.belongsTo(db.Service, { foreignKey: 'service_id', as: 'service' });
 
 
+// USER ↔ BOOKING_SERVICE
+db.User.hasMany(db.BookingService, { foreignKey: 'staff_id', as: 'bookingServices' });
+db.BookingService.belongsTo(db.User, { foreignKey: 'staff_id', as: 'staff' });
+
+// CUSTOMER ↔ BOOKING_SERVICE
+db.Customer.hasMany(db.BookingService, { foreignKey: 'customer_id', as: 'bookingServices' });
+db.BookingService.belongsTo(db.Customer, { foreignKey: 'customer_id', as: 'customer' });
+
+// SERVICE ↔ BOOKING_SERVICE
+db.Service.hasMany(db.BookingService, { foreignKey: 'service_id', as: 'bookingServices' });
+db.BookingService.belongsTo(db.Service, { foreignKey: 'service_id', as: 'service' });
+
+// BOOKING ↔ BOOKING_SERVICE
+db.Booking.hasMany(db.BookingService, { foreignKey: 'booking_id', as: 'bookingServices' });
+db.BookingService.belongsTo(db.Booking, { foreignKey: 'booking_id', as: 'booking' });
+
+
+
 // ✅ BOOKING ↔ CUSTOMER
 db.Customer.hasMany(db.Booking, { foreignKey: 'customer_id', as: 'bookings' });
 db.Booking.belongsTo(db.Customer, { foreignKey: 'customer_id', as: 'customer' });
@@ -101,16 +121,6 @@ db.Rating.belongsTo(db.User, { foreignKey: 'staff_id', as: 'staff' });
 db.Customer.hasMany(db.Rating, { foreignKey: 'customer_id', as: 'ratingsGiven' });
 db.Rating.belongsTo(db.Customer, { foreignKey: 'customer_id', as: 'customer' });
 
-db.ServicePackages.belongsToMany(db.Service, {
-  through: db.PackageServices,
-  foreignKey: 'package_id',
-  as: 'services'
-});
-db.Service.belongsToMany(db.ServicePackages, {
-  through: db.PackageServices,
-  foreignKey: 'service_id',
-  as: 'packages'
-});
 
 // INVOICES ↔ BOOKINGS
 db.Booking.hasOne(db.Invoice, { foreignKey: 'booking_id', as: 'invoice' });
@@ -124,15 +134,5 @@ db.Invoice.belongsTo(db.Customer, { foreignKey: 'customer_id', as: 'customer' })
 db.Discount.hasMany(db.Invoice, { foreignKey: 'discount_id', as: 'invoices' });
 db.Invoice.belongsTo(db.Discount, { foreignKey: 'discount_id', as: 'discount' });
 
-// NOTIFICATIONS ↔ USERS / CUSTOMERS / BOOKINGS / INVOICES
-// db.User.hasMany(db.Notification, { foreignKey: 'user_id', as: 'notifications' });
-// db.Customer.hasMany(db.Notification, { foreignKey: 'customer_id', as: 'notifications' });
-// db.Booking.hasMany(db.Notification, { foreignKey: 'related_booking_id', as: 'notifications' });
-// db.Invoice.hasMany(db.Notification, { foreignKey: 'related_invoice_id', as: 'notifications' });
-
-// db.Notification.belongsTo(db.User, { foreignKey: 'user_id', as: 'user' });
-// db.Notification.belongsTo(db.Customer, { foreignKey: 'customer_id', as: 'customer' });
-// db.Notification.belongsTo(db.Booking, { foreignKey: 'related_booking_id', as: 'booking' });
-// db.Notification.belongsTo(db.Invoice, { foreignKey: 'related_invoice_id', as: 'invoice' });
 
 module.exports = db;

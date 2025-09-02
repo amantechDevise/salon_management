@@ -6,16 +6,20 @@ import { Link, useNavigate } from "react-router-dom";
 function AddBooking() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-  
+
   const staffRef = useRef(null);
   const serviceRef = useRef(null);
 
+  // 🔹 State for form
   const [formData, setFormData] = useState({
     customer_id: "",
     staff_id: [],
     service_id: [],
     date: "",
     time: "",
+    isRecurring: false,
+    frequency: "",
+    endDate: "",
   });
 
   const [dropdownData, setDropdownData] = useState({
@@ -29,14 +33,19 @@ function AddBooking() {
 
   // 🔹 Common input handler
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "customer_id" ? Number(value) : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : name === "customer_id"
+          ? Number(value)
+          : value,
     }));
   };
 
-  // Fetch dropdown data
+  // 🔹 Fetch dropdown data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,7 +67,7 @@ function AddBooking() {
     fetchData();
   }, [API_BASE_URL]);
 
-  // Toggle staff selection
+  // 🔹 Toggle staff selection
   const toggleStaff = (id) => {
     setFormData((prev) => {
       const staffArr = prev.staff_id.includes(id.toString())
@@ -68,7 +77,7 @@ function AddBooking() {
     });
   };
 
-  // Toggle service selection
+  // 🔹 Toggle service selection
   const toggleService = (id) => {
     setFormData((prev) => {
       const serviceArr = prev.service_id.includes(id.toString())
@@ -78,7 +87,7 @@ function AddBooking() {
     });
   };
 
-  // Close dropdowns on outside click
+  // 🔹 Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (staffRef.current && !staffRef.current.contains(event.target)) {
@@ -92,21 +101,27 @@ function AddBooking() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Submit
+  // 🔹 Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const payload = {
         ...formData,
-        staff_id: formData.staff_id.join(","), 
+        staff_id: formData.staff_id.join(","),
         service_id: formData.service_id.join(","),
       };
+
       await axios.post(`${API_BASE_URL}/admin/bookings/add`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
-      toast.success("Booking added successfully!");
+
+      toast.success(
+        formData.isRecurring
+          ? "Recurring booking added successfully!"
+          : "Booking added successfully!"
+      );
       navigate("/admin/bookings");
     } catch (error) {
       toast.error("Failed to add booking");
@@ -119,8 +134,8 @@ function AddBooking() {
       <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-semibold mb-6">Add Booking</h2>
         <form onSubmit={handleSubmit}>
+          {/* Customer Dropdown */}
           <div className="flex flex-wrap -mx-3">
-            {/* Customer Dropdown */}
             <div className="w-full sm:w-1/2 px-3 mb-5">
               <label className="block text-base font-medium text-[#07074D] mb-2">
                 Select Customer
@@ -246,6 +261,57 @@ function AddBooking() {
               />
             </div>
           </div>
+
+          {/* Recurring Appointment Toggle */}
+          <div className="w-full px-3 mb-5">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="isRecurring"
+                checked={formData.isRecurring}
+                onChange={handleChange}
+              />
+              <span className="text-base font-medium text-[#07074D]">
+                Recurring Appointment?
+              </span>
+            </label>
+          </div>
+
+          {/* Frequency + End Date */}
+          {formData.isRecurring && (
+            <div className="flex flex-wrap -mx-3">
+              <div className="w-full sm:w-1/2 px-3 mb-5">
+                <label className="block text-base font-medium text-[#07074D] mb-2">
+                  Frequency
+                </label>
+                <select
+                  name="frequency"
+                  value={formData.frequency}
+                  onChange={handleChange}
+                  className="w-full border rounded-md py-3 px-4"
+                  required
+                >
+                  <option value="">-- Select Frequency --</option>
+                  <option value="1">Weekly</option>
+                  <option value="2">Monthly</option>
+                </select>
+              </div>
+
+              <div className="w-full sm:w-1/2 px-3 mb-5">
+                <label className="block text-base font-medium text-[#07074D] mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className="w-full border rounded-md py-3 px-4"
+                  required
+                />
+              </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-between items-center mt-6">
