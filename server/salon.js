@@ -23,12 +23,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Allowed origins for CORS
-// const allowedOrigins = process.env.ALLOWED_ORIGINS
-//   ? process.env.ALLOWED_ORIGINS.split(",") 
-//   : ["https://techdevise.com", "https://techdevise.com"];
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",") 
-  : ["http://localhost:3200", "http://localhost:3200"];
+  : ["https://salonmanagement.com", "https://salonmanagement.com"];
+// const allowedOrigins = process.env.ALLOWED_ORIGINS
+//   ? process.env.ALLOWED_ORIGINS.split(",") 
+//   : ["http://localhost:3200", "http://localhost:3200"];
 app.use(
   cors({
     origin: allowedOrigins,
@@ -37,11 +37,23 @@ app.use(
     credentials: true, // Allow cookies if needed
   })
 );
+// Set correct path for React build
+const frontendBuildPath = path.join(__dirname, '../frontend/dist');
 
+// Serve React build static files
+app.use(express.static(frontendBuildPath));
 app.use('/admin', indexRouter);
 app.use('/admin', usersRouter);
 app.use('/staffAdmin', staffRouter);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, 'index.html'), function(err) {
+    if (err) {
+      console.error('Error sending React index.html:', err);
+      res.status(err.status).end();
+    }
+  });
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
