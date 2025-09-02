@@ -16,7 +16,7 @@ module.exports = {
       // Step 1: Get latest visit_count for each email
       const [latestCustomers] = await sequelize.query(`
       SELECT MAX(visit_count) AS visit_count, email
-      FROM Customers
+      FROM customers
       GROUP BY email
     `);
 
