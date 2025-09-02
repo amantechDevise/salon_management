@@ -19,114 +19,113 @@ module.exports = {
             const totleServise = await Service.count();
 
             // ====== Business Overview ======
-            // 1. Total Revenue with Staff
-// 1. Total Revenue by Staff
-const totalRevenue = await Booking.findAll({
-    attributes: [
-        [fn("SUM", col("bookingServices->service.price")), "totalRevenue"]
-    ],
-    include: [
-        { 
-            model: BookingService, 
-            as: "bookingServices", 
-            attributes: [],
-            include: [{
-                model: Service,
-                as: "service", 
-                attributes: []
-            }]
-        },
-        { 
-            model: User, 
-            as: "staff", 
-            attributes: ["id", "name"] 
-        }
-    ],
-    group: ["staff.id"],
-    raw: true
-});
+            // 1. Total Revenue by Staff
+            const totalRevenue = await Booking.findAll({
+                attributes: [
+                    [fn("SUM", col("bookingServices->service.price")), "totalRevenue"]
+                ],
+                include: [
+                    {
+                        model: BookingService,
+                        as: "bookingServices",
+                        attributes: [],
+                        include: [{
+                            model: Service,
+                            as: "service",
+                            attributes: []
+                        }]
+                    },
+                    {
+                        model: User,
+                        as: "staff",
+                        attributes: ["id", "name"]
+                    }
+                ],
+                group: ["staff.id"],
+                raw: true
+            });
 
-// 2. Daily Revenue Performance with Staff
-const dailyRevenue = await Booking.findAll({
-    attributes: [
-        [fn("DATE", col("date")), "day"],
-        [fn("SUM", col("bookingServices->service.price")), "revenue"]
-    ],
-    include: [
-        { 
-            model: BookingService, 
-            as: "bookingServices", 
-            attributes: [],
-            include: [{
-                model: Service,
-                as: "service", 
-                attributes: []
-            }]
-        },
-        { 
-            model: User, 
-            as: "staff", 
-            attributes: ["id", "name"] 
-        }
-    ],
-    group: [fn("DATE", col("date")), "staff.id"],
-    order: [[fn("DATE", col("date")), "DESC"]],
-    raw: true
-});
+            // 2. Daily Revenue Performance with Staff
+            const dailyRevenue = await Booking.findAll({
+                attributes: [
+                    [fn("DATE", col("date")), "day"],
+                    [fn("SUM", col("bookingServices->service.price")), "revenue"]
+                ],
+                include: [
+                    {
+                        model: BookingService,
+                        as: "bookingServices",
+                        attributes: [],
+                        include: [{
+                            model: Service,
+                            as: "service",
+                            attributes: []
+                        }]
+                    },
+                    {
+                        model: User,
+                        as: "staff",
+                        attributes: ["id", "name"]
+                    }
+                ],
+                group: [fn("DATE", col("date")), "staff.id"],
+                order: [[fn("DATE", col("date")), "DESC"]],
+                raw: true
+            });
 
-// 3. Weekly Revenue Performance with Staff
-const weeklyRevenue = await Booking.findAll({
-    attributes: [
-        [fn("YEARWEEK", col("date")), "week"],
-        [fn("SUM", col("bookingServices->service.price")), "revenue"]
-    ],
-    include: [
-        { 
-            model: BookingService, 
-            as: "bookingServices", 
-            attributes: [],
-            include: [{
-                model: Service,
-                as: "service", 
-                attributes: []
-            }]
-        },
-        { 
-            model: User, 
-            as: "staff", 
-            attributes: ["id", "name"] 
-        }
-    ],
-    group: [fn("YEARWEEK", col("date")), "staff.id"],
-    raw: true
-});
+            // 3. Weekly Revenue Performance with Staff
+            const weeklyRevenue = await Booking.findAll({
+                attributes: [
+                    [fn("YEARWEEK", col("date")), "week"],
+                    [fn("SUM", col("bookingServices->service.price")), "revenue"]
+                ],
+                include: [
+                    {
+                        model: BookingService,
+                        as: "bookingServices",
+                        attributes: [],
+                        include: [{
+                            model: Service,
+                            as: "service",
+                            attributes: []
+                        }]
+                    },
+                    {
+                        model: User,
+                        as: "staff",
+                        attributes: ["id", "name"]
+                    }
+                ],
+                group: [fn("YEARWEEK", col("date")), "staff.id"],
+                raw: true
+            });
 
-// 4. Monthly Revenue Performance with Staff
-const monthlyRevenue = await Booking.findAll({
-    attributes: [
-        [fn("DATE_FORMAT", col("date"), "%Y-%m"), "month"],
-        [fn("SUM", col("bookingServices->service.price")), "revenue"]
-    ],
-    include: [
-        { 
-            model: BookingService, 
-            as: "bookingServices", 
-            attributes: [],
-            include: [{
-                model: Service,
-                as: "service", 
-                attributes: []
-            }]
-        },
-        { 
-            model: User, 
-            as: "staff", 
-            attributes: ["id", "name"] 
-        }
-    ],
-    group: [fn("DATE_FORMAT", col("date"), "%Y-%m"), "staff.id"],
-    raw: true
-});
+            // 4. Monthly Revenue Performance with Staff
+            const monthlyRevenue = await Booking.findAll({
+                attributes: [
+                    [fn("DATE_FORMAT", col("date"), "%Y-%m"), "month"],
+                    [fn("SUM", col("bookingServices->service.price")), "revenue"]
+                ],
+                include: [
+                    {
+                        model: BookingService,
+                        as: "bookingServices",
+                        attributes: [],
+                        include: [{
+                            model: Service,
+                            as: "service",
+                            attributes: []
+                        }]
+                    },
+                    {
+                        model: User,
+                        as: "staff",
+                        attributes: ["id", "name"]
+                    }
+                ],
+                group: [fn("DATE_FORMAT", col("date"), "%Y-%m"), "staff.id"],
+                raw: true
+            });
             // 5. Breakdown by Services with Staff
             const revenueByService = await Booking.findAll({
                 attributes: [
