@@ -37,11 +37,23 @@ app.use(
     credentials: true, // Allow cookies if needed
   })
 );
+// Set correct path for React build
+const frontendBuildPath = path.join(__dirname, '../frontend/dist');
 
+// Serve React build static files
+app.use(express.static(frontendBuildPath));
 app.use('/admin', indexRouter);
 app.use('/admin', usersRouter);
 app.use('/staffAdmin', staffRouter);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, 'index.html'), function (err) {
+    if (err) {
+      console.error('Error sending React index.html:', err);
+      res.status(err.status).end();
+    }
+  });
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
