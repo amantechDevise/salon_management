@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import CustomerDropdown from "../../components/CustomerDropdown";
 
 function AddBooking() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -136,25 +137,11 @@ function AddBooking() {
         <form onSubmit={handleSubmit}>
           {/* Customer Dropdown */}
           <div className="flex flex-wrap -mx-3">
-            <div className="w-full sm:w-1/2 px-3 mb-5">
-              <label className="block text-base font-medium text-[#07074D] mb-2">
-                Select Customer
-              </label>
-              <select
-                name="customer_id"
-                value={formData.customer_id}
-                onChange={handleChange}
-                className="w-full border rounded-md py-3 px-4"
-                required
-              >
-                <option value="">-- Select Customer --</option>
-                {dropdownData.customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomerDropdown
+              formData={formData}
+              setFormData={setFormData}
+              dropdownData={dropdownData}
+            />
 
             {/* Staff Multi-select */}
             <div className="w-full sm:w-1/2 px-3 mb-5 relative" ref={staffRef}>
@@ -167,7 +154,9 @@ function AddBooking() {
               >
                 {formData.staff_id.length > 0
                   ? dropdownData.staff
-                      .filter((s) => formData.staff_id.includes(s.id.toString()))
+                      .filter((s) =>
+                        formData.staff_id.includes(s.id.toString())
+                      )
                       .map((s) => s.name)
                       .join(", ")
                   : "Select staff"}
@@ -195,7 +184,7 @@ function AddBooking() {
           </div>
 
           {/* Service Multi-select */}
-          <div className="w-full px-3 mb-5 relative" ref={serviceRef}>
+          <div className="w-full  mb-5 relative" ref={serviceRef}>
             <label className="mb-3 block text-base font-medium text-[#07074D]">
               Services
             </label>
@@ -205,7 +194,9 @@ function AddBooking() {
             >
               {formData.service_id.length > 0
                 ? dropdownData.services
-                    .filter((s) => formData.service_id.includes(s.id.toString()))
+                    .filter((s) =>
+                      formData.service_id.includes(s.id.toString())
+                    )
                     .map((s) => s.title)
                     .join(", ")
                 : "Select services"}

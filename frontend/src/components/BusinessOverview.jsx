@@ -29,11 +29,39 @@ function BusinessOverview({ data = {} }) {
   const [selectedStaff, setSelectedStaff] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
 
-  // Safe arrays
-  const daily = data?.dailyRevenue || [];
-  const weekly = data?.weeklyRevenue || [];
-  const monthly = data?.monthlyRevenue || [];
-  const services = data?.revenueByService || [];
+  // Safe arrays with proper data type conversion
+  const daily = Array.isArray(data?.dailyRevenue)
+    ? data.dailyRevenue.map((item) => ({
+        ...item,
+        revenue: parseFloat(item.revenue) || 0,
+        staff: item.staff || { name: "" },
+      }))
+    : [];
+
+  const weekly = Array.isArray(data?.weeklyRevenue)
+    ? data.weeklyRevenue.map((item) => ({
+        ...item,
+        revenue: parseFloat(item.revenue) || 0,
+        staff: item.staff || { name: "" },
+      }))
+    : [];
+
+  const monthly = Array.isArray(data?.monthlyRevenue)
+    ? data.monthlyRevenue.map((item) => ({
+        ...item,
+        revenue: parseFloat(item.revenue) || 0,
+        staff: item.staff || { name: "" },
+      }))
+    : [];
+
+  const services = Array.isArray(data?.revenueByService)
+    ? data.revenueByService.map((item) => ({
+        ...item,
+        totalRevenue: parseFloat(item.totalRevenue) || 0,
+        service: item.service || { title: "Unknown Service" },
+        staff: item.staff || { name: "" },
+      }))
+    : [];
 
   // Unique staff list
   const staffList = [
@@ -69,8 +97,19 @@ function BusinessOverview({ data = {} }) {
           .map((d) => ({ label: d.month, revenue: d.revenue }))
       : [];
 
+  // Custom tooltip formatter
+  const formatTooltip = (value, name, props) => {
+    return [
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(value),
+      name,
+    ];
+  };
+
   return (
-    <div className="bg-white rounded-lg  overflow-hidden">
+    <div className="bg-white rounded-lg overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-3">
         <h2 className="text-lg font-semibold text-gray-800">
@@ -125,8 +164,16 @@ function BusinessOverview({ data = {} }) {
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
+              <YAxis
+                tickFormatter={(value) =>
+                  new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 0,
+                  }).format(value)
+                }
+              />
+              <Tooltip formatter={formatTooltip} />
               <Legend />
               <Line
                 type="monotone"
@@ -151,7 +198,12 @@ function BusinessOverview({ data = {} }) {
                 cy="50%"
                 outerRadius={120}
                 fill="#8884d8"
-                label
+                label={({ service, totalRevenue }) =>
+                  `${service?.title}: ${new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalRevenue)}`
+                }
               >
                 {services
                   .filter((d) =>
@@ -164,10 +216,22 @@ function BusinessOverview({ data = {} }) {
                     />
                   ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={formatTooltip} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
+        )}
+
+        {chartData.length === 0 && activeTab !== "services" && (
+          <div className="text-center py-8 text-gray-500">
+            No data available for the selected filters
+          </div>
+        )}
+
+        {services.length === 0 && activeTab === "services" && (
+          <div className="text-center py-8 text-gray-500">
+            No service revenue data available
+          </div>
         )}
       </div>
     </div>

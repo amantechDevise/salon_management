@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import CustomerDropdown from "../../../components/CustomerDropdown";
 
 function BookingAdd() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -111,67 +112,57 @@ function BookingAdd() {
         <form onSubmit={handleSubmit}>
           <div className="flex flex-wrap -mx-3">
             {/* Customer Dropdown */}
-            <div className="w-full sm:w-1/2 px-3 mb-5">
-              <label className="block text-base font-medium text-[#07074D] mb-2">
-                Select Customer
-              </label>
-              <select
-                name="customer_id"
-                value={formData.customer_id}
-                onChange={handleChange}
-                className="w-full border rounded-md py-3 px-4"
-                required
-              >
-                <option value="">-- Select Customer --</option>
-                {dropdownData.customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomerDropdown
+              formData={formData}
+              setFormData={setFormData}
+              dropdownData={dropdownData}
+            />
 
             {/* Services Multi-select */}
-          <div className="w-full sm:w-1/2 px-3 mb-5 relative" ref={serviceDropdownRef}>
-  <label className="mb-3 block text-base font-medium text-[#07074D]">
-    Services
-  </label>
-  
-  {/* The clickable input */}
-  <div
-    className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
-    onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
-  >
-    {formData.service_id.length > 0
-      ? dropdownData.services
-          .filter((s) => formData.service_id.includes(s.id.toString()))
-          .map((s) => s.title)
-          .join(", ")
-      : "Select services"}
-  </div>
+            <div
+              className="w-full sm:w-1/2 px-3 mb-5 relative"
+              ref={serviceDropdownRef}
+            >
+              <label className="mb-3 block text-base font-medium text-[#07074D]">
+                Services
+              </label>
 
-  {/* Dropdown */}
-  {serviceDropdownOpen && (
-    <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-      {dropdownData.services.map((s) => (
-        <label
-          key={s.id}
-          className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-        >
-          <input
-            type="checkbox"
-            value={s.id}
-            checked={formData.service_id.includes(s.id.toString())}
-            onChange={() => toggleService(s.id)}
-            className="mr-3"
-          />
-          {s.title}
-        </label>
-      ))}
-    </div>
-  )}
-</div>
+              {/* The clickable input */}
+              <div
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
+                onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
+              >
+                {formData.service_id.length > 0
+                  ? dropdownData.services
+                      .filter((s) =>
+                        formData.service_id.includes(s.id.toString())
+                      )
+                      .map((s) => s.title)
+                      .join(", ")
+                  : "Select services"}
+              </div>
 
+              {/* Dropdown */}
+              {serviceDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                  {dropdownData.services.map((s) => (
+                    <label
+                      key={s.id}
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        value={s.id}
+                        checked={formData.service_id.includes(s.id.toString())}
+                        onChange={() => toggleService(s.id)}
+                        className="mr-3"
+                      />
+                      {s.title}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Date + Time */}
