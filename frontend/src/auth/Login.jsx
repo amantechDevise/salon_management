@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import Salon_Bg from "/salonbg.jpg";
+import logo from "/logo.jpg";
+import "react-toastify/dist/ReactToastify.css";
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
- const handleLogin = async () => {
+  const handleLogin = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/admin/login`, {
         email,
@@ -17,25 +19,25 @@ function Login() {
       });
 
       const { token } = response.data;
-      localStorage.setItem('adminToken', token);
+      localStorage.setItem("adminToken", token);
 
-      toast.success('Login successful 🎉', {
-        position: 'top-right',
+      toast.success("Login successful 🎉", {
+        position: "top-right",
         autoClose: 2000,
       });
 
       setTimeout(() => {
-        navigate('/admin/dashboard');
+        navigate("/admin/dashboard");
       }, 1500);
     } catch (err) {
       if (err.response) {
         toast.error(err.response.data.message, {
-          position: 'top-right',
+          position: "top-right",
           autoClose: 2000,
         });
       } else {
-        toast.error('Something went wrong', {
-          position: 'top-right',
+        toast.error("Something went wrong", {
+          position: "top-right",
           autoClose: 2000,
         });
       }
@@ -48,19 +50,15 @@ function Login() {
         <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
           <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div>
-                  <h1 className='text-2xl font-bold mb-5 uppercase text-center text-green-400 '>Admin Login</h1>
-              <img
-                src="https://drive.google.com/uc?export=view&id=1MFiKAExRFF0-2YNpAZzIu1Sh52J8r16v"
-                className="w-mx-auto"
-                alt="Logo"
-              />
+              <h1 className="text-2xl font-bold mb-5 uppercase text-center text-green-400 ">
+                Admin Login
+              </h1>
+              <img src="" className="w-mx-auto" alt="Logo" />
             </div>
             <div className="mt-12 flex flex-col items-center">
               <div className="w-full flex-1 mt-8">
-                <div className="flex flex-col items-center">
-                  <button
-                    className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-green-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
-                  >
+                {/* <div className="flex flex-col items-center">
+                  <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-green-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                     <div className="bg-white p-2 rounded-full">
                       <svg className="w-4" viewBox="0 0 533.5 544.3">
                         <path
@@ -83,7 +81,7 @@ function Login() {
                     </div>
                     <span className="ml-4">Sign In with Google</span>
                   </button>
-                </div>
+                </div> */}
 
                 <div className="my-12 border-b text-center">
                   <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
@@ -127,36 +125,20 @@ function Login() {
                   </button>
 
                   {error && (
-                    <p className="text-red-500 text-sm mt-3 text-center">{error}</p>
+                    <p className="text-red-500 text-sm mt-3 text-center">
+                      {error}
+                    </p>
                   )}
-
-                  <p className="mt-6 text-xs text-gray-600 text-center">
-                    I agree to abide by Cartesian Kinetics{' '}
-                    <a
-                      href="#"
-                      className="border-b border-gray-500 border-dotted"
-                    >
-                      Terms of Service
-                    </a>{' '}
-                    and its{' '}
-                    <a
-                      href="#"
-                      className="border-b border-gray-500 border-dotted"
-                    >
-                      Privacy Policy
-                    </a>
-                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex-1 bg-green-100 text-center hidden lg:flex">
+          <div className="flex-1 bg-green-100 text-center hidden lg:flex ">
             <div
-              className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+              className=" w-full bg-cover bg-center  rounded-r-lg "
               style={{
-                backgroundImage:
-                  'url("https://drive.google.com/uc?export=view&id=1KZ_Ub_2lZ0dHbKV0fAIhxVhiQA183RCz")',
+                backgroundImage: `url(${Salon_Bg})`,
               }}
             ></div>
           </div>
