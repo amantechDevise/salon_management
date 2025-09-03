@@ -132,7 +132,7 @@ function StaffDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-red-100 text-red-600">
               <i className="fas fa-calendar-times text-xl" />
@@ -144,7 +144,7 @@ function StaffDashboard() {
               <p className="text-2xl font-semibold text-gray-800">8</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Attendance Table */}
