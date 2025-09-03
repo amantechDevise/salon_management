@@ -19,8 +19,8 @@ module.exports = {
       // Create URL-friendly staff name
       const staffNameForUrl = staff.name
         .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/[^a-z0-9-]/g, ''); // Remove special characters
+        .replace(/\s+/g, "-") // Replace spaces with hyphens
+        .replace(/[^a-z0-9-]/g, ""); // Remove special characters
 
       const rating = await Rating.create({
         staff_id: staff_id,
@@ -30,13 +30,13 @@ module.exports = {
       });
 
       // Frontend link with staff name and token
-      const link = `${process.env.ALLOWED_ORIGINS}/staff-Admin/feedback/${staffNameForUrl}/${token}`;
+      const link = `/staff-Admin/feedback/${staffNameForUrl}/${token}`;
 
       res.status(200).json({
         message: "Feedback link generated",
         link,
         customer_id,
-        staff_name: staff.name
+        staff_name: staff.name,
       });
     } catch (error) {
       console.error(error);
@@ -71,7 +71,6 @@ module.exports = {
         feedback: rating.feedback,
         status: rating.status,
       });
-
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
@@ -86,7 +85,9 @@ module.exports = {
 
       // Validate rating (should be between 1-5)
       if (!rating || rating < 1 || rating > 5) {
-        return res.status(400).json({ message: "Please provide a valid rating between 1 and 5 stars" });
+        return res.status(400).json({
+          message: "Please provide a valid rating between 1 and 5 stars",
+        });
       }
 
       const ratingData = await Rating.findOne({
@@ -122,7 +123,6 @@ module.exports = {
         staff_name: ratingData.staff.name, // 👈 lowercase
         rating: ratingData.rating,
       });
-
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

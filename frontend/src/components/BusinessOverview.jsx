@@ -58,8 +58,14 @@ function BusinessOverview({ data = {} }) {
     ? data.revenueByService.map((item) => ({
         ...item,
         totalRevenue: parseFloat(item.totalRevenue) || 0,
-        service: item.service || { title: "Unknown Service" },
-        staff: item.staff || { name: "" },
+        service: {
+          id: item.serviceId,
+          title: item.serviceTitle || "Unknown Service",
+        },
+        staff: {
+          id: item["staff.id"] || null,
+          name: item["staff.name"] || "",
+        },
       }))
     : [];
 
@@ -193,7 +199,7 @@ function BusinessOverview({ data = {} }) {
                   selectedStaff ? d.staff?.name === selectedStaff : true
                 )}
                 dataKey="totalRevenue"
-                nameKey="service.title"
+                nameKey="serviceTitle"
                 cx="50%"
                 cy="50%"
                 outerRadius={120}
