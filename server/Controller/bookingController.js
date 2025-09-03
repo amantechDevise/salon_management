@@ -57,6 +57,16 @@ module.exports = {
       const staffIds = staff_id.split(",").map((id) => id.trim());
       const serviceIds = service_id.split(",").map((id) => id.trim());
 
+      // Find the customer first
+      const customer = await Customer.findByPk(customer_id);
+      if (!customer) {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+
+      // Increment visit count
+      customer.visit_count = (customer.visit_count || 0) + 1;
+      await customer.save();
+
       // 1️⃣ First booking record → just store first staff + first service
       const booking = await Booking.create({
         customer_id,
@@ -95,6 +105,7 @@ module.exports = {
           ? "Recurring booking added successfully with services"
           : "Booking added successfully with services",
         data: {
+          customer,
           booking,
           bookingServices: bookingServiceRecords,
         },

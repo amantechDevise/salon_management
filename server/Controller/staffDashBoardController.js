@@ -377,6 +377,15 @@ module.exports = {
       // ✅ Get logged-in staff/user ID
       const userId = req.staff.id; // Depending on your auth middleware
 
+      // Find the customer first
+      const customer = await Customer.findByPk(customer_id);
+      if (!customer) {
+        return res.status(404).json({ error: "Customer not found" });
+      }
+
+      // Increment visit count
+      customer.visit_count = (customer.visit_count || 0) + 1;
+      await customer.save();
       // ✅ Create main booking
       const booking = await Booking.create({
         customer_id,
@@ -413,6 +422,7 @@ module.exports = {
           : "Booking added successfully with services.",
         data: {
           booking,
+          customer,
           bookingServices: bookingServiceRecords,
         },
       });

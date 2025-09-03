@@ -6,6 +6,7 @@ const customerController = require("../Controller/customerController");
 const authenticateToken = require("../middleware/verifyToken");
 const bookingController = require("../Controller/bookingController");
 const discountController = require("../Controller/discountController");
+const invoiceCantroller = require("../Controller/invoiceCantroller");
 
 var router = express.Router();
 
@@ -109,6 +110,23 @@ router.delete(
   "/discounts/delete/:id",
   authenticateToken,
   discountController.deleteDiscount
+);
+
+router.get(
+  "/generate_Invoice/:booking_id",
+  authenticateToken,
+  invoiceCantroller.generateInvoice
+);
+router.get(
+  "/generate_Invoice",
+  authenticateToken,
+  invoiceCantroller.getAllInvoices
+);
+
+router.get(
+  "/generate_Invoice/:id",
+  authenticateToken,
+  invoiceCantroller.getInvoiceById
 );
 
 module.exports = router;
