@@ -28,10 +28,9 @@ module.exports = {
         status: 1, // 1 = pending
         unique_token: token,
       });
-
+      const baseUrl = process.env.ALLOWED_ORIGINS.split(",")[0].trim();
       // Frontend link with staff name and token
-      const link = `${process.env.ALLOWED_ORIGINS}/staff-Admin/feedback/${staffNameForUrl}/${token}`;
-
+      const link = `${baseUrl}/staff-Admin/feedback/${staffNameForUrl}/${token}`;
       res.status(200).json({
         message: "Feedback link generated",
         link,
