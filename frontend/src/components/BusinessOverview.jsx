@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -27,81 +27,120 @@ const formatWeek = (weekString) => {
 function BusinessOverview({ data = {} }) {
   const [activeTab, setActiveTab] = useState("daily");
   const [selectedStaff, setSelectedStaff] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
 
-  // Safe arrays with proper data type conversion
-  const daily = Array.isArray(data?.dailyRevenue)
-    ? data.dailyRevenue.map((item) => ({
-        ...item,
-        revenue: parseFloat(item.revenue) || 0,
-        staff: item.staff || { name: "" },
-      }))
-    : [];
-
-  const weekly = Array.isArray(data?.weeklyRevenue)
-    ? data.weeklyRevenue.map((item) => ({
-        ...item,
-        revenue: parseFloat(item.revenue) || 0,
-        staff: item.staff || { name: "" },
-      }))
-    : [];
-
-  const monthly = Array.isArray(data?.monthlyRevenue)
-    ? data.monthlyRevenue.map((item) => ({
-        ...item,
-        revenue: parseFloat(item.revenue) || 0,
-        staff: item.staff || { name: "" },
-      }))
-    : [];
-
-  const services = Array.isArray(data?.revenueByService)
-    ? data.revenueByService.map((item) => ({
-        ...item,
-        totalRevenue: parseFloat(item.totalRevenue) || 0,
-        service: {
-          id: item.serviceId,
-          title: item.serviceTitle || "Unknown Service",
-        },
-        staff: {
-          id: item["staff.id"] || null,
-          name: item["staff.name"] || "",
-        },
-      }))
-    : [];
-
-  // Unique staff list
-  const staffList = [
-    ...new Set([
-      ...daily.map((d) => d.staff?.name),
-      ...weekly.map((d) => d.staff?.name),
-      ...monthly.map((d) => d.staff?.name),
-      ...services.map((d) => d.staff?.name),
-    ]),
-  ].filter(Boolean);
-
-  // Filtered chartData
-  const chartData =
-    activeTab === "daily"
-      ? daily
-          .filter((d) =>
-            selectedStaff ? d.staff?.name === selectedStaff : true
-          )
-          .map((d) => ({ label: d.day, revenue: d.revenue }))
-      : activeTab === "weekly"
-      ? weekly
-          .filter((d) =>
-            selectedStaff ? d.staff?.name === selectedStaff : true
-          )
-          .map((d) => ({ label: formatWeek(d.week), revenue: d.revenue }))
-      : activeTab === "monthly"
-      ? monthly
-          .filter((d) => {
-            if (selectedStaff && d.staff?.name !== selectedStaff) return false;
-            if (selectedMonth && d.month !== selectedMonth) return false;
-            return true;
-          })
-          .map((d) => ({ label: d.month, revenue: d.revenue }))
+  // Process data with proper staff information
+  const processedData = useMemo(() => {
+    // Process daily revenue
+    const daily = Array.isArray(data?.dailyRevenue)
+      ? data.dailyRevenue.map((item) => ({
+          ...item,
+          revenue: parseFloat(item.revenue) || 0,
+          staffName: item["staff.name"] || "Unknown Staff",
+          staffId: item["staff.id"] || null,
+        }))
       : [];
+
+    // Process weekly revenue
+    const weekly = Array.isArray(data?.weeklyRevenue)
+      ? data.weeklyRevenue.map((item) => ({
+          ...item,
+          revenue: parseFloat(item.revenue) || 0,
+          staffName: item["staff.name"] || "Unknown Staff",
+          staffId: item["staff.id"] || null,
+        }))
+      : [];
+
+    // Process monthly revenue
+    const monthly = Array.isArray(data?.monthlyRevenue)
+      ? data.monthlyRevenue.map((item) => ({
+          ...item,
+          revenue: parseFloat(item.revenue) || 0,
+          staffName: item["staff.name"] || "Unknown Staff",
+          staffId: item["staff.id"] || null,
+        }))
+      : [];
+
+    // Process service revenue
+    const services = Array.isArray(data?.revenueByService)
+      ? data.revenueByService.map((item) => ({
+          ...item,
+          totalRevenue: parseFloat(item.totalRevenue) || 0,
+          totalBookings: parseInt(item.totalBookings) || 0,
+          serviceTitle: item.serviceTitle || "Unknown Service",
+          staffName: item["staff.name"] || "All Staff",
+          staffId: item["staff.id"] || null,
+        }))
+      : [];
+
+    return { daily, weekly, monthly, services };
+  }, [data]);
+
+  // Get unique staff list from all data
+  const staffList = useMemo(() => {
+    const allStaff = [
+      ...processedData.daily.map((d) => ({ id: d.staffId, name: d.staffName })),
+      ...processedData.weekly.map((d) => ({
+        id: d.staffId,
+        name: d.staffName,
+      })),
+      ...processedData.monthly.map((d) => ({
+        id: d.staffId,
+        name: d.staffName,
+      })),
+      ...processedData.services.map((d) => ({
+        id: d.staffId,
+        name: d.staffName,
+      })),
+    ];
+
+    // Remove duplicates and filter out null/undefined
+    return [
+      ...new Map(
+        allStaff
+          .filter((staff) => staff.id && staff.name)
+          .map((staff) => [staff.id, staff])
+      ).values(),
+    ];
+  }, [processedData]);
+
+  // Filter data based on selected staff
+  const filteredData = useMemo(() => {
+    const filterByStaff = (items) => {
+      if (!selectedStaff) return items;
+      return items.filter((item) => item.staffId === selectedStaff);
+    };
+
+    return {
+      daily: filterByStaff(processedData.daily),
+      weekly: filterByStaff(processedData.weekly),
+      monthly: filterByStaff(processedData.monthly),
+      services: filterByStaff(processedData.services),
+    };
+  }, [processedData, selectedStaff]);
+
+  // Prepare chart data based on active tab
+  const chartData = useMemo(() => {
+    if (activeTab === "daily") {
+      return filteredData.daily.map((d) => ({
+        label: d.day,
+        revenue: d.revenue,
+        staffName: d.staffName,
+      }));
+    } else if (activeTab === "weekly") {
+      return filteredData.weekly.map((d) => ({
+        label: formatWeek(d.week),
+        revenue: d.revenue,
+        staffName: d.staffName,
+      }));
+    } else if (activeTab === "monthly") {
+      return filteredData.monthly.map((d) => ({
+        label: d.month,
+        revenue: d.revenue,
+        staffName: d.staffName,
+      }));
+    }
+    return [];
+  }, [activeTab, filteredData]);
 
   // Custom tooltip formatter
   const formatTooltip = (value, name, props) => {
@@ -145,21 +184,11 @@ function BusinessOverview({ data = {} }) {
           >
             <option value="">All Staff</option>
             {staffList.map((s) => (
-              <option key={s} value={s}>
-                {s}
+              <option key={s.id} value={s.id}>
+                {s.name}
               </option>
             ))}
           </select>
-
-          {/* Month Selector (only for monthly) */}
-          {activeTab === "monthly" && (
-            <input
-              type="month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="border rounded px-2 py-1 text-sm"
-            />
-          )}
         </div>
       </div>
 
@@ -179,7 +208,15 @@ function BusinessOverview({ data = {} }) {
                   }).format(value)
                 }
               />
-              <Tooltip formatter={formatTooltip} />
+              <Tooltip
+                formatter={formatTooltip}
+                labelFormatter={(label) => {
+                  const item = chartData.find((d) => d.label === label);
+                  return `${label}${
+                    item && item.staffName ? ` - ${item.staffName}` : ""
+                  }`;
+                }}
+              />
               <Legend />
               <Line
                 type="monotone"
@@ -195,34 +232,36 @@ function BusinessOverview({ data = {} }) {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={services.filter((d) =>
-                  selectedStaff ? d.staff?.name === selectedStaff : true
-                )}
+                data={filteredData.services}
                 dataKey="totalRevenue"
                 nameKey="serviceTitle"
                 cx="50%"
                 cy="50%"
                 outerRadius={120}
                 fill="#8884d8"
-                label={({ service, totalRevenue }) =>
-                  `${service?.title}: ${new Intl.NumberFormat("en-US", {
+                label={({ serviceTitle, totalRevenue }) =>
+                  `${serviceTitle}: ${new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
                   }).format(totalRevenue)}`
                 }
               >
-                {services
-                  .filter((d) =>
-                    selectedStaff ? d.staff?.name === selectedStaff : true
-                  )
-                  .map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
+                {filteredData.services.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
               </Pie>
-              <Tooltip formatter={formatTooltip} />
+              <Tooltip
+                formatter={formatTooltip}
+                labelFormatter={(label, payload) => {
+                  if (payload && payload.length) {
+                    return `${payload[0].payload.serviceTitle} - ${payload[0].payload.staffName}`;
+                  }
+                  return label;
+                }}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -234,7 +273,7 @@ function BusinessOverview({ data = {} }) {
           </div>
         )}
 
-        {services.length === 0 && activeTab === "services" && (
+        {filteredData.services.length === 0 && activeTab === "services" && (
           <div className="text-center py-8 text-gray-500">
             No service revenue data available
           </div>

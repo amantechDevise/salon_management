@@ -1,0 +1,87 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+
+const ListStaffPackage = () => {
+  const [packages, setPackages] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // Fetch packages
+  const fetchPackages = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/staffAdmin/packages`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
+        },
+      });
+      setPackages(response.data.data);
+    } catch (error) {
+      console.error("Error fetching packages:", error);
+      toast.error("Failed to load packages");
+    }
+  };
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  return (
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">All Packages</h2>
+        {/* <Link
+          to="/admin/packages/add"
+          className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
+        >
+          Add Package
+        </Link> */}
+      </div>
+
+      <table className="w-full text-sm text-left text-gray-500">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th className="px-6 py-3">SR.NO</th>
+            <th className="px-6 py-3">Title</th>
+            <th className="px-6 py-3">Price</th>
+            <th className="px-6 py-3">Services</th>
+            {/* <th className="px-6 py-3">Created At</th> */}
+          </tr>
+        </thead>
+        <tbody>
+          {packages.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="text-center py-6">
+                <p className="mt-2 text-gray-500">No packages found</p>
+              </td>
+            </tr>
+          ) : (
+            packages.map((pkg, index) => (
+              <tr
+                key={pkg.id}
+                className="odd:bg-white even:bg-gray-50 border-b"
+              >
+                <td className="px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4 font-medium text-gray-900">
+                  {pkg.title}
+                </td>
+                <td className="px-6 py-4">{pkg.price}</td>
+                <td className="px-6 py-4">
+                  {pkg.packageServices
+                    ?.map((ps) => ps.service?.title)
+                    .join(", ")}
+                </td>
+                {/* <td className="px-6 py-4">
+                  {new Date(pkg.createdAt).toLocaleDateString()}
+                </td> */}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default ListStaffPackage;

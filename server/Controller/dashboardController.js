@@ -42,13 +42,7 @@ module.exports = {
               },
             ],
           },
-          {
-            model: User,
-            as: "staff",
-            attributes: ["id", "name"],
-          },
         ],
-        group: ["staff.id"],
         raw: true,
       });
 
@@ -160,17 +154,17 @@ module.exports = {
               },
             ],
           },
-          {
-            model: User,
-            as: "staff",
-            attributes: ["id", "name"],
-          },
+          //   {
+          //     model: User,
+          //     as: "staff",
+          //     attributes: ["id", "name"],
+          //   },
         ],
         group: [
           "bookingServices.service.id",
           "bookingServices.service.title",
-          "staff.id",
-          "staff.name",
+          //   "staff.id",
+          //   "staff.name",
         ],
         raw: true,
       });

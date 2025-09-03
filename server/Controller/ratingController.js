@@ -30,7 +30,7 @@ module.exports = {
       });
 
       // Frontend link with staff name and token
-      const link = `/staff-Admin/feedback/${staffNameForUrl}/${token}`;
+      const link = `${process.env.ALLOWED_ORIGINS}/staff-Admin/feedback/${staffNameForUrl}/${token}`;
 
       res.status(200).json({
         message: "Feedback link generated",

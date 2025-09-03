@@ -2,11 +2,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
-  FaTachometerAlt,
-  FaCalendarCheck,
-  FaUsers,
-  FaClipboardList,
-  FaConciergeBell,
+  FaTachometerAlt, // Dashboard
+  FaUserTie, // Staff
+  FaUsers, // Customers
+  FaConciergeBell, // Services
+  FaBoxes, // Packages
+  FaTags, // Discounts
+  FaCalendarAlt, // Bookings
 } from "react-icons/fa";
 
 function AdminSidebar({ userData, isOpen, onClose }) {
@@ -21,10 +23,7 @@ function AdminSidebar({ userData, isOpen, onClose }) {
     <>
       {/* Overlay for mobile */}
       {isOpen && (
-        <div
-          className="fixed inset-0  z-30 md:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0  z-30 md:hidden" onClick={onClose} />
       )}
 
       {/* Sidebar */}
@@ -46,7 +45,7 @@ function AdminSidebar({ userData, isOpen, onClose }) {
             </NavLink>
 
             <NavLink to="/admin/staff" className={navLinkClass}>
-              <FaCalendarCheck className="mr-3" />
+              <FaUserTie className="mr-3" />
               All Staff
             </NavLink>
 
@@ -60,13 +59,24 @@ function AdminSidebar({ userData, isOpen, onClose }) {
               Services
             </NavLink>
 
+            <NavLink to="/admin/packages" className={navLinkClass}>
+              <FaBoxes className="mr-3" />
+              Service Packages
+            </NavLink>
+
+            <NavLink to="/admin/discounts" className={navLinkClass}>
+              <FaTags className="mr-3" />
+              Discounts
+            </NavLink>
+
             <NavLink to="/admin/bookings" className={navLinkClass}>
-              <FaClipboardList className="mr-3" />
+              <FaCalendarAlt className="mr-3" />
               Bookings
             </NavLink>
           </nav>
         </div>
 
+        {/* Footer User Info */}
         <div className="p-4 border-t border-blue-700">
           <div className="flex items-center">
             <img

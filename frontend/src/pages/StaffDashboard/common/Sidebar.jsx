@@ -5,6 +5,8 @@ import {
   FaUsers,
   FaConciergeBell,
   FaRegCalendarCheck,
+  FaBoxes, // Packages
+  FaTags, // Discounts
 } from "react-icons/fa";
 
 function StaffSidebar({ userData, isOpen, onClose }) {
@@ -19,10 +21,7 @@ function StaffSidebar({ userData, isOpen, onClose }) {
     <>
       {/* Transparent Overlay for Mobile */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-30 md:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 z-30 md:hidden" onClick={onClose} />
       )}
 
       {/* Sidebar */}
@@ -54,6 +53,14 @@ function StaffSidebar({ userData, isOpen, onClose }) {
               Services
             </NavLink>
 
+            <NavLink to="/staff-Admin/packages" className={navLinkClass}>
+              <FaBoxes className="mr-3" />
+              Services Packages
+            </NavLink>
+            {/* <NavLink to="/staff-Admin/discounts" className={navLinkClass}>
+              <FaTags className="mr-3" />
+              Discounts
+            </NavLink> */}
             <NavLink to="/staff-Admin/bookings" className={navLinkClass}>
               <FaClipboardList className="mr-3" />
               Bookings

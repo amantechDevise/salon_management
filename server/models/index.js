@@ -171,22 +171,42 @@ db.Customer.hasMany(db.Rating, {
 });
 db.Rating.belongsTo(db.Customer, { foreignKey: "customer_id", as: "customer" });
 
-// INVOICES ↔ BOOKINGS
+// INVOICES ↔ BOOKINGS (1-1)
 db.Booking.hasOne(db.Invoice, { foreignKey: "booking_id", as: "invoice" });
 db.Invoice.belongsTo(db.Booking, { foreignKey: "booking_id", as: "booking" });
 
-// INVOICES ↔ CUSTOMERS
+// INVOICES ↔ CUSTOMERS (1-M)
 db.Customer.hasMany(db.Invoice, { foreignKey: "customer_id", as: "invoices" });
 db.Invoice.belongsTo(db.Customer, {
   foreignKey: "customer_id",
   as: "customer",
 });
 
-// INVOICES ↔ DISCOUNTS
+// INVOICES ↔ DISCOUNTS (1-M)
 db.Discount.hasMany(db.Invoice, { foreignKey: "discount_id", as: "invoices" });
 db.Invoice.belongsTo(db.Discount, {
   foreignKey: "discount_id",
   as: "discount",
+});
+
+// PACKAGE_SERVICES ↔ SERVICE_PACKAGES
+db.ServicePackages.hasMany(db.PackageServices, {
+  foreignKey: "package_id",
+  as: "packageServices",
+});
+db.PackageServices.belongsTo(db.ServicePackages, {
+  foreignKey: "package_id",
+  as: "package",
+});
+
+// PACKAGE_SERVICES ↔ SERVICES
+db.Service.hasMany(db.PackageServices, {
+  foreignKey: "service_id",
+  as: "servicePackages",
+});
+db.PackageServices.belongsTo(db.Service, {
+  foreignKey: "service_id",
+  as: "service",
 });
 
 module.exports = db;

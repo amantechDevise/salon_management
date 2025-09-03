@@ -7,6 +7,8 @@ const {
   Attendance,
   CustomerService,
   BookingService,
+  ServicePackages,
+  PackageServices,
 } = require("../models");
 const { Op } = require("sequelize");
 const { uploadImage } = require("../uilts/imageUplord");
@@ -304,6 +306,27 @@ module.exports = {
     }
   },
 
+  getPackages: async (req, res) => {
+    try {
+      const services = await ServicePackages.findAll({
+        include: [
+          {
+            model: PackageServices,
+            as: "packageServices",
+            include: [{ model: Service, as: "service" }],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+      res
+        .status(200)
+        .json({ message: "All ServicePackages fetched", data: services });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   allBooking: async (req, res) => {
     try {
       const userId = req.staff.id;
@@ -349,7 +372,6 @@ module.exports = {
       } = req.body;
 
       // ✅ Parse staff_id and service_id
-      const staffIds = staff_id.split(",").map((id) => id.trim());
       const serviceIds = service_id.split(",").map((id) => id.trim());
 
       // ✅ Get logged-in staff/user ID

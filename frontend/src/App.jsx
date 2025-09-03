@@ -32,6 +32,11 @@ import ListAttendance from "./pages/StaffDashboard/Attendance/ListAttendance";
 import AttendanceList from "./pages/Staff/AttendanceList";
 import EditServices from "./pages/Services/EditServices";
 import Feedlisting from "./pages/StaffDashboard/Feedback/Feedlisting";
+import ListingPackage from "./pages/ServicesPackage/ListingPackage";
+import AddPackage from "./pages/ServicesPackage/AddPackage";
+import ListStaffPackage from "./pages/StaffDashboard/services/ListingPackage";
+import ListingDiscount from "./pages/Discounts/listing";
+import AddDiscount from "./pages/Discounts/add";
 
 function App() {
   return (
@@ -61,8 +66,12 @@ function App() {
             <Route path="services" element={<Listing />} />
             <Route path="services/add" element={<AddServices />} />
             <Route path="services/:id" element={<EditServices />} />
+            <Route path="packages" element={<ListingPackage />} />
+            <Route path="packages/add" element={<AddPackage />} />
             <Route path="bookings" element={<ListBooking />} />
             <Route path="bookings/add" element={<AddBooking />} />
+            <Route path="discounts" element={<ListingDiscount />} />
+            <Route path="discounts/add" element={<AddDiscount />} />
             <Route path="attendance/:id" element={<AttendanceList />} />
           </Route>
 
@@ -80,13 +89,18 @@ function App() {
             <Route path="profile" element={<UserstaffProfile />} />
             <Route path="update-profile" element={<UpdatestaffProfile />} />
             <Route path="services" element={<ListServices />} />
+            <Route path="packages" element={<ListStaffPackage />} />
+
             <Route path="customer" element={<ListStaffCustomer />} />
             <Route path="customer/add" element={<AddstaffCustomer />} />
             <Route path="bookings" element={<BookingList />} />
             <Route path="bookings/add" element={<BookingAdd />} />
             <Route path="attendance" element={<ListAttendance />} />
           </Route>
-              <Route path="/staff-Admin/feedback/:staffName/:token" element={<Feedlisting />} />
+          <Route
+            path="/staff-Admin/feedback/:staffName/:token"
+            element={<Feedlisting />}
+          />
         </Routes>
         <ToastContainer />
       </BrowserRouter>

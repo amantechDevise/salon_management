@@ -216,16 +216,16 @@ function StaffDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {moment(a.date).format("DD MMM YYYY")}
                     </td>
-                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-  {a.checkIn
-    ? moment(a.checkIn, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
-    : "--"}
-</td>
-<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-  {a.checkOut
-    ? moment(a.checkOut, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
-    : "--"}
-</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {a.checkIn
+                        ? moment(a.checkIn, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
+                        : "--"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {a.checkOut
+                        ? moment(a.checkOut, "hh:mm A").format("hh:mm A") // Parse as 12-hour format
+                        : "--"}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {a.checkOut ? (
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -323,7 +323,7 @@ function StaffDashboard() {
         </div>
       </div>
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      {/* <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           Quick Actions
         </h2>
@@ -355,7 +355,7 @@ function StaffDashboard() {
             <span className="text-sm font-medium text-gray-700">Requests</span>
           </button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
