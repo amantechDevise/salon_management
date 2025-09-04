@@ -65,7 +65,7 @@ const BookingList = () => {
     }
   };
 
-    const paymentStatus = {
+  const paymentStatus = {
     1: { label: "Pending", color: "bg-yellow-100 text-yellow-800" },
     2: { label: "Paid", color: "bg-green-100 text-green-800" },
     3: { label: "Failed", color: "bg-red-100 text-red-800" },
@@ -92,7 +92,7 @@ const BookingList = () => {
             <th className="px-6 py-3">Date</th>
             <th className="px-6 py-3">Time</th>
             <th className="px-6 py-3">Total Amount</th>
-             <th className="px-6 py-3"> Payment Status</th>
+            <th className="px-6 py-3"> Payment Status</th>
             {/* <th className="px-6 py-3">Action</th> */}
           </tr>
         </thead>
@@ -125,15 +125,14 @@ const BookingList = () => {
                     ?.map((ps) => ps.service?.title)
                     .join(", ")}
                 </td>
-   <td className="px-6 py-4">
-  {(
-    booking.bookingServices?.reduce(
-      (total, ps) => total + Number(ps.service?.price || 0),
-      0
-    ) || 0
-  ).toFixed(2)}
-</td>
-
+                <td className="px-6 py-4">
+                  {(
+                    booking.bookingServices?.reduce(
+                      (total, ps) => total + Number(ps.service?.price || 0),
+                      0
+                    ) || 0
+                  ).toFixed(2)}
+                </td>
 
                 <td className="px-6 py-4">
                   {booking.date
@@ -157,7 +156,7 @@ const BookingList = () => {
                       )
                     : "N/A"}
                 </td>
-     <td className="px-6 py-4">
+                <td className="px-6 py-4">
                   {paymentStatus[booking.status] ? (
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${

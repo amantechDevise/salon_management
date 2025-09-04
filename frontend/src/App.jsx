@@ -37,6 +37,7 @@ import AddPackage from "./pages/ServicesPackage/AddPackage";
 import ListStaffPackage from "./pages/StaffDashboard/services/ListingPackage";
 import ListingDiscount from "./pages/Discounts/listing";
 import AddDiscount from "./pages/Discounts/add";
+import BookingCalendar from "./pages/Bookings/BookingCalendar";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
             <Route path="packages" element={<ListingPackage />} />
             <Route path="packages/add" element={<AddPackage />} />
             <Route path="bookings" element={<ListBooking />} />
+            <Route path="bookings/calendar" element={<BookingCalendar />} />
             <Route path="bookings/add" element={<AddBooking />} />
             <Route path="discounts" element={<ListingDiscount />} />
             <Route path="discounts/add" element={<AddDiscount />} />

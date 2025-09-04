@@ -146,8 +146,8 @@ const revenueByService = await Booking.findAll({
     [col("bookingServices.service.title"), "serviceTitle"],
     [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
     [fn("COUNT", col("bookingServices.id")), "totalBookings"],
-    [col("staff.id"), "staffId"], 
-    [col("staff.name"), "staffName"], 
+    [col("staff.id"), "staffId"],
+    [fn("GROUP_CONCAT", col("staff.name")), "staffNames"], // Use GROUP_CONCAT only
   ],
   include: [
     {
@@ -171,12 +171,10 @@ const revenueByService = await Booking.findAll({
   group: [
     "bookingServices.service.id",
     "bookingServices.service.title",
-    "staff.id",
-    "staff.name",
+    "staff.id", // Group by staff.id only
   ],
   raw: true,
 });
-
       // ====== Existing Stats ======
       const dailyStats = await Booking.findAll({
         attributes: [

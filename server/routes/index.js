@@ -84,12 +84,20 @@ router.get(
   authenticateToken,
   customerController.getCustomerDetails
 );
+router.delete(
+  "/customerDetails/:id",
+  authenticateToken,
+  customerController.deleteCustumar
+);
+
 
 // ----------------------bookingsController---------------
 
 router.get("/bookings", authenticateToken, bookingController.getBookings);
+router.get("/booking/calender", authenticateToken, bookingController.getBookingsCalender);
 router.get("/getAll", authenticateToken, bookingController.getAll);
 router.post("/bookings/add", authenticateToken, bookingController.addBooking);
+router.delete("/bookings/:id", authenticateToken, bookingController.deleteBooking);
 
 // / ----------------------discountController---------------
 
