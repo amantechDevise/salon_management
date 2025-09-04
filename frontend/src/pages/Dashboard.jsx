@@ -21,7 +21,7 @@ function Dashboard() {
     dailyRevenue: [],
     weeklyRevenue: [],
     monthlyRevenue: [],
-    revenueByService: [],
+    revenueByService: [], 
   }
   });
 
