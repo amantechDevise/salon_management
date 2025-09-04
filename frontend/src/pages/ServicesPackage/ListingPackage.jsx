@@ -77,7 +77,8 @@ const ListingPackage = () => {
             <th className="px-6 py-3">Title</th>
             <th className="px-6 py-3">Price</th>
             <th className="px-6 py-3">Services</th>
-            <th className="px-6 py-3">Created At</th>
+            <th className="px-6 py-3">Start Date</th>
+            <th className="px-6 py-3">End Date</th>
             <th className="px-6 py-3 text-center">Actions</th>
           </tr>
         </thead>
@@ -105,7 +106,10 @@ const ListingPackage = () => {
                     .join(", ")}
                 </td>
                 <td className="px-6 py-4">
-                  {new Date(pkg.createdAt).toLocaleDateString()}
+                  {new Date(pkg.start_date).toLocaleDateString()}
+                </td>
+                 <td className="px-6 py-4">
+                  {new Date(pkg.end_date).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-center">
                   <button

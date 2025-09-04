@@ -90,26 +90,7 @@ module.exports = {
   // -------------------end userProfile nd update------------
 
   // -------------------start customer ------------
-  // getCustomers: async (req, res) => {
-  //     try {
 
-  //         const customers = await Customer.findAll({
-  //             include: [
-  //                 {
-  //                     model: Service,
-  //                     as: 'service',
-  //                     attributes: ['id', 'title', 'description', 'image', 'price']
-  //                 }
-  //             ],
-
-  //             order: [['createdAt', 'DESC']]
-  //         });
-  //         res.status(201).json({ message: 'Get all Customers', data: customers });
-  //     } catch (error) {
-  //         console.error("Error fetching customers:", error);
-  //         res.status(500).json({ error: "An error occurred while fetching customers." });
-  //     }
-  // },
   getCustomers: async (req, res) => {
     try {
       const [latestCustomers] = await sequelize.query(`
@@ -154,74 +135,6 @@ module.exports = {
     }
   },
 
-  // addCustomers: async (req, res) => {
-  //     try {
-  //         const {
-  //             service_id,
-  //             name,
-  //             email,
-  //             dob,
-  //             address,
-  //             phone,
-  //             status
-  //         } = req.body;
-
-  //         // Check if service_id is provided
-  //         if (!service_id) {
-  //             return res.status(400).json({ message: "service_id is required" });
-  //         }
-
-  //         const imageFile = req.files ? req.files.image : null;
-  //         let imagePath = null;
-
-  //         if (imageFile) {
-  //             imagePath = await uploadImage(imageFile);
-  //         }
-
-  //         // Split service_id string into array, trim spaces
-  //         const serviceIds = service_id.split(',').map(id => id.trim()).filter(id => id !== '');
-
-  //         if (serviceIds.length === 0) {
-  //             return res.status(400).json({ message: "At least one valid service_id is required" });
-  //         }
-
-  //         // Use the logged in staff id from token/session (not from req.body)
-  //         const userId = req.staff.id;
-
-  //         // Count current visits by this email (for visit_count tracking)
-  //         let visitCount = await Customer.count({ where: { email } });
-
-  //         const customerRecords = [];
-
-  //         for (const svcId of serviceIds) {
-  //             visitCount++; // increment for each new record
-  //             customerRecords.push({
-  //                 staff_id: userId,
-  //                 service_id: svcId,
-  //                 name,
-  //                 email,
-  //                 dob,
-  //                 address,
-  //                 image: imagePath || "",
-  //                 phone,
-  //                 status: status || 1,
-  //                 visit_count: visitCount
-  //             });
-  //         }
-
-  //         // Bulk insert all customer visit records
-  //         const createdCustomers = await Customer.bulkCreate(customerRecords);
-
-  //         res.status(201).json({
-  //             message: 'Customer visits recorded successfully',
-  //             data: createdCustomers
-  //         });
-
-  //     } catch (error) {
-  //         console.error(error);
-  //         res.status(500).json({ message: 'Internal server error' });
-  //     }
-  // },
 
   addCustomers: async (req, res) => {
     try {
@@ -235,7 +148,7 @@ module.exports = {
       }
 
       const userId = req.staff.id; // single staff id
-      const serviceIds = service_id.split(",").map((id) => id.trim());
+      // const serviceIds = service_id.split(",").map((id) => id.trim());
 
       // Find or create the main customer record
       const [customer, created] = await Customer.findOrCreate({
@@ -250,26 +163,26 @@ module.exports = {
           image: imagePath || "",
           phone,
           status: status || 1,
-          visit_count: 1,
+          visit_count: 0,
         },
       });
 
       // If customer already exists, update visit count
-      if (!created) {
-        customer.visit_count += 1;
-        await customer.save();
-      }
+      // if (!created) {
+      //   customer.visit_count += 1;
+      //   await customer.save();
+      // }
 
       // Create customer-service-staff relationships
       const customerServices = [];
 
-      for (const svcId of serviceIds) {
+      // for (const svcId of serviceIds) {
         customerServices.push({
           customer_id: customer.id,
           staff_id: userId,
-          service_id: svcId,
+          // service_id: svcId,
         });
-      }
+      // }
 
       // Assuming you have a CustomerService model for the relationships
       const createdRelationships = await CustomerService.bulkCreate(
@@ -338,10 +251,17 @@ module.exports = {
             as: "customer",
           },
           {
-            model: Service,
-            as: "service",
-            attributes: ["id", "title", "price"],
+            model: BookingService,
+            as: "bookingServices",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price"],
+              },
+            ]
           },
+
         ],
         where: { staff_id: userId },
       });

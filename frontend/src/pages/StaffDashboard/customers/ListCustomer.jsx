@@ -92,14 +92,14 @@ const ListStaffCustomer = () => {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th className="px-6 py-3">SR.NO</th>
-            <th className="px-6 py-3">Service Name</th>
+            {/* <th className="px-6 py-3">Service Name</th> */}
             <th className="px-6 py-3">Name</th>
             <th className="px-6 py-3">Email</th>
             <th className="px-6 py-3">Phone No</th>
             <th className="px-6 py-3">Visit Count</th>
             <th className="px-6 py-3">Image</th>
             <th className="px-6 py-3">Generate Link</th>
-            <th className="px-6 py-3">Action</th>
+            {/* <th className="px-6 py-3">Action</th> */}
           </tr>
         </thead>
         <tbody>
@@ -116,7 +116,7 @@ const ListStaffCustomer = () => {
                 className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
               >
                 <td className="px-6 py-4">{index + 1}</td>
-                <td className="px-6 py-4">{product.service?.title || "N / A"}</td>
+                {/* <td className="px-6 py-4">{product.service?.title || "N / A"}</td> */}
                 <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {product.name}
                 </td>
@@ -147,14 +147,14 @@ const ListStaffCustomer = () => {
                     {loadingLinkId === product.id ? "Generating..." : "Generate Link"}
                   </button>
                 </td>
-                <td className="px-6 py-4">
+                {/* <td className="px-6 py-4">
                   <button
                     onClick={() => handleDelete(product.id)}
                     className="text-red-500 hover:underline"
                   >
                     Delete
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           )}

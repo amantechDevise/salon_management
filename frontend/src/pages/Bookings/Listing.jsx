@@ -64,6 +64,12 @@ const ListBooking = () => {
       toast.error("Failed to update status");
     }
   };
+  const paymentStatus = {
+    1: { label: "Pending", color: "bg-yellow-100 text-yellow-800" },
+    2: { label: "Paid", color: "bg-green-100 text-green-800" },
+    3: { label: "Failed", color: "bg-red-100 text-red-800" },
+    4: { label: "Cancelled", color: "bg-gray-100 text-gray-800" },
+  };
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
@@ -84,10 +90,11 @@ const ListBooking = () => {
             <th className="px-6 py-3">Staff</th>
             <th className="px-6 py-3">Customer</th>
             <th className="px-6 py-3">Service</th>
+            <th className="px-6 py-3">Total Amount</th>
             <th className="px-6 py-3">Date</th>
             <th className="px-6 py-3">Time</th>
-            {/* <th className="px-6 py-3">Status</th> */}
-            <th className="px-6 py-3">Action</th>
+            <th className="px-6 py-3"> Payment Status</th>
+            {/* <th className="px-6 py-3">Action</th> */}
           </tr>
         </thead>
 
@@ -114,7 +121,20 @@ const ListBooking = () => {
                   {booking.staff?.name || "N/A"}
                 </td>
                 <td className="px-6 py-4">{booking.customer?.name || "N/A"}</td>
-                <td className="px-6 py-4">{booking.service?.title || "N/A"}</td>
+                {/* <td className="px-6 py-4">{booking.service?.title || "N/A"}</td> */}
+                <td className="px-6 py-4">
+                  {booking.bookingServices
+                    ?.map((ps) => ps.service?.title)
+                    .join(", ")}
+                </td>
+                <td className="px-6 py-4">
+                  {(
+                    booking.bookingServices?.reduce(
+                      (total, ps) => total + Number(ps.service?.price || 0),
+                      0
+                    ) || 0
+                  ).toFixed(2)}
+                </td>
                 <td className="px-6 py-4">
                   {booking.date
                     ? new Date(booking.date).toLocaleDateString("en-GB", {
@@ -137,8 +157,20 @@ const ListBooking = () => {
                       )
                     : "N/A"}
                 </td>
-
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4">
+                  {paymentStatus[booking.status] ? (
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        paymentStatus[booking.status].color
+                      }`}
+                    >
+                      {paymentStatus[booking.status].label}
+                    </span>
+                  ) : (
+                    "N/A"
+                  )}
+                </td>
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <Link
                     to={`/admin/bookings/edit/${booking.id}`}
                     className="text-blue-600 hover:underline mr-4"
@@ -151,7 +183,7 @@ const ListBooking = () => {
                   >
                     Delete
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))
           )}

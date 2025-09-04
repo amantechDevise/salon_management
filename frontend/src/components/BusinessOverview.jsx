@@ -35,8 +35,8 @@ function BusinessOverview({ data = {} }) {
       ? data.dailyRevenue.map((item) => ({
           ...item,
           revenue: parseFloat(item.revenue) || 0,
-          staffName: item["staff.name"] || "Unknown Staff",
-          staffId: item["staff.id"] || null,
+          staffName: item.staffName || "Unknown Staff",
+          staffId: item.staffId || null,
         }))
       : [];
 
@@ -45,8 +45,8 @@ function BusinessOverview({ data = {} }) {
       ? data.weeklyRevenue.map((item) => ({
           ...item,
           revenue: parseFloat(item.revenue) || 0,
-          staffName: item["staff.name"] || "Unknown Staff",
-          staffId: item["staff.id"] || null,
+          staffName: item.staffName || "Unknown Staff",
+          staffId: item.staffId || null,
         }))
       : [];
 
@@ -55,8 +55,8 @@ function BusinessOverview({ data = {} }) {
       ? data.monthlyRevenue.map((item) => ({
           ...item,
           revenue: parseFloat(item.revenue) || 0,
-          staffName: item["staff.name"] || "Unknown Staff",
-          staffId: item["staff.id"] || null,
+          staffName: item.staffName || "Unknown Staff",
+          staffId: item.staffId || null,
         }))
       : [];
 
@@ -67,8 +67,8 @@ function BusinessOverview({ data = {} }) {
           totalRevenue: parseFloat(item.totalRevenue) || 0,
           totalBookings: parseInt(item.totalBookings) || 0,
           serviceTitle: item.serviceTitle || "Unknown Service",
-          staffName: item["staff.name"] || "All Staff",
-          staffId: item["staff.id"] || null,
+          staffName: item.staffName || "All Staff",
+          staffId: item.staffId || null,
         }))
       : [];
 
@@ -107,7 +107,7 @@ function BusinessOverview({ data = {} }) {
   const filteredData = useMemo(() => {
     const filterByStaff = (items) => {
       if (!selectedStaff) return items;
-      return items.filter((item) => item.staffId === selectedStaff);
+      return items.filter((item) => String(item.staffId) === String(selectedStaff));
     };
 
     return {

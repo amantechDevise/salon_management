@@ -15,6 +15,8 @@ function AddPackage() {
   const [services, setServices] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
+    start_date: "",
+    end_date: "",
     price: "",
     description: "",
     service_id: [], // selected services
@@ -100,6 +102,8 @@ function AddPackage() {
           price: formData.price,
           description: formData.description,
           service_id: formData.service_id,
+          end_date: formData.end_date,
+          start_date: formData.start_date,
         },
         {
           headers: {
@@ -123,8 +127,8 @@ function AddPackage() {
         <form onSubmit={handleSubmit}>
           <div className="-mx-3 flex flex-wrap">
             {/* Title */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium text-[#07074D]">
+            <div className="w-full px-3 sm:w-1/2 mt-2">
+              <label className="mb-2 block text-base font-medium text-[#07074D]">
                 Title
               </label>
               <input
@@ -137,8 +141,8 @@ function AddPackage() {
             </div>
 
             {/* Price */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium text-[#07074D]">
+            <div className="w-full px-3 sm:w-1/2 mt-2">
+              <label className="mb-2 block text-base font-medium text-[#07074D]">
                 Price
               </label>
               <input
@@ -149,10 +153,34 @@ function AddPackage() {
                 className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
               />
             </div>
+             <div className="w-full px-3 sm:w-1/2 mt-2">
+              <label className="mb-2 block text-base font-medium text-[#07074D]">
+                Start Date
+              </label>
+              <input
+                type="date"
+                name="start_date"
+                value={formData.start_date}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
+              />
+            </div>
+            <div className="w-full px-3 sm:w-1/2 mt-2">
+              <label className="mb-2 block text-base font-medium text-[#07074D]">
+                End Date
+              </label>
+              <input
+                type="date"
+                name="end_date"
+                value={formData.end_date}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
+              />
+            </div>
 
             {/* Description */}
-            <div className="w-full px-3">
-              <label className="mb-3 block text-base font-medium text-[#07074D]">
+            <div className="w-full px-3 mt-2">
+              <label className="mb-2 block text-base font-medium text-[#07074D]">
                 Description
               </label>
               <textarea
@@ -165,7 +193,7 @@ function AddPackage() {
             </div>
 
             {/* Services Multi-select */}
-            <div className="w-full px-3 relative" ref={dropdownRef}>
+            <div className="w-full mt-2 px-3 relative" ref={dropdownRef}>
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Services
               </label>

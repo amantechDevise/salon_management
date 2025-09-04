@@ -14,7 +14,7 @@ function AddstaffCustomer() {
     phone: "",
     dob: "",
     address: "",
-    service_id: [], // store as array
+    // service_id: [], // store as array
   });
 
   const [image, setImage] = useState(null);
@@ -51,33 +51,33 @@ function AddstaffCustomer() {
   };
 
   // Handle checkbox toggle for services
-  const toggleService = (id) => {
-    setFormData((prev) => {
-      const selected = prev.service_id;
-      if (selected.includes(id.toString())) {
-        // Remove
-        return {
-          ...prev,
-          service_id: selected.filter((sid) => sid !== id.toString()),
-        };
-      } else {
-        // Add
-        return {
-          ...prev,
-          service_id: [...selected, id.toString()],
-        };
-      }
-    });
-  };
+  // const toggleService = (id) => {
+  //   setFormData((prev) => {
+  //     const selected = prev.service_id;
+  //     if (selected.includes(id.toString())) {
+  //       // Remove
+  //       return {
+  //         ...prev,
+  //         service_id: selected.filter((sid) => sid !== id.toString()),
+  //       };
+  //     } else {
+  //       // Add
+  //       return {
+  //         ...prev,
+  //         service_id: [...selected, id.toString()],
+  //       };
+  //     }
+  //   });
+  // };
 
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.service_id.length === 0) {
-      toast.error("Please select at least one service");
-      return;
-    }
+    // if (formData.service_id.length === 0) {
+    //   toast.error("Please select at least one service");
+    //   return;
+    // }
 
     const data = new FormData();
     Object.keys(formData).forEach((key) => {
@@ -110,7 +110,7 @@ function AddstaffCustomer() {
         phone: "",
         dob: "",
         address: "",
-        service_id: [],
+        // service_id: [],
       });
       setImage(null);
     } catch (error) {
@@ -139,10 +139,10 @@ function AddstaffCustomer() {
   }, []);
 
   // Helper to show selected service names in dropdown label
-  const selectedServicesNames = services
-    .filter((s) => formData.service_id.includes(s.id.toString()))
-    .map((s) => s.title)
-    .join(", ");
+  // const selectedServicesNames = services
+  //   .filter((s) => formData.service_id.includes(s.id.toString()))
+  //   .map((s) => s.title)
+  //   .join(", ");
 
   return (
     <div className="flex items-center justify-center p-12">
@@ -219,7 +219,7 @@ function AddstaffCustomer() {
             </div>
 
             {/* Services */}
-            <div className="w-full px-3 sm:w-1/2 relative" ref={dropdownRef}>
+            {/* <div className="w-full px-3 sm:w-1/2 relative" ref={dropdownRef}>
               <div className="mb-5">
                 <label className="mb-3 block text-base font-medium text-[#07074D]">
                   Services
@@ -255,7 +255,7 @@ function AddstaffCustomer() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Address */}
             <div className="w-full px-3">

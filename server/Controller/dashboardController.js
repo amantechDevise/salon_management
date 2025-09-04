@@ -45,129 +45,137 @@ module.exports = {
         ],
         raw: true,
       });
+// 2. Daily Revenue Performance with Staff (FIXED)
+const dailyRevenue = await Booking.findAll({
+  attributes: [
+    [fn("DATE", col("date")), "day"],
+    [fn("SUM", col("bookingServices->service.price")), "revenue"],
+    [col("staff.id"), "staffId"], // Add staff ID
+    [col("staff.name"), "staffName"], // Add staff name
+  ],
+  include: [
+    {
+      model: BookingService,
+      as: "bookingServices",
+      attributes: [],
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      model: User,
+      as: "staff",
+      attributes: [], // Keep attributes empty here since we're selecting them above
+    },
+  ],
+  group: [fn("DATE", col("date")), "staff.id", "staff.name"], // Add staff.name to group
+  order: [[fn("DATE", col("date")), "DESC"]],
+  raw: true,
+});
 
-      // 2. Daily Revenue Performance with Staff
-      const dailyRevenue = await Booking.findAll({
-        attributes: [
-          [fn("DATE", col("date")), "day"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-        ],
-        include: [
-          {
-            model: BookingService,
-            as: "bookingServices",
-            attributes: [],
-            include: [
-              {
-                model: Service,
-                as: "service",
-                attributes: [],
-              },
-            ],
-          },
-          {
-            model: User,
-            as: "staff",
-            attributes: ["id", "name"],
-          },
-        ],
-        group: [fn("DATE", col("date")), "staff.id"],
-        order: [[fn("DATE", col("date")), "DESC"]],
-        raw: true,
-      });
+// 3. Weekly Revenue Performance with Staff (FIXED)
+const weeklyRevenue = await Booking.findAll({
+  attributes: [
+    [fn("YEARWEEK", col("date")), "week"],
+    [fn("SUM", col("bookingServices->service.price")), "revenue"],
+    [col("staff.id"), "staffId"], // Add staff ID
+    [col("staff.name"), "staffName"], // Add staff name
+  ],
+  include: [
+    {
+      model: BookingService,
+      as: "bookingServices",
+      attributes: [],
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      model: User,
+      as: "staff",
+      attributes: [], // Keep attributes empty here
+    },
+  ],
+  group: [fn("YEARWEEK", col("date")), "staff.id", "staff.name"], // Add staff.name to group
+  raw: true,
+});
 
-      // 3. Weekly Revenue Performance with Staff
-      const weeklyRevenue = await Booking.findAll({
-        attributes: [
-          [fn("YEARWEEK", col("date")), "week"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-        ],
-        include: [
-          {
-            model: BookingService,
-            as: "bookingServices",
-            attributes: [],
-            include: [
-              {
-                model: Service,
-                as: "service",
-                attributes: [],
-              },
-            ],
-          },
-          {
-            model: User,
-            as: "staff",
-            attributes: ["id", "name"],
-          },
-        ],
-        group: [fn("YEARWEEK", col("date")), "staff.id"],
-        raw: true,
-      });
+// 4. Monthly Revenue Performance with Staff (FIXED)
+const monthlyRevenue = await Booking.findAll({
+  attributes: [
+    [fn("DATE_FORMAT", col("date"), "%Y-%m"), "month"],
+    [fn("SUM", col("bookingServices->service.price")), "revenue"],
+    [col("staff.id"), "staffId"], // Add staff ID
+    [col("staff.name"), "staffName"], // Add staff name
+  ],
+  include: [
+    {
+      model: BookingService,
+      as: "bookingServices",
+      attributes: [],
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      model: User,
+      as: "staff",
+      attributes: [], // Keep attributes empty here
+    },
+  ],
+  group: [fn("DATE_FORMAT", col("date"), "%Y-%m"), "staff.id", "staff.name"], // Add staff.name to group
+  raw: true,
+});
 
-      // 4. Monthly Revenue Performance with Staff
-      const monthlyRevenue = await Booking.findAll({
-        attributes: [
-          [fn("DATE_FORMAT", col("date"), "%Y-%m"), "month"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-        ],
-        include: [
-          {
-            model: BookingService,
-            as: "bookingServices",
-            attributes: [],
-            include: [
-              {
-                model: Service,
-                as: "service",
-                attributes: [],
-              },
-            ],
-          },
-          {
-            model: User,
-            as: "staff",
-            attributes: ["id", "name"],
-          },
-        ],
-        group: [fn("DATE_FORMAT", col("date"), "%Y-%m"), "staff.id"],
-        raw: true,
-      });
-      // 5. Breakdown by Services with Staff
-      const revenueByService = await Booking.findAll({
-        attributes: [
-          [col("bookingServices.service.id"), "serviceId"],
-          [col("bookingServices.service.title"), "serviceTitle"],
-          [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
-          [fn("COUNT", col("bookingServices.id")), "totalBookings"],
-        ],
-        include: [
-          {
-            model: BookingService,
-            as: "bookingServices",
-            attributes: [],
-            include: [
-              {
-                model: Service,
-                as: "service",
-                attributes: [],
-              },
-            ],
-          },
-          //   {
-          //     model: User,
-          //     as: "staff",
-          //     attributes: ["id", "name"],
-          //   },
-        ],
-        group: [
-          "bookingServices.service.id",
-          "bookingServices.service.title",
-          //   "staff.id",
-          //   "staff.name",
-        ],
-        raw: true,
-      });
+// 5. Breakdown by Services with Staff (FIXED)
+const revenueByService = await Booking.findAll({
+  attributes: [
+    [col("bookingServices.service.id"), "serviceId"],
+    [col("bookingServices.service.title"), "serviceTitle"],
+    [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
+    [fn("COUNT", col("bookingServices.id")), "totalBookings"],
+    [col("staff.id"), "staffId"], 
+    [col("staff.name"), "staffName"], 
+  ],
+  include: [
+    {
+      model: BookingService,
+      as: "bookingServices",
+      attributes: [],
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      model: User,
+      as: "staff",
+      attributes: [],
+    },
+  ],
+  group: [
+    "bookingServices.service.id",
+    "bookingServices.service.title",
+    "staff.id",
+    "staff.name",
+  ],
+  raw: true,
+});
 
       // ====== Existing Stats ======
       const dailyStats = await Booking.findAll({

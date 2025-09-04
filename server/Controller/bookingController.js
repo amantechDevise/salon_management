@@ -22,10 +22,16 @@ module.exports = {
             as: "staff",
             attributes: ["id", "name", "email"],
           },
-          {
-            model: Service,
-            as: "service",
-            attributes: ["id", "title", "price"],
+            {
+            model: BookingService,
+            as: "bookingServices",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price"],
+              },
+            ]
           },
         ],
       });

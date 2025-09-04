@@ -148,9 +148,9 @@ module.exports = {
   // ---------------------------- ServicePackages
   addPackage: async (req, res) => {
     try {
-      const { title, description, price, service_id } = req.body;
+      const { title, description, price, service_id,end_date,start_date } = req.body;
 
-      const pkg = await ServicePackages.create({ title, description, price });
+      const pkg = await ServicePackages.create({ title, description, price,start_date,end_date });
 
       if (service_id && service_id.length > 0) {
         const mapData = service_id.map((sid) => ({

@@ -46,7 +46,8 @@ const ListStaffPackage = () => {
             <th className="px-6 py-3">Title</th>
             <th className="px-6 py-3">Price</th>
             <th className="px-6 py-3">Services</th>
-            {/* <th className="px-6 py-3">Created At</th> */}
+            <th className="px-6 py-3">Start Date</th>
+            <th className="px-6 py-3">End Date</th>
           </tr>
         </thead>
         <tbody>
@@ -72,9 +73,12 @@ const ListStaffPackage = () => {
                     ?.map((ps) => ps.service?.title)
                     .join(", ")}
                 </td>
-                {/* <td className="px-6 py-4">
-                  {new Date(pkg.createdAt).toLocaleDateString()}
-                </td> */}
+                <td className="px-6 py-4">
+                  {new Date(pkg.start_date).toLocaleDateString()}
+                </td>
+                  <td className="px-6 py-4">
+                  {new Date(pkg.end_date).toLocaleDateString()}
+                </td>
               </tr>
             ))
           )}
