@@ -67,7 +67,7 @@ function BusinessOverview({ data = {} }) {
           totalRevenue: parseFloat(item.totalRevenue) || 0,
           totalBookings: parseInt(item.totalBookings) || 0,
           serviceTitle: item.serviceTitle || "Unknown Service",
-          staffName: item.staffName || "All Staff",
+          staffName: item.staffNames || "All Staff",
           staffId: item.staffId || null,
         }))
       : [];
@@ -78,7 +78,10 @@ function BusinessOverview({ data = {} }) {
   // Get unique staff list from all data
   const staffList = useMemo(() => {
     const allStaff = [
-      ...processedData.daily.map((d) => ({ id: d.staffId, name: d.staffName })),
+      ...processedData.daily.map((d) => ({
+        id: d.staffId,
+        name: d.staffName,
+      })),
       ...processedData.weekly.map((d) => ({
         id: d.staffId,
         name: d.staffName,
@@ -107,7 +110,9 @@ function BusinessOverview({ data = {} }) {
   const filteredData = useMemo(() => {
     const filterByStaff = (items) => {
       if (!selectedStaff) return items;
-      return items.filter((item) => String(item.staffId) === String(selectedStaff));
+      return items.filter(
+        (item) => String(item.staffId) === String(selectedStaff)
+      );
     };
 
     return {

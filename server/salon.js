@@ -5,8 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("dotenv").config();
 const cors = require("cors");
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/admin");
+var indexRouter = require("./routes/admin");
 const fileUpload = require("express-fileupload");
 const staffRouter = require("./routes/staffAdmin");
 var app = express();
@@ -43,7 +42,6 @@ const frontendBuildPath = path.join(__dirname, "../frontend/dist");
 // Serve React build static files
 app.use(express.static(frontendBuildPath));
 app.use("/admin", indexRouter);
-app.use("/admin", usersRouter);
 app.use("/staffAdmin", staffRouter);
 
 app.get("*", (req, res) => {

@@ -151,7 +151,7 @@ module.exports = {
           [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
           [fn("COUNT", col("bookingServices.id")), "totalBookings"],
           [col("staff.id"), "staffId"],
-          [fn("GROUP_CONCAT", col("staff.name")), "staffNames"], // Use GROUP_CONCAT only
+          [fn("GROUP_CONCAT", fn("DISTINCT", col("staff.name"))), "staffNames"],
         ],
         include: [
           {
