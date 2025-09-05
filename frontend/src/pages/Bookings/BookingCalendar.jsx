@@ -10,6 +10,12 @@ const BookingCalendar = () => {
   const [bookings, setBookings] = useState([]);
   const [view, setView] = useState(Views.MONTH);
   const [date, setDate] = useState(new Date());
+  const [filteredBookings, setFilteredBookings] = useState([]);
+  const [bookingStats, setBookingStats] = useState({
+    today: 0,
+    upcoming: 0,
+    past: 0,
+  });
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchBookings = async (viewType = view, currentDate = date) => {
@@ -45,6 +51,20 @@ const BookingCalendar = () => {
           const endDateTime = new Date(
             startDateTime.getTime() + 60 * 60 * 1000
           );
+
+          // Determine booking status
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const bookingDay = new Date(startDateTime);
+          bookingDay.setHours(0, 0, 0, 0);
+
+          let status = "upcoming";
+          if (bookingDay.getTime() === today.getTime()) {
+            status = "today";
+          } else if (bookingDay < today) {
+            status = "past";
+          }
+
           return {
             id: booking.id,
             title: `${moment(bookingTime, "HH:mm:ss").format("hh:mm A")} - ${
@@ -53,6 +73,7 @@ const BookingCalendar = () => {
             start: startDateTime,
             end: endDateTime,
             resource: booking,
+            status: status,
           };
         });
 
@@ -67,6 +88,38 @@ const BookingCalendar = () => {
     fetchBookings(view, date);
   }, [view, date, API_BASE_URL]);
 
+  // Categorize bookings and update stats
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const categorizedBookings = {
+      today: [],
+      upcoming: [],
+      past: [],
+    };
+
+    bookings.forEach((booking) => {
+      const bookingDay = new Date(booking.start);
+      bookingDay.setHours(0, 0, 0, 0);
+
+      if (bookingDay.getTime() === today.getTime()) {
+        categorizedBookings.today.push(booking);
+      } else if (bookingDay > today) {
+        categorizedBookings.upcoming.push(booking);
+      } else {
+        categorizedBookings.past.push(booking);
+      }
+    });
+
+    setFilteredBookings(categorizedBookings);
+    setBookingStats({
+      today: categorizedBookings.today.length,
+      upcoming: categorizedBookings.upcoming.length,
+      past: categorizedBookings.past.length,
+    });
+  }, [bookings]);
+
   // Compute daily booking counts for month view
   const dayCounts = useMemo(() => {
     const map = new Map();
@@ -78,6 +131,7 @@ const BookingCalendar = () => {
   }, [bookings]);
 
   // Custom Date Header for Month view
+  // Custom Date Header for Month view
   const DateHeader = ({ label, date: cellDate }) => {
     if (view !== Views.MONTH) return <span>{label}</span>;
     const key = moment(cellDate).format("YYYY-MM-DD");
@@ -86,12 +140,12 @@ const BookingCalendar = () => {
     const handleClick = () => {
       if (count > 0) {
         setView(Views.DAY); // Switch to Day view
-        setDate(cellDate);  // Navigate to the clicked date
+        setDate(cellDate); // Navigate to the clicked date
       }
     };
-    
+
     return (
-      <div className="flex flex-col items-center justify-between h-full cursor-pointer">
+      <div className="flex flex-col items-center h-full cursor-pointer">
         {/* Date at the top */}
         <span className="self-start">{cellDate.getDate()}</span>
 
@@ -100,7 +154,7 @@ const BookingCalendar = () => {
           <button
             onClick={handleClick}
             type="button"
-            className="px-3 py-1 flex items-center justify-center rounded-full text-white text-sm font-semibold bg-blue-600 hover:bg-blue-700 active:bg-blue-600 cursor-pointer"
+            className="mt-auto w-full 2xl:px-3 2xl:py-1 flex items-center justify-center rounded-full text-white 2xl:text-sm text-[10px] font-semibold bg-blue-600 hover:bg-blue-700 active:bg-blue-600 cursor-pointer"
           >
             Total Bookings: {count}
           </button>
@@ -111,33 +165,81 @@ const BookingCalendar = () => {
 
   // Hide event titles in Month view
   const EventWrapper = ({ event, children }) => {
-    if (view === Views.MONTH) return null; 
+    if (view === Views.MONTH) return null;
     return children;
   };
 
   return (
-    <div style={{ height: "90vh" }}>
-      <Calendar
-        localizer={localizer}
-        events={bookings}
-        startAccessor="start"
-        endAccessor="end"
-        views={[Views.DAY, Views.WEEK, Views.MONTH]}
-        view={view}
-        date={date}
-        popup={false}
-        components={{
-          dateHeader: DateHeader,
-          eventWrapper: EventWrapper,
-          month: {
-            event: () => null,       // Hide events in month cells
-            dateHeader: DateHeader,  // Use your custom header
-          },
-        }}
-        onView={setView}
-        onNavigate={setDate}
-        style={{ height: "100%" }}
-      />
+    <div className="h-screen flex flex-col">
+      <div className="flex items-center justify-center mb-4">
+        {/* Heading */}
+        <p className="flex-grow 2xl:text-4xl md:text-2xl text-md font-extrabold text-start">
+          Booking Calendar
+        </p>
+
+        {/* Booking Stats */}
+        <div className="flex gap-4">
+          <div className="bg-blue-100 md:p-3 rounded-lg text-center">
+            <div className="md:text-2xl text-sm font-bold text-blue-800">
+              {bookingStats.today}
+            </div>
+            <div className="2xl:text-sm text-[10px] text-blue-600">
+              Today Bookings
+            </div>
+          </div>
+          <div className="bg-green-100 md:p-3 rounded-lg text-center">
+            <div className="md:text-2xl text-sm font-bold text-green-800">
+              {bookingStats.upcoming}
+            </div>
+            <div className="2xl:text-sm text-[10px] text-green-600">
+              Upcoming Bookings
+            </div>
+          </div>
+          <div className="bg-gray-100 md:p-3 rounded-lg text-center">
+            <div className="md:text-2xl text-sm  font-bold text-gray-800">
+              {bookingStats.past}
+            </div>
+            <div className="2xl:text-sm text-[10px] text-gray-600">
+              Total Bookings
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-grow">
+        <Calendar
+          localizer={localizer}
+          events={bookings}
+          startAccessor="start"
+          endAccessor="end"
+          views={[Views.DAY, Views.WEEK, Views.MONTH]}
+          view={view}
+          date={date}
+          popup={false}
+          components={{
+            dateHeader: DateHeader,
+            eventWrapper: EventWrapper,
+            month: {
+              event: () => null, // Hide events in month cells
+              dateHeader: DateHeader, // Use your custom header
+            },
+          }}
+          onView={setView}
+          onNavigate={setDate}
+          style={{ height: "100%" }}
+          eventPropGetter={(event) => {
+            let backgroundColor = "#3174ad"; // Default blue for upcoming
+
+            if (event.status === "today") {
+              backgroundColor = "#28a745"; // Green for today
+            } else if (event.status === "past") {
+              backgroundColor = "#6c757d"; // Gray for past
+            }
+
+            return { style: { backgroundColor } };
+          }}
+        />
+      </div>
     </div>
   );
 };

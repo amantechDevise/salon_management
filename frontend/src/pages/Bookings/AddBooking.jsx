@@ -215,7 +215,7 @@ function AddBooking() {
                       onChange={() => toggleService(s.id)}
                       className="mr-3"
                     />
-                    {s.title}
+                    {s.title} &nbsp; - &nbsp; {s.price}
                   </label>
                 ))}
               </div>

@@ -41,7 +41,7 @@ const AdminNavbar = ({ userData, onToggleSidebar }) => {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+    <header className="relative flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
       {/* Left Side */}
       <div className="flex items-center">
         <button
@@ -51,6 +51,16 @@ const AdminNavbar = ({ userData, onToggleSidebar }) => {
           <FaBars className="text-2xl" />
         </button>
         <h1 className="text-xl font-semibold text-gray-800 ml-4">Dashboard</h1>
+      </div>
+
+      {/* Center */}
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+        <Link
+          to={"/admin/bookings/calendar"}
+          className="text-lg font-semibold text-white bg-blue-600 rounded-full px-4 py-2"
+        >
+          Booking Calendar
+        </Link>
       </div>
 
       {/* Right Side */}

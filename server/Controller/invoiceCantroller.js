@@ -1,140 +1,122 @@
-const { Booking, Discount, Invoice, Service, Customer, BookingService } = require("../models");
+const { Booking, Discount, Invoice, Service, Customer } = require("../models");
 
 module.exports = {
   // Generate invoice for a booking/visit
-generateInvoice: async (req, res) => {
-  try {
-    const { booking_id } = req.params;
+  generateInvoice: async (req, res) => {
+    try {
+      const { booking_id } = req.params;
 
-    // Get booking details with associated data
-    const booking = await Booking.findOne({
-      where: { id: booking_id },
-      include: [
-        {
-          model: Customer,
-          as: "customer",
-          attributes: ["id", "name", "email", "phone", "address"],
-        },
-        {
-          model: BookingService,
-          as: "bookingServices",
-          include: [
-            {
-              model: Service,
-              as: "service",
-              attributes: ["id", "title", "price", "duration"],
-            },
-          ],
-        },
-      ],
-    });
-
-    if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: "Booking not found",
-      });
-    }
-
-    // ✅ Calculate total amount from all booking services
-    let totalAmount = 0;
-if (booking.bookingServices && booking.bookingServices.length > 0) {
-  totalAmount = booking.bookingServices.reduce((sum, bs) => {
-    return sum + (bs.service ? parseFloat(bs.service.price) : 0);
-  }, 0);
-}
-
-    // Apply discount if available
-    let discount = null;
-    let finalAmount = totalAmount;
-
-    if (booking.discount_id && booking.discount_id !== 0) {
-      discount = await Discount.findOne({
-        where: { id: booking.discount_id },
+      // Get booking details with associated data
+      const booking = await Booking.findOne({
+        where: { id: booking_id },
+        include: [
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "name", "email", "phone", "address"],
+          },
+          {
+            model: Service,
+            as: "service",
+            attributes: ["id", "title", "price", "duration"],
+          },
+        ],
       });
 
-      if (discount) {
-        if (discount.type === 1) {
-          // Percentage discount
-          const discountValue = (totalAmount * discount.value) / 100;
-          finalAmount = totalAmount - discountValue;
-        } else if (discount.type === 2) {
-          // Fixed discount
-          finalAmount = totalAmount - discount.value;
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: "Booking not found",
+        });
+      }
+
+      // Calculate total amount
+      let totalAmount = booking.service.price;
+
+      // Check for discount if applicable
+      let discount = null;
+      let finalAmount = totalAmount;
+
+      if (booking.discount_id && booking.discount_id !== 0) {
+        discount = await Discount.findOne({
+          where: { id: booking.discount_id },
+        });
+
+        if (discount) {
+          if (discount.type === 1) {
+            // Percentage discount
+            const discountValue = (totalAmount * discount.value) / 100;
+            finalAmount = totalAmount - discountValue;
+          } else if (discount.type === 2) {
+            // Fixed discount
+            finalAmount = totalAmount - discount.value;
+          }
         }
       }
-    }
 
-    // Create or update invoice
-    const [invoice, created] = await Invoice.findOrCreate({
-      where: { booking_id: booking_id },
-      defaults: {
-        customer_id: booking.customer_id,
-        discount_id: booking.discount_id || 0,
-        total_amount: totalAmount,
-        final_amount: finalAmount,
-        status: 1, // Pending
-      },
-    });
+      // Create or update invoice
+      const [invoice, created] = await Invoice.findOrCreate({
+        where: { booking_id: booking_id },
+        defaults: {
+          customer_id: booking.customer_id,
+          discount_id: booking.discount_id || 0,
+          total_amount: totalAmount,
+          final_amount: finalAmount,
+          status: 1, // Pending
+        },
+      });
 
-    if (!created) {
-      // Update existing invoice if needed
-      await invoice.update({
-        total_amount: totalAmount,
-        final_amount: finalAmount,
-        discount_id: booking.discount_id || 0,
+      if (!created) {
+        // Update existing invoice if needed
+        await invoice.update({
+          total_amount: totalAmount,
+          final_amount: finalAmount,
+          discount_id: booking.discount_id || 0,
+        });
+      }
+
+      // Get the complete invoice with all relations
+      const completeInvoice = await Invoice.findOne({
+        where: { id: invoice.id },
+        include: [
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "name", "email", "phone", "address"],
+          },
+          {
+            model: Booking,
+            as: "booking",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price", "duration"],
+              },
+            ],
+          },
+          {
+            model: Discount,
+            as: "discount",
+            attributes: ["id", "code", "title", "type", "value"],
+          },
+        ],
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Invoice generated successfully",
+        data: completeInvoice,
+      });
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
       });
     }
-
-    // Get the complete invoice with relations
-    const completeInvoice = await Invoice.findOne({
-      where: { id: invoice.id },
-      include: [
-        {
-          model: Customer,
-          as: "customer",
-          attributes: ["id", "name", "email", "phone", "address"],
-        },
-        {
-          model: Booking,
-          as: "booking",
-          include: [
-            {
-              model: BookingService,
-              as: "bookingServices",
-              include: [
-                {
-                  model: Service,
-                  as: "service",
-                  attributes: ["id", "title", "price", "duration"],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          model: Discount,
-          as: "discount",
-          attributes: ["id", "code", "title", "type", "value"],
-        },
-      ],
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Invoice generated successfully",
-      data: completeInvoice,
-    });
-  } catch (error) {
-    console.error("Error generating invoice:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-},
-
+  },
 
   // Get all invoices
   getAllInvoices: async (req, res) => {
@@ -150,18 +132,12 @@ if (booking.bookingServices && booking.bookingServices.length > 0) {
             model: Booking,
             as: "booking",
             include: [
-            {
-              model: BookingService,
-              as: "bookingServices",
-              include: [
-                {
-                  model: Service,
-                  as: "service",
-                  attributes: ["id", "title", "price", "duration"],
-                },
-              ],
-            },
-          ],
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price"],
+              },
+            ],
           },
         ],
         order: [["createdAt", "DESC"]],

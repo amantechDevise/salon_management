@@ -38,6 +38,7 @@ import ListStaffPackage from "./pages/StaffDashboard/services/ListingPackage";
 import ListingDiscount from "./pages/Discounts/listing";
 import AddDiscount from "./pages/Discounts/add";
 import BookingCalendar from "./pages/Bookings/BookingCalendar";
+import Invoice from "./pages/Invoices/listInvoice";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
             <Route path="discounts" element={<ListingDiscount />} />
             <Route path="discounts/add" element={<AddDiscount />} />
             <Route path="attendance/:id" element={<AttendanceList />} />
+            <Route path="generate_Invoice/:booking_id" element={<Invoice />} />
           </Route>
 
           <Route path="/admin/staff-login" element={<StaffLogin />} />
