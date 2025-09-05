@@ -16,14 +16,11 @@ function StaffDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/staffAdmin/dashboard`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_BASE_URL}/staffApi/dashboard`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
+          },
+        });
         setDashboardData(response.data.data);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -36,7 +33,7 @@ function StaffDashboard() {
   const fetchAttendance = async () => {
     try {
       const token = localStorage.getItem("staffToken");
-      const res = await axios.get(`${API_BASE_URL}/staffAdmin/attendance`, {
+      const res = await axios.get(`${API_BASE_URL}/staffApi/attendance`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -76,7 +73,7 @@ function StaffDashboard() {
       }
 
       await axios.post(
-        `${API_BASE_URL}/staffAdmin/attendance/add`,
+        `${API_BASE_URL}/staffApi/attendance/add`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

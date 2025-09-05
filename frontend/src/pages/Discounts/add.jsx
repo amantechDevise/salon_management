@@ -58,7 +58,7 @@ function AddDiscount() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/admin/discounts/add`, formData, {
+      await axios.post(`${API_BASE_URL}/api/discounts/add`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },

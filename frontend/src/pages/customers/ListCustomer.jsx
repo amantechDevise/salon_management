@@ -7,14 +7,14 @@ import { FaSearch } from "react-icons/fa";
 
 const ListCustomer = () => {
   const [products, setProducts] = useState([]);
-  const [meta, setMeta] = useState({}); 
+  const [meta, setMeta] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(""); // controlled input
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchProducts = async (page = 1, search = "") => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/customer`, {
+      const response = await axios.get(`${API_BASE_URL}/api/customer`, {
         params: {
           page: page,
           limit: search ? 10000 : 10, // large limit when searching
@@ -93,7 +93,11 @@ const ListCustomer = () => {
                     No customers found for "{searchQuery}"
                   </span>
                 ) : (
-                  <img src="/oder.jpg" alt="Empty" className="inline-block w-70 h-70" />
+                  <img
+                    src="/oder.jpg"
+                    alt="Empty"
+                    className="inline-block w-70 h-70"
+                  />
                 )}
               </td>
             </tr>
@@ -103,7 +107,9 @@ const ListCustomer = () => {
                 key={product.id}
                 className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
               >
-                <td className="px-6 py-4">{(currentPage - 1) * 10 + index + 1}</td>
+                <td className="px-6 py-4">
+                  {(currentPage - 1) * 10 + index + 1}
+                </td>
                 {/* <td className="px-6 py-4">{product.service?.title || "N/A"}</td>
                 <td className="px-6 py-4">{product.staff?.name || "N/A"}</td> */}
                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
@@ -114,7 +120,9 @@ const ListCustomer = () => {
                 <td className="px-6 py-4">{product.visit_count}</td>
                 <td className="px-6 py-4">
                   <img
-                    src={product.image ? `${API_BASE_URL}${product.image}` : Avtar}
+                    src={
+                      product.image ? `${API_BASE_URL}${product.image}` : Avtar
+                    }
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded-full"
                   />

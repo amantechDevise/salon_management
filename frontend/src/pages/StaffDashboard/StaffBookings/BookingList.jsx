@@ -10,7 +10,7 @@ const BookingList = () => {
   // Fetch all bookings
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffAdmin/booking`, {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/booking`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -31,7 +31,7 @@ const BookingList = () => {
     if (!window.confirm("Are you sure you want to delete this booking?"))
       return;
     try {
-      await axios.delete(`${API_BASE_URL}/staffadmin/${id}`, {
+      await axios.delete(`${API_BASE_URL}/staffApi/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -49,7 +49,7 @@ const BookingList = () => {
     const newStatus = booking.status === 1 ? 0 : 1;
     try {
       await axios.patch(
-        `${API_BASE_URL}/staffadmin/${booking.id}/status`,
+        `${API_BASE_URL}/staffApi/${booking.id}/status`,
         { status: newStatus },
         {
           headers: {

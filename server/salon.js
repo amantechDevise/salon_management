@@ -41,8 +41,8 @@ const frontendBuildPath = path.join(__dirname, "../frontend/dist");
 
 // Serve React build static files
 app.use(express.static(frontendBuildPath));
-app.use("/admin", indexRouter);
-app.use("/staffAdmin", staffRouter);
+app.use("/api", indexRouter);
+app.use("/staffApi", staffRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(frontendBuildPath, "index.html"), function (err) {

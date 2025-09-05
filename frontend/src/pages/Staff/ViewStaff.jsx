@@ -18,7 +18,7 @@ function ViewStaff() {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/admin/staff/${id}`, {
+      const res = await axios.get(`${API_BASE_URL}/api/staff/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },

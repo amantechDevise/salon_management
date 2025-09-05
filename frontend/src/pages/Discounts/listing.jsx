@@ -11,7 +11,7 @@ const DiscountListing = () => {
   // Fetch discounts
   const fetchDiscounts = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/discounts`, {
+      const response = await axios.get(`${API_BASE_URL}/api/discounts`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -40,7 +40,7 @@ const DiscountListing = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/admin/discounts/delete/${id}`, {
+          await axios.delete(`${API_BASE_URL}/api/discounts/delete/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
             },

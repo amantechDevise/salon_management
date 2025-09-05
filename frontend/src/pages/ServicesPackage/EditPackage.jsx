@@ -22,7 +22,7 @@ function EditPackage() {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/admin/services/${id}`, {
+        const res = await axios.get(`${API_BASE_URL}/api/services/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -69,7 +69,7 @@ function EditPackage() {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/admin/services/${id}`, data, {
+      await axios.put(`${API_BASE_URL}/api/services/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,

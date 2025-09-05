@@ -93,7 +93,7 @@ function AddstaffCustomer() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/staffAdmin/customer/add`, data, {
+      await axios.post(`${API_BASE_URL}/staffApi/customer/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
@@ -122,7 +122,7 @@ function AddstaffCustomer() {
   // Fetch services list
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffAdmin/services`, {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },

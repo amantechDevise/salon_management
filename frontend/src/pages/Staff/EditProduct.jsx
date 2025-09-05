@@ -47,7 +47,7 @@ function EditProduct() {
 
     try {
       const res = await axios.put(
-        `${API_BASE_URL}/admin/products/update/${productId}`,
+        `${API_BASE_URL}/api/products/update/${productId}`,
         data,
         {
           headers: {
@@ -67,7 +67,7 @@ function EditProduct() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/category`, {
+      const response = await axios.get(`${API_BASE_URL}/api/category`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -82,7 +82,7 @@ function EditProduct() {
   const fetchProduct = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/admin/products/details/${productId}`,
+        `${API_BASE_URL}/api/products/details/${productId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -238,15 +238,13 @@ function EditProduct() {
           </div>
 
           <div className="flex justify-between items-center mt-6">
-          
-
             <Link
               to="/admin/products"
               className="text-[#6A64F1] font-semibold hover:underline"
             >
               Back
             </Link>
-              <button
+            <button
               type="submit"
               className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none"
             >

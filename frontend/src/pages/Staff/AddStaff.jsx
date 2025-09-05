@@ -52,7 +52,7 @@ function AddStaff() {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/admin/staff/add`, data, {
+      const res = await axios.post(`${API_BASE_URL}/api/staff/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -60,7 +60,7 @@ function AddStaff() {
       });
 
       toast.success("Staff added successfully!");
-      
+
       // ✅ Clear form before navigating
       setFormData({
         name: "",
@@ -95,7 +95,7 @@ function AddStaff() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    autoComplete="new-name" 
+                    autoComplete="new-name"
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                   />
                 </div>
@@ -110,7 +110,7 @@ function AddStaff() {
                   <input
                     type="password"
                     name="password"
-                      autoComplete="new-password" 
+                    autoComplete="new-password"
                     value={formData.password}
                     onChange={handleChange}
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -127,7 +127,7 @@ function AddStaff() {
                   <input
                     type="email"
                     name="email"
-                      autoComplete="new-email" 
+                    autoComplete="new-email"
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -143,7 +143,7 @@ function AddStaff() {
                   </label>
                   <input
                     type="number"
-                     autoComplete="off" 
+                    autoComplete="off"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}

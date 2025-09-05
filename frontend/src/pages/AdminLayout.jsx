@@ -22,7 +22,7 @@ const AdminLayouts = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/admin/dashboard`, {
+        const res = await axios.get(`${API_BASE_URL}/api/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

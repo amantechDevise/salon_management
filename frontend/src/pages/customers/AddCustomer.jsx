@@ -24,7 +24,7 @@ function AddCustomer() {
     email: "",
     phone: "",
     service_id: [], // array of string ids
-    staff_id: [],   // array of string ids (optional)
+    staff_id: [], // array of string ids (optional)
   });
 
   const [image, setImage] = useState(null);
@@ -32,10 +32,7 @@ function AddCustomer() {
   // Close dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
       if (
@@ -52,7 +49,7 @@ function AddCustomer() {
   // Fetch services from API
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/services`, {
+      const response = await axios.get(`${API_BASE_URL}/api/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -67,7 +64,7 @@ function AddCustomer() {
   // Fetch staff from API
   const fetchStaff = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/staff`, {
+      const response = await axios.get(`${API_BASE_URL}/api/staff`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -168,7 +165,7 @@ function AddCustomer() {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/admin/customer/add`, data, {
+      const res = await axios.post(`${API_BASE_URL}/api/customer/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -225,7 +222,9 @@ function AddCustomer() {
                       <input
                         type="checkbox"
                         value={service.id}
-                        checked={formData.service_id.includes(service.id.toString())}
+                        checked={formData.service_id.includes(
+                          service.id.toString()
+                        )}
                         onChange={() => toggleService(service.id)}
                         className="mr-3"
                       />
@@ -238,8 +237,11 @@ function AddCustomer() {
 
             {/* Staff Multi-select (optional, add UI if needed) */}
             {/* Uncomment this block if you want staff multi-select dropdown */}
-            
-            <div className="w-full px-3 sm:w-1/2 relative" ref={staffDropdownRef}>
+
+            <div
+              className="w-full px-3 sm:w-1/2 relative"
+              ref={staffDropdownRef}
+            >
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Staff
               </label>
@@ -262,7 +264,9 @@ function AddCustomer() {
                       <input
                         type="checkbox"
                         value={member.id}
-                        checked={formData.staff_id.includes(member.id.toString())}
+                        checked={formData.staff_id.includes(
+                          member.id.toString()
+                        )}
                         onChange={() => toggleStaff(member.id)}
                         className="mr-3"
                       />
@@ -272,7 +276,6 @@ function AddCustomer() {
                 </div>
               )}
             </div>
-           
 
             {/* Name */}
             <div className="w-full px-3 sm:w-1/2">

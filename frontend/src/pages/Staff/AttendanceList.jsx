@@ -19,7 +19,7 @@ const AttendanceList = () => {
   const fetchAttendance = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/admin/staff/${id}/attendance`,
+        `${API_BASE_URL}/api/staff/${id}/attendance`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -47,7 +47,7 @@ const AttendanceList = () => {
     }
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/admin/staff/${id}/range?startDate=${startDate}&endDate=${endDate}`,
+        `${API_BASE_URL}/api/staff/${id}/range?startDate=${startDate}&endDate=${endDate}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,

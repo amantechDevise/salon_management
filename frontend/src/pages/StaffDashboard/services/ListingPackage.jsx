@@ -11,7 +11,7 @@ const ListStaffPackage = () => {
   // Fetch packages
   const fetchPackages = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffAdmin/packages`, {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/packages`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -76,7 +76,7 @@ const ListStaffPackage = () => {
                 <td className="px-6 py-4">
                   {new Date(pkg.start_date).toLocaleDateString()}
                 </td>
-                  <td className="px-6 py-4">
+                <td className="px-6 py-4">
                   {new Date(pkg.end_date).toLocaleDateString()}
                 </td>
               </tr>

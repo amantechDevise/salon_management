@@ -17,7 +17,7 @@ const Feedlisting = () => {
     const fetchFeedbackData = async () => {
       try {
         const res = await axios.get(
-          `${API_BASE_URL}/staffAdmin/feedback/${staffName}/${token}`
+          `${API_BASE_URL}/staffApi/feedback/${staffName}/${token}`
         );
         setStaffInfo(res.data);
       } catch (error) {
@@ -31,7 +31,7 @@ const Feedlisting = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/staffAdmin/feedback/${staffName}/${token}`,
+        `${API_BASE_URL}/staffApi/feedback/${staffName}/${token}`,
         {
           rating,
           feedback,

@@ -11,7 +11,7 @@ const ListStaffCustomer = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staffAdmin/customer`, {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/customer`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -30,7 +30,7 @@ const ListStaffCustomer = () => {
     try {
       setLoadingLinkId(customerId);
       const res = await axios.post(
-        `${API_BASE_URL}/staffAdmin/generate`,
+        `${API_BASE_URL}/staffApi/generate`,
         { customer_id: customerId },
         {
           headers: {
@@ -62,7 +62,7 @@ const ListStaffCustomer = () => {
       return;
 
     try {
-      await axios.delete(`${API_BASE_URL}/admin/products/delete/${id}`, {
+      await axios.delete(`${API_BASE_URL}/staffApi/products/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
@@ -106,7 +106,11 @@ const ListStaffCustomer = () => {
           {products.length === 0 ? (
             <tr>
               <td colSpan="9" className="text-center py-4">
-                <img src="/oder.jpg" alt="" className="inline-block w-70 h-70" />
+                <img
+                  src="/oder.jpg"
+                  alt=""
+                  className="inline-block w-70 h-70"
+                />
               </td>
             </tr>
           ) : (
@@ -144,7 +148,9 @@ const ListStaffCustomer = () => {
                     disabled={loadingLinkId === product.id}
                     className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
                   >
-                    {loadingLinkId === product.id ? "Generating..." : "Generate Link"}
+                    {loadingLinkId === product.id
+                      ? "Generating..."
+                      : "Generate Link"}
                   </button>
                 </td>
                 {/* <td className="px-6 py-4">

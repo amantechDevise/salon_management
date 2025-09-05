@@ -43,7 +43,7 @@ function BookingAdd() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/staffAdmin/getAll`, {
+        const res = await axios.get(`${API_BASE_URL}/staffApi/getAll`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
           },
@@ -91,7 +91,7 @@ function BookingAdd() {
           : "",
       };
 
-      await axios.post(`${API_BASE_URL}/staffAdmin/booking/add`, payload, {
+      await axios.post(`${API_BASE_URL}/staffApi/booking/add`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },

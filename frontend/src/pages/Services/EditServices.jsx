@@ -22,7 +22,7 @@ function EditServices() {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/admin/services/${id}`, {
+        const res = await axios.get(`${API_BASE_URL}/api/services/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -69,7 +69,7 @@ function EditServices() {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/admin/services/${id}`, data, {
+      await axios.put(`${API_BASE_URL}/api/services/${id}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -119,9 +119,9 @@ function EditServices() {
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
             </div>
-              <div className="mb-5">
+            <div className="mb-5">
               <label className="mb-3 block text-base font-medium text-[#07074D]">
-              Duration
+                Duration
               </label>
               <input
                 type="text"

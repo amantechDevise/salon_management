@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import Salon_Bg from "/salonbg.jpg";
-import logo from "/logo.jpg";
 import "react-toastify/dist/ReactToastify.css";
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,7 +12,7 @@ function Login() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/login`, {
+      const response = await axios.post(`${API_BASE_URL}/api/login`, {
         email,
         password,
       });

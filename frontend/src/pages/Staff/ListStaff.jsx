@@ -20,7 +20,7 @@ const ListStaff = () => {
   // Fetch staff from API
   const fetchStaff = async (page = 1, search = "") => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/staff`, {
+      const response = await axios.get(`${API_BASE_URL}/api/staff`, {
         params: {
           page: search ? 1 : page, // if searching, always get first page
           limit: search ? 10000 : pagination.perPage, // large number to get all for search
@@ -61,7 +61,7 @@ const ListStaff = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/admin/staff/${id}`, {
+          await axios.delete(`${API_BASE_URL}/api/staff/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
             },
@@ -82,7 +82,7 @@ const ListStaff = () => {
     const newStatus = staffMember.status === 1 ? 0 : 1;
     try {
       await axios.patch(
-        `${API_BASE_URL}/admin/staff/${staffMember.id}/status`,
+        `${API_BASE_URL}/api/staff/${staffMember.id}/status`,
         { status: newStatus },
         {
           headers: {
@@ -144,79 +144,80 @@ const ListStaff = () => {
             <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
-     <tbody>
-  {staff.length === 0 ? (
-    <tr>
-      <td colSpan="8" className="text-center py-4">
-        {searchTerm ? (
-          <span className="text-gray-500 text-lg">No staff found for "{searchTerm}"</span>
-        ) : (
-          <img
-            src="/oder.jpg"
-            alt=""
-            className="inline-block w-70 h-70"
-          />
-        )}
-      </td>
-    </tr>
-  ) : (
-    staff.map((staffMember, index) => (
-      <tr
-        key={staffMember.id}
-        className="odd:bg-white even:bg-gray-50 border-b"
-      >
-        <td className="px-6 py-4">{index + 1}</td>
-        <td className="px-6 py-4">{staffMember.name}</td>
-        <td className="px-6 py-4">{staffMember.email}</td>
-        <td className="px-6 py-4">{staffMember.phone}</td>
-        <td className="px-6 py-4">
-          <button
-            onClick={() => handleToggleStatus(staffMember)}
-            className={`px-3 py-1 rounded ${
-              staffMember.status === 1 ? "bg-green-500" : "bg-red-500"
-            } text-white`}
-          >
-            {staffMember.status === 1 ? "Active" : "Inactive"}
-          </button>
-        </td>
-        <td className="px-6 py-4">
-          <Link
-            to={`/admin/attendance/${staffMember.id}`}
-            className="inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-600 hover:text-white transition duration-200"
-          >
-            List Attendance
-          </Link>
-        </td>
-        <td className="px-6 py-4">
-          {staffMember.image ? (
-            <img
-              src={`${API_BASE_URL}${staffMember.image}`}
-              alt={staffMember.name}
-              className="w-16 h-16 object-cover rounded"
-            />
+        <tbody>
+          {staff.length === 0 ? (
+            <tr>
+              <td colSpan="8" className="text-center py-4">
+                {searchTerm ? (
+                  <span className="text-gray-500 text-lg">
+                    No staff found for "{searchTerm}"
+                  </span>
+                ) : (
+                  <img
+                    src="/oder.jpg"
+                    alt=""
+                    className="inline-block w-70 h-70"
+                  />
+                )}
+              </td>
+            </tr>
           ) : (
-            "No Image"
+            staff.map((staffMember, index) => (
+              <tr
+                key={staffMember.id}
+                className="odd:bg-white even:bg-gray-50 border-b"
+              >
+                <td className="px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4">{staffMember.name}</td>
+                <td className="px-6 py-4">{staffMember.email}</td>
+                <td className="px-6 py-4">{staffMember.phone}</td>
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleToggleStatus(staffMember)}
+                    className={`px-3 py-1 rounded ${
+                      staffMember.status === 1 ? "bg-green-500" : "bg-red-500"
+                    } text-white`}
+                  >
+                    {staffMember.status === 1 ? "Active" : "Inactive"}
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  <Link
+                    to={`/admin/attendance/${staffMember.id}`}
+                    className="inline-block px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-600 hover:text-white transition duration-200"
+                  >
+                    List Attendance
+                  </Link>
+                </td>
+                <td className="px-6 py-4">
+                  {staffMember.image ? (
+                    <img
+                      src={`${API_BASE_URL}${staffMember.image}`}
+                      alt={staffMember.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  ) : (
+                    "No Image"
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  <Link
+                    to={`/admin/staff/${staffMember.id}`}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                  >
+                    View
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(staffMember.id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
-        </td>
-        <td className="px-6 py-4">
-          <Link
-            to={`/admin/staff/${staffMember.id}`}
-            className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
-          >
-            View
-          </Link>
-          <button
-            onClick={() => handleDelete(staffMember.id)}
-            className="text-red-500 hover:underline"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
-
+        </tbody>
       </table>
 
       {/* Pagination Controls (hide if searching) */}

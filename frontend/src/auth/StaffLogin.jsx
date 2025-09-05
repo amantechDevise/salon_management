@@ -15,7 +15,7 @@ function StaffLogin() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/staffLogin`, {
+      const response = await axios.post(`${API_BASE_URL}/staffApi/staffLogin`, {
         email,
         password,
       });

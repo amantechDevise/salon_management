@@ -50,7 +50,7 @@ function AddBooking() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/admin/getAll`, {
+        const res = await axios.get(`${API_BASE_URL}/api/getAll`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -112,7 +112,7 @@ function AddBooking() {
         service_id: formData.service_id.join(","),
       };
 
-      await axios.post(`${API_BASE_URL}/admin/bookings/add`, payload, {
+      await axios.post(`${API_BASE_URL}/api/bookings/add`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },

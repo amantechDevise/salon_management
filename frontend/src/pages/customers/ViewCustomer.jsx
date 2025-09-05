@@ -17,14 +17,11 @@ function ViewCustomer() {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/admin/customerDetails/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-        }
-      );
+      const res = await axios.get(`${API_BASE_URL}/api/customerDetails/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
 
       const data = res.data.data;
 
@@ -135,9 +132,7 @@ function ViewCustomer() {
                       key={`${visit.id}-${csIndex}`}
                       className="bg-white border-b hover:bg-gray-100"
                     >
-                      <td className="px-6 py-4">
-                        {startIndex + csIndex + 1}
-                      </td>
+                      <td className="px-6 py-4">{startIndex + csIndex + 1}</td>
                       <td className="px-6 py-4">{cs.staff?.name || "N/A"}</td>
                       <td className="px-6 py-4">
                         {cs.service?.title || "N/A"}

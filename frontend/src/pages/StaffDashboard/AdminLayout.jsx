@@ -21,7 +21,7 @@ const StaffLayouts = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/staffAdmin/dashboard`, {
+        const res = await axios.get(`${API_BASE_URL}/staffApi/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

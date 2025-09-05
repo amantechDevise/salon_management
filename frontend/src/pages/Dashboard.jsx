@@ -16,19 +16,19 @@ function Dashboard() {
     weeklyStats: [],
     monthlyStats: [],
     recentBookings: [],
-      businessOverview: {
-    totalRevenue: 0,
-    dailyRevenue: [],
-    weeklyRevenue: [],
-    monthlyRevenue: [],
-    revenueByService: [], 
-  }
+    businessOverview: {
+      totalRevenue: 0,
+      dailyRevenue: [],
+      weeklyRevenue: [],
+      monthlyRevenue: [],
+      revenueByService: [],
+    },
   });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/dashboard`, {
+        const response = await axios.get(`${API_BASE_URL}/api/dashboard`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -45,69 +45,80 @@ function Dashboard() {
   return (
     <>
       {/* Stats Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-  {/* Total Staff */}
-  <div className="bg-white rounded-lg shadow p-6">
-    <Link to={"/admin/staff"}>
-      <div className="flex items-center">
-        <div className="p-3 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-          <FaUserTie className="text-2xl" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        {/* Total Staff */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <Link to={"/admin/staff"}>
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                <FaUserTie className="text-2xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Total Staff</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {dashboardData.totleUser}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-500">Total Staff</p>
-          <p className="text-2xl font-semibold text-gray-800">{dashboardData.totleUser}</p>
-        </div>
-      </div>
-    </Link>
-  </div>
 
-  {/* Total Customer */}
-  <div className="bg-white rounded-lg shadow p-6">
-    <Link to={"/admin/customer"}>
-      <div className="flex items-center">
-        <div className="p-3 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-          <FaUsers className="text-2xl" />
+        {/* Total Customer */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <Link to={"/admin/customer"}>
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                <FaUsers className="text-2xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">
+                  Total Customer
+                </p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {dashboardData.totleCustomer}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-500">Total Customer</p>
-          <p className="text-2xl font-semibold text-gray-800">{dashboardData.totleCustomer}</p>
-        </div>
-      </div>
-    </Link>
-  </div>
 
-  {/* Total Services */}
-  <div className="bg-white rounded-lg shadow p-6">
-    <Link to={"/admin/services"}>
-      <div className="flex items-center">
-        <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
-          <FaCogs className="text-2xl" />
+        {/* Total Services */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <Link to={"/admin/services"}>
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                <FaCogs className="text-2xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">
+                  Total Services
+                </p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {dashboardData.totleServise}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-500">Total Services</p>
-          <p className="text-2xl font-semibold text-gray-800">{dashboardData.totleServise}</p>
-        </div>
-      </div>
-    </Link>
-  </div>
 
-  {/* Total Revenue */}
-  <div className="bg-white rounded-lg shadow p-6">
-    <div className="flex items-center">
-      <div className="p-3 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-        <FaDollarSign className="text-2xl" />
+        {/* Total Revenue */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-3 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+              <FaDollarSign className="text-2xl" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Revenue</p>
+              <p className="text-2xl font-semibold text-gray-800">
+                {dashboardData.businessOverview.totalRevenue}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="ml-4">
-        <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-        <p className="text-2xl font-semibold text-gray-800">{dashboardData.businessOverview.totalRevenue}</p>
-      </div>
-    </div>
-  </div>
-</div>
 
       <div className="bg-white rounded-lg p-6 mb-6">
-      <BusinessOverview data={dashboardData.businessOverview} />
-
+        <BusinessOverview data={dashboardData.businessOverview} />
       </div>
       {/* Recent Bookings and Room Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

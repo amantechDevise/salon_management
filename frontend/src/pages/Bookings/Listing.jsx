@@ -10,7 +10,7 @@ const ListBooking = () => {
   // Fetch all bookings
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/bookings`, {
+      const response = await axios.get(`${API_BASE_URL}/api/bookings`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -49,7 +49,7 @@ const ListBooking = () => {
     const newStatus = booking.status === 1 ? 0 : 1;
     try {
       await axios.patch(
-        `${API_BASE_URL}/admin/bookings/${booking.id}/status`,
+        `${API_BASE_URL}/api/bookings/${booking.id}/status`,
         { status: newStatus },
         {
           headers: {

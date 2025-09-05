@@ -36,7 +36,7 @@ function AddPackage() {
   // Fetch services from API
   const fetchServices = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/admin/services`, {
+      const res = await axios.get(`${API_BASE_URL}/api/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -96,7 +96,7 @@ function AddPackage() {
 
     try {
       await axios.post(
-        `${API_BASE_URL}/admin/packages/add`,
+        `${API_BASE_URL}/api/packages/add`,
         {
           title: formData.title,
           price: formData.price,
@@ -153,7 +153,7 @@ function AddPackage() {
                 className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
               />
             </div>
-             <div className="w-full px-3 sm:w-1/2 mt-2">
+            <div className="w-full px-3 sm:w-1/2 mt-2">
               <label className="mb-2 block text-base font-medium text-[#07074D]">
                 Start Date
               </label>

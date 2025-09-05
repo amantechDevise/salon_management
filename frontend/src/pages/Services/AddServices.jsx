@@ -39,7 +39,7 @@ function AddServices() {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/admin/services/add`, data, {
+      const res = await axios.post(`${API_BASE_URL}/api/services/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -68,7 +68,7 @@ function AddServices() {
         <div className="mx-auto w-full max-w-full bg-white">
           <form onSubmit={handleSubmit}>
             <div className="-mx-3 flex flex-wrap">
-              <div className="w-full px-3 w-full">
+              <div className="w-full px-3 ">
                 <div className="mb-5">
                   <label
                     htmlFor="name"

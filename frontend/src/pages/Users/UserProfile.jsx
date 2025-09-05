@@ -15,7 +15,7 @@ const UserProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-        const res = await axios.get(`${API_BASE_URL}/admin/get-profile`, {
+        const res = await axios.get(`${API_BASE_URL}/api/get-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.data);
@@ -49,7 +49,7 @@ const UserProfile = () => {
       // if (data.phone) formData.append("phone", data.phone);
 
       const res = await axios.put(
-        `${API_BASE_URL}/admin/update-profile`,
+        `${API_BASE_URL}/api/update-profile`,
         formData,
         {
           headers: {

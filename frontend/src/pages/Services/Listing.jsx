@@ -11,7 +11,7 @@ const Listing = () => {
   // Fetch services
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/services`, {
+      const response = await axios.get(`${API_BASE_URL}/api/services`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -41,7 +41,7 @@ const Listing = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/admin/services/${id}`, {
+          await axios.delete(`${API_BASE_URL}/api/services/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
             },
@@ -63,7 +63,7 @@ const Listing = () => {
     const newStatus = service.status === 1 ? 0 : 1; // switch
     try {
       await axios.patch(
-        `${API_BASE_URL}/admin/services/${service.id}/status`,
+        `${API_BASE_URL}/api/services/${service.id}/status`,
         { status: newStatus },
         {
           headers: {

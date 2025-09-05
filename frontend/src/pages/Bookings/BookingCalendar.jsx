@@ -29,15 +29,12 @@ const BookingCalendar = () => {
         params.year = moment(currentDate).year();
       }
 
-      const response = await axios.get(
-        `${API_BASE_URL}/admin/booking/calender`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-          params,
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/api/booking/calender`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+        params,
+      });
 
       const data = response.data;
 

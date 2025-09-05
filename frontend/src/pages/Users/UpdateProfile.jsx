@@ -18,7 +18,7 @@ const UpdateProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("adminToken");
-        const res = await axios.get(`${API_BASE_URL}/admin/get-profile`, {
+        const res = await axios.get(`${API_BASE_URL}/api/get-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -67,13 +67,13 @@ const UpdateProfile = () => {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/admin/update-profile`, data, {
+      await axios.put(`${API_BASE_URL}/api/update-profile`, data, {
         headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
-      navigate("/admin/profile"); 
+      navigate("/admin/profile");
     } catch (err) {
       console.error("Error updating profile:", err);
     }

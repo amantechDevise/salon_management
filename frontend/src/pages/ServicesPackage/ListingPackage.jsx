@@ -11,7 +11,7 @@ const ListingPackage = () => {
   // Fetch packages
   const fetchPackages = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/packages`, {
+      const response = await axios.get(`${API_BASE_URL}/api/packages`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
@@ -40,7 +40,7 @@ const ListingPackage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/admin/packages/delete/${id}`, {
+          await axios.delete(`${API_BASE_URL}/api/packages/delete/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
             },
@@ -108,7 +108,7 @@ const ListingPackage = () => {
                 <td className="px-6 py-4">
                   {new Date(pkg.start_date).toLocaleDateString()}
                 </td>
-                 <td className="px-6 py-4">
+                <td className="px-6 py-4">
                   {new Date(pkg.end_date).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-center">
