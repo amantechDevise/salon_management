@@ -137,6 +137,26 @@ const BookingCalendar = () => {
     const key = moment(cellDate).format("YYYY-MM-DD");
     const count = dayCounts.get(key) || 0;
 
+    // आज की तारीख normalize
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const cellDay = new Date(cellDate);
+
+    let status = "upcoming";
+    let btnClass = "bg-blue-600 hover:bg-blue-700 active:bg-blue-600"; // default upcoming
+    let labelText = `Upcoming Bookings: ${count}`;
+
+    if (cellDay.getTime() === today.getTime()) {
+      status = "today";
+      btnClass = "bg-green-600 hover:bg-green-700 active:bg-green-600";
+      labelText = `Today Bookings: ${count}`;
+    } else if (cellDay < today) {
+      status = "past";
+      btnClass = "bg-gray-600 hover:bg-gray-700 active:bg-gray-600";
+      labelText = `Past Bookings: ${count}`;
+    }
+
     const handleClick = () => {
       if (count > 0) {
         setView(Views.DAY); // Switch to Day view
@@ -149,14 +169,14 @@ const BookingCalendar = () => {
         {/* Date at the top */}
         <span className="self-start">{cellDate.getDate()}</span>
 
-        {/* Show total bookings button if count > 0 */}
+        {/* Show categorized bookings button if count > 0 */}
         {count > 0 && (
           <button
             onClick={handleClick}
             type="button"
-            className="mt-auto w-full 2xl:px-3 2xl:py-1 flex items-center justify-center rounded-full text-white 2xl:text-sm text-[10px] font-semibold bg-blue-600 hover:bg-blue-700 active:bg-blue-600 cursor-pointer"
+            className={`mt-20 cursor-pointer w-full 2xl:px-3 2xl:py-1 flex items-center justify-center rounded-full text-white 2xl:text-sm text-[10px] font-semibold ${btnClass}`}
           >
-            Total Bookings: {count}
+            {labelText}
           </button>
         )}
       </div>
@@ -179,28 +199,28 @@ const BookingCalendar = () => {
 
         {/* Booking Stats */}
         <div className="flex gap-4">
-          <div className="bg-blue-100 md:p-3 rounded-lg text-center">
-            <div className="md:text-2xl text-sm font-bold text-blue-800">
+          <div className="bg-green-600 hover:bg-green-700 md:p-3 rounded-lg text-center">
+            <div className="md:text-2xl text-sm font-bold text-white">
               {bookingStats.today}
             </div>
-            <div className="2xl:text-sm text-[10px] text-blue-600">
+            <div className="2xl:text-sm text-[10px] text-white">
               Today Bookings
             </div>
           </div>
-          <div className="bg-green-100 md:p-3 rounded-lg text-center">
-            <div className="md:text-2xl text-sm font-bold text-green-800">
+          <div className="bg-blue-600 hover:bg-blue-700 md:p-3 rounded-lg text-center">
+            <div className="md:text-2xl text-sm font-bold text-white">
               {bookingStats.upcoming}
             </div>
-            <div className="2xl:text-sm text-[10px] text-green-600">
+            <div className="2xl:text-sm text-[10px] text-white">
               Upcoming Bookings
             </div>
           </div>
-          <div className="bg-gray-100 md:p-3 rounded-lg text-center">
-            <div className="md:text-2xl text-sm  font-bold text-gray-800">
+          <div className="bg-gray-600 md:p-3  hover:bg-gray-700 rounded-lg text-center">
+            <div className="md:text-2xl text-sm  font-bold text-white">
               {bookingStats.past}
             </div>
-            <div className="2xl:text-sm text-[10px] text-gray-600">
-              Total Bookings
+            <div className="2xl:text-sm text-[10px] text-white">
+              Past Bookings
             </div>
           </div>
         </div>
