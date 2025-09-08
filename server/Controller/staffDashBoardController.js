@@ -252,6 +252,11 @@ module.exports = {
             model: Customer,
             as: "customer",
           },
+             {
+            model: ServicePackages,
+            as: "package",
+            attributes: ["id", "title", "price"],
+          },
           {
             model: BookingService,
             as: "bookingServices",
@@ -285,6 +290,7 @@ module.exports = {
       const {
         customer_id,
         staff_id,
+          package_id,
         service_id,
         date,
         time,
@@ -312,6 +318,7 @@ module.exports = {
       const booking = await Booking.create({
         customer_id,
         date,
+        package_id:package_id||1,
         staff_id: userId,
         service_id: serviceIds[0], // Assuming first service as primary; update logic if needed
         time,
