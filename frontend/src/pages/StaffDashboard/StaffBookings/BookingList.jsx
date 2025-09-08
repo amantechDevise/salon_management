@@ -125,16 +125,17 @@ const BookingList = () => {
                     ?.map((ps) => ps.service?.title)
                     .join(", ") || booking.package?.title}
                 </td>
-                <td className="px-6 py-4">
-                  {Number(
-                    booking.bookingServices?.length
-                      ? booking.bookingServices.reduce(
-                          (total, ps) => total + Number(ps.service?.price ?? 0),
-                          0
-                        )
-                      : booking.package?.price ?? 0
-                  ).toFixed(2)}
-                </td>
+            <td className="px-6 py-4">
+  {Number(
+    booking.bookingServices?.length
+      ? booking.bookingServices.reduce((total, ps) => {
+          // Use service price if available, otherwise ignore (don't use package price per service)
+          return total + (ps.service?.price ? Number(ps.service.price) : 0);
+        }, 0) || booking.package?.price || 0 // if total of services is 0, fallback to package price
+      : booking.package?.price || 0
+  ).toFixed(2)}
+</td>
+
 
                 <td className="px-6 py-4">
                   {booking.date
