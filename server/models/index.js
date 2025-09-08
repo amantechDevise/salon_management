@@ -152,6 +152,13 @@ db.Booking.belongsTo(db.Customer, {
   as: "customer",
 });
 
+// ✅ BOOKING ↔ Service_Packages
+db.ServicePackages.hasMany(db.Booking, { foreignKey: "package_id", as: "bookings" });
+db.Booking.belongsTo(db.ServicePackages, {
+  foreignKey: "package_id",
+  as: "package",
+});
+
 // db.PackageServices.hasMany(db.Booking, {
 //   foreignKey: "package_id",
 //   as: "packageBookings",

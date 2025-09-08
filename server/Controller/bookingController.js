@@ -6,6 +6,7 @@ const {
   sequelize,
   RecurringBooking,
   BookingService,
+  ServicePackages,
 } = require("../models");
 const { Op } = require("sequelize");
 
@@ -142,6 +143,11 @@ module.exports = {
             as: "staff",
             attributes: ["id", "name", "email"],
           },
+            {
+            model: ServicePackages,
+            as: "package",
+            attributes: ["id", "title", "price"],
+          },
           {
             model: BookingService,
             as: "bookingServices",
@@ -173,6 +179,7 @@ module.exports = {
         customer_id,
         staff_id,
         service_id,
+        package_id,
         date,
         time,
         isRecurring,
@@ -196,9 +203,10 @@ module.exports = {
       // 1️⃣ First booking record → just store first staff + first service
       const booking = await Booking.create({
         customer_id,
+        package_id:package_id||1,
         date,
-        staff_id: staffIds[0], // just first one
-        service_id: serviceIds[0], // just first one
+        staff_id: staffIds[0]||1, // just first one
+        service_id: serviceIds[0]||0, // just first one
         time,
         status: 1,
       });
@@ -211,7 +219,7 @@ module.exports = {
             booking_id: booking.id,
             customer_id,
             staff_id: sId,
-            service_id: svcId,
+            service_id: svcId ||[],
           });
         }
       }

@@ -4,6 +4,7 @@ const {
   Service,
   Booking,
   BookingService,
+  ServicePackages,
 } = require("../models");
 const { fn, col, literal } = require("sequelize");
 const bcrypt = require("bcryptjs");
@@ -27,7 +28,15 @@ module.exports = {
       // 1. Total Revenue by Staff
       const totalRevenue = await Booking.findAll({
         attributes: [
-          [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
+          [
+            fn(
+              "SUM",
+              literal(
+                "COALESCE(`bookingServices->service`.`price`, 0) + COALESCE(`package`.`price`, 0)"
+              )
+            ),
+            "totalRevenue",
+          ],
         ],
         include: [
           {
@@ -41,17 +50,31 @@ module.exports = {
                 attributes: [],
               },
             ],
+          },
+          {
+            model: ServicePackages,
+            as: "package",
+            attributes: [],
           },
         ],
         raw: true,
       });
+
       // 2. Daily Revenue Performance with Staff (FIXED)
       const dailyRevenue = await Booking.findAll({
         attributes: [
           [fn("DATE", col("date")), "day"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-          [col("staff.id"), "staffId"], // Add staff ID
-          [col("staff.name"), "staffName"], // Add staff name
+          [
+            fn(
+              "SUM",
+              literal(
+                "COALESCE(`bookingServices->service`.`price`, 0) + COALESCE(`package`.`price`, 0)"
+              )
+            ),
+            "revenue",
+          ],
+          [col("staff.id"), "staffId"],
+          [col("staff.name"), "staffName"],
         ],
         include: [
           {
@@ -67,12 +90,17 @@ module.exports = {
             ],
           },
           {
+            model: ServicePackages,
+            as: "package",
+            attributes: [],
+          },
+          {
             model: User,
             as: "staff",
-            attributes: [], // Keep attributes empty here since we're selecting them above
+            attributes: [],
           },
         ],
-        group: [fn("DATE", col("date")), "staff.id", "staff.name"], // Add staff.name to group
+        group: [fn("DATE", col("date")), "staff.id", "staff.name"],
         order: [[fn("DATE", col("date")), "DESC"]],
         raw: true,
       });
@@ -81,9 +109,17 @@ module.exports = {
       const weeklyRevenue = await Booking.findAll({
         attributes: [
           [fn("YEARWEEK", col("date")), "week"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-          [col("staff.id"), "staffId"], // Add staff ID
-          [col("staff.name"), "staffName"], // Add staff name
+          [
+            fn(
+              "SUM",
+              literal(
+                "COALESCE(`bookingServices->service`.`price`, 0) + COALESCE(`package`.`price`, 0)"
+              )
+            ),
+            "revenue",
+          ],
+          [col("staff.id"), "staffId"],
+          [col("staff.name"), "staffName"],
         ],
         include: [
           {
@@ -99,12 +135,17 @@ module.exports = {
             ],
           },
           {
+            model: ServicePackages,
+            as: "package",
+            attributes: [],
+          },
+          {
             model: User,
             as: "staff",
-            attributes: [], // Keep attributes empty here
+            attributes: [],
           },
         ],
-        group: [fn("YEARWEEK", col("date")), "staff.id", "staff.name"], // Add staff.name to group
+        group: [fn("YEARWEEK", col("date")), "staff.id", "staff.name"],
         raw: true,
       });
 
@@ -112,9 +153,17 @@ module.exports = {
       const monthlyRevenue = await Booking.findAll({
         attributes: [
           [fn("DATE_FORMAT", col("date"), "%Y-%m"), "month"],
-          [fn("SUM", col("bookingServices->service.price")), "revenue"],
-          [col("staff.id"), "staffId"], // Add staff ID
-          [col("staff.name"), "staffName"], // Add staff name
+          [
+            fn(
+              "SUM",
+              literal(
+                "COALESCE(`bookingServices->service`.`price`, 0) + COALESCE(`package`.`price`, 0)"
+              )
+            ),
+            "revenue",
+          ],
+          [col("staff.id"), "staffId"],
+          [col("staff.name"), "staffName"],
         ],
         include: [
           {
@@ -130,55 +179,74 @@ module.exports = {
             ],
           },
           {
+            model: ServicePackages,
+            as: "package",
+            attributes: [],
+          },
+          {
             model: User,
             as: "staff",
-            attributes: [], // Keep attributes empty here
+            attributes: [],
           },
         ],
-        group: [
-          fn("DATE_FORMAT", col("date"), "%Y-%m"),
-          "staff.id",
-          "staff.name",
-        ], // Add staff.name to group
+        group: [fn("DATE_FORMAT", col("date"), "%Y-%m"), "staff.id", "staff.name"],
         raw: true,
       });
 
       // 5. Breakdown by Services with Staff (FIXED)
-      const revenueByService = await Booking.findAll({
-        attributes: [
-          [col("bookingServices.service.id"), "serviceId"],
-          [col("bookingServices.service.title"), "serviceTitle"],
-          [fn("SUM", col("bookingServices->service.price")), "totalRevenue"],
-          [fn("COUNT", col("bookingServices.id")), "totalBookings"],
-          [col("staff.id"), "staffId"],
-          [fn("GROUP_CONCAT", fn("DISTINCT", col("staff.name"))), "staffNames"],
-        ],
-        include: [
-          {
-            model: BookingService,
-            as: "bookingServices",
-            attributes: [],
-            include: [
-              {
-                model: Service,
-                as: "service",
-                attributes: [],
-              },
-            ],
-          },
-          {
-            model: User,
-            as: "staff",
-            attributes: [],
-          },
-        ],
-        group: [
-          "bookingServices.service.id",
-          "bookingServices.service.title",
-          "staff.id", // Group by staff.id only
-        ],
-        raw: true,
-      });
+     const revenueByService = await Booking.findAll({
+  attributes: [
+    [col("bookingServices.service.id"), "serviceId"],
+    [col("bookingServices.service.title"), "serviceTitle"],
+    [col("package.title"), "packageTitle"], // package title
+    [
+      fn(
+        "SUM",
+        literal(
+          "COALESCE(`bookingServices->service`.`price`, 0) + COALESCE(`package`.`price`, 0)"
+        )
+      ),
+      "totalRevenue",
+    ],
+    [fn("COUNT", col("bookingServices.id")), "totalBookings"],
+    [col("staff.id"), "staffId"],
+    [fn("GROUP_CONCAT", fn("DISTINCT", col("staff.name"))), "staffNames"],
+  ],
+  include: [
+    {
+      model: BookingService,
+      as: "bookingServices",
+      attributes: [],
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      model: ServicePackages,
+      as: "package",
+      attributes: [],
+    },
+    {
+      model: User,
+      as: "staff",
+      attributes: [],
+    },
+  ],
+  group: [
+    "bookingServices.service.id",
+    "bookingServices.service.title",
+    "package.id",
+    "package.title",
+    "staff.id",
+  ],
+  raw: true,
+});
+
+
       // ====== Existing Stats ======
       const dailyStats = await Booking.findAll({
         attributes: [

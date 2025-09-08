@@ -5,7 +5,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-const Invoice = () => {
+const Staff_Invoice = () => {
   const { booking_id } = useParams();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -150,9 +150,9 @@ const Invoice = () => {
               <tbody>
                 {booking?.bookingServices?.map((bs, idx) => (
                   <tr key={idx}>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.title|| booking.package?.title}</td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.duration || "1.30 Hr"} </td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>₹{bs.service?.price || booking.package?.price}</td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.title}</td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.duration} mins</td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>₹{bs.service?.price}</td>
                   </tr>
                 ))}
               </tbody>
@@ -198,4 +198,4 @@ const Invoice = () => {
   );
 };
 
-export default Invoice;
+export default Staff_Invoice;

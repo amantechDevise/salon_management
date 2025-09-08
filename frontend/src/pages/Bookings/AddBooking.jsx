@@ -7,8 +7,9 @@ import CustomerDropdown from "../../components/CustomerDropdown";
 function AddBooking() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-
+  const [packages, setPackages] = useState([]);
   const staffRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("services");
   const serviceRef = useRef(null);
 
   // 🔹 State for form
@@ -16,6 +17,7 @@ function AddBooking() {
     customer_id: "",
     staff_id: [],
     service_id: [],
+    package_id: "",
     date: "",
     time: "",
     isRecurring: false,
@@ -25,6 +27,7 @@ function AddBooking() {
 
   const [dropdownData, setDropdownData] = useState({
     customers: [],
+    package_id: [],
     staff: [],
     services: [],
   });
@@ -59,6 +62,7 @@ function AddBooking() {
           customers: res.data.data.customer || [],
           staff: res.data.data.Staff || [],
           services: res.data.data.service || [],
+          package: res.data.data.package || [],
         });
       } catch (error) {
         console.error("Error fetching dropdown data:", error);
@@ -68,6 +72,14 @@ function AddBooking() {
     fetchData();
   }, [API_BASE_URL]);
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setFormData((prev) => ({
+      ...prev,
+      service_id: tab === "package" ? [] : prev.service_id,
+      package_id: tab === "services" ? "" : prev.package_id,
+    }));
+  };
   // 🔹 Toggle staff selection
   const toggleStaff = (id) => {
     setFormData((prev) => {
@@ -87,6 +99,24 @@ function AddBooking() {
       return { ...prev, service_id: serviceArr };
     });
   };
+
+  const fetchPackages = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/packages`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
+      setPackages(response.data.data);
+    } catch (error) {
+      console.error("Error fetching packages:", error);
+      toast.error("Failed to load packages");
+    }
+  };
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
 
   // 🔹 Close dropdowns on outside click
   useEffect(() => {
@@ -183,44 +213,94 @@ function AddBooking() {
             </div>
           </div>
 
-          {/* Service Multi-select */}
-          <div className="w-full  mb-5 relative" ref={serviceRef}>
-            <label className="mb-3 block text-base font-medium text-[#07074D]">
-              Services
-            </label>
-            <div
-              className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
-              onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
+          {/* Toggle Buttons */}
+          <div className="flex gap-3 mb-5">
+            <button
+              type="button"
+              onClick={() => handleTabChange("services")}
+              className={`px-4 py-2 rounded-lg font-medium ${
+                activeTab === "services"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
             >
-              {formData.service_id.length > 0
-                ? dropdownData.services
-                    .filter((s) =>
-                      formData.service_id.includes(s.id.toString())
-                    )
-                    .map((s) => s.title)
-                    .join(", ")
-                : "Select services"}
-            </div>
-            {serviceDropdownOpen && (
-              <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-                {dropdownData.services.map((s) => (
-                  <label
-                    key={s.id}
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      value={s.id}
-                      checked={formData.service_id.includes(s.id.toString())}
-                      onChange={() => toggleService(s.id)}
-                      className="mr-3"
-                    />
-                    {s.title} &nbsp; - &nbsp; {s.price}
-                  </label>
-                ))}
-              </div>
-            )}
+              Select Services
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange("package")}
+              className={`px-4 py-2 rounded-lg font-medium ${
+                activeTab === "package"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Select Package
+            </button>
           </div>
+
+          {/* Services Multi-select */}
+          {activeTab === "services" && (
+            <div className="w-full mb-5 relative" ref={serviceRef}>
+              <label className="mb-3 block text-base font-medium text-[#07074D]">
+                Services
+              </label>
+              <div
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
+                onClick={() => setServiceDropdownOpen(!serviceDropdownOpen)}
+              >
+                {formData.service_id.length > 0
+                  ? dropdownData.services
+                      .filter((s) =>
+                        formData.service_id.includes(s.id.toString())
+                      )
+                      .map((s) => s.title)
+                      .join(", ")
+                  : "Select services"}
+              </div>
+              {serviceDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                  {dropdownData.services.map((s) => (
+                    <label
+                      key={s.id}
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        value={s.id}
+                        checked={formData.service_id.includes(s.id.toString())}
+                        onChange={() => toggleService(s.id)}
+                        className="mr-3"
+                      />
+                      {s.title} &nbsp; - &nbsp; {s.price}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Package Single-select */}
+          {activeTab === "package" && (
+            <div className="w-full mb-5">
+              <label className="block text-base font-medium text-[#07074D] mb-2">
+                Package
+              </label>
+              <select
+                name="package_id"
+                value={formData.package_id}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
+              >
+                <option value="">-- Select Package --</option>
+                {packages.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title} &nbsp; - &nbsp; {p.price}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Date + Time */}
           <div className="flex flex-wrap -mx-3">
@@ -233,7 +313,7 @@ function AddBooking() {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full border rounded-md py-3 px-4"
+                className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
                 required
               />
             </div>
@@ -247,7 +327,7 @@ function AddBooking() {
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
-                className="w-full border rounded-md py-3 px-4"
+                className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
                 required
               />
             </div>

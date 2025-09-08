@@ -125,15 +125,15 @@ const ListBooking = () => {
                 <td className="px-6 py-4">
                   {booking.bookingServices
                     ?.map((ps) => ps.service?.title)
-                    .join(", ")}
+                    .join(", ") || booking.package?.title} 
                 </td>
                 <td className="px-6 py-4">
                   {(
                     booking.bookingServices?.reduce(
-                      (total, ps) => total + Number(ps.service?.price || 0),
+                      (total, ps) => total + Number(ps.service?.price ||  booking.package?.price),
                       0
                     ) || 0
-                  ).toFixed(2)}
+                  ).toFixed(2)||  booking.package?.price}
                 </td>
                 <td className="px-6 py-4">
                   {booking.date

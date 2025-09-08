@@ -87,4 +87,10 @@ staffrouter.post(
   ratingController.submitFeedback
 );
 
+
+staffrouter.get(
+  "/generate_Invoice/:booking_id",
+  stafauthenticateToken,
+  staffDashBoardController.generateInvoice
+);
 module.exports = staffrouter;

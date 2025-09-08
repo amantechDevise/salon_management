@@ -169,13 +169,23 @@ const BookingList = () => {
                     "N/A"
                   )}
                 </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap">
+                   {/* <td className="px-6 py-4">
                   <Link
-                    to={`/admin/bookings/edit/${booking.id}`}
-                    className="text-blue-600 hover:underline mr-4"
+                    to={`/staff-Admin/generate_Invoice/${booking.id}`}
+                    className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
                   >
-                    Edit
+                    Generate Invoice
                   </Link>
+                </td> */}
+                {/* <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4">
+                                    <Link
+                                      to={`/admin/generate_Invoice/${booking.id}`}
+                                      className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
+                                    >
+                                      Generate Invoice
+                                    </Link>
+                                  </td>
                   <button
                     onClick={() => handleDelete(booking.id)}
                     className="text-red-600 hover:underline"

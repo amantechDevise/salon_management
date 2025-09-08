@@ -39,6 +39,7 @@ import ListingDiscount from "./pages/Discounts/listing";
 import AddDiscount from "./pages/Discounts/add";
 import BookingCalendar from "./pages/Bookings/BookingCalendar";
 import Invoice from "./pages/Invoices/listInvoice";
+import Staff_Invoice from "./pages/StaffDashboard/Invoices/listInvoice";
 
 function App() {
   return (
@@ -100,6 +101,7 @@ function App() {
             <Route path="bookings" element={<BookingList />} />
             <Route path="bookings/add" element={<BookingAdd />} />
             <Route path="attendance" element={<ListAttendance />} />
+                 <Route path="generate_Invoice/:booking_id" element={<Staff_Invoice />} />
           </Route>
           <Route
             path="/staff-Admin/feedback/:staffName/:token"

@@ -1,4 +1,4 @@
-const { Booking, Discount, Invoice, Service, Customer, BookingService, User } = require("../models");
+const { Booking, Discount, Invoice, Service, Customer, BookingService, User, ServicePackages } = require("../models");
 
 module.exports = {
   generateInvoice: async (req, res) => {
@@ -8,12 +8,15 @@ module.exports = {
       const booking = await Booking.findOne({
         where: { id: booking_id },
         include: [
-
+  {
+                model: ServicePackages,
+                as: "package",
+              },
           {
             model: Customer,
             as: "customer",
             attributes: ["id", "name", "email", "phone", "address"],
-         
+
           },
           {
             model: BookingService,
@@ -42,7 +45,7 @@ module.exports = {
 
       if (booking.bookingServices && booking.bookingServices.length > 0) {
         booking.bookingServices.forEach(bs => {
-          const price = Number(bs.service?.price) || 0;
+          const price = Number(bs.service?.price) || Number(booking.package?.price);
           const duration = Number(bs.service?.duration) || 0;
 
           totalAmount += price;
@@ -102,7 +105,7 @@ module.exports = {
             model: Customer,
             as: "customer",
             attributes: ["id", "name", "email", "phone", "address"],
-               include: [
+            include: [
               {
                 model: User,
                 as: "staff",
@@ -114,6 +117,10 @@ module.exports = {
             model: Booking,
             as: "booking",
             include: [
+              {
+                model: ServicePackages,
+                as: "package",
+              },
               {
                 model: BookingService,
                 as: "bookingServices",

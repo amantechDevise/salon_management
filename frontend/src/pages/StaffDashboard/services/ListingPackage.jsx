@@ -48,6 +48,7 @@ const ListStaffPackage = () => {
             <th className="px-6 py-3">Services</th>
             <th className="px-6 py-3">Start Date</th>
             <th className="px-6 py-3">End Date</th>
+            <th className="px-6 py-3">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +79,13 @@ const ListStaffPackage = () => {
                 </td>
                 <td className="px-6 py-4">
                   {new Date(pkg.end_date).toLocaleDateString()}
+                </td>
+                    <td className="px-6 py-4">
+                  {pkg.status === 1 ? (
+                    <span className="text-green-600 font-semibold">Active</span>
+                  ) : (
+                    <span className="text-red-600 font-semibold">Inactive</span>
+                  )}
                 </td>
               </tr>
             ))

@@ -9,6 +9,8 @@ const {
   BookingService,
   ServicePackages,
   PackageServices,
+  Discount,
+  Invoice,
 } = require("../models");
 const { Op } = require("sequelize");
 const { uploadImage } = require("../uilts/imageUplord");
@@ -551,4 +553,164 @@ module.exports = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+
+
+
+
+
+
+
+
+    generateInvoice: async (req, res) => {
+      try {
+        const { booking_id } = req.params;
+  
+        const booking = await Booking.findOne({
+          where: { id: booking_id },
+          include: [
+  
+            {
+              model: Customer,
+              as: "customer",
+              attributes: ["id", "name", "email", "phone", "address"],
+           
+            },
+            {
+              model: BookingService,
+              as: "bookingServices",
+              include: [
+                {
+                  model: Service,
+                  as: "service",
+                  attributes: ["id", "title", "price", "duration"],
+                },
+              ],
+            },
+          ],
+        });
+  
+        if (!booking) {
+          return res.status(404).json({
+            success: false,
+            message: "Booking not found",
+          });
+        }
+  
+        // ✅ Calculate totals from all services (force number)
+        let totalAmount = 0;
+        let totalDuration = 0;
+  
+        if (booking.bookingServices && booking.bookingServices.length > 0) {
+          booking.bookingServices.forEach(bs => {
+            const price = Number(bs.service?.price) || 0;
+            const duration = Number(bs.service?.duration) || 0;
+  
+            totalAmount += price;
+            totalDuration += duration;
+          });
+        }
+  
+        // 🔹 Check for discount if applicable
+        let discount = null;
+        let finalAmount = totalAmount;
+  
+        if (booking.discount_id && booking.discount_id !== 0) {
+          discount = await Discount.findOne({
+            where: { id: booking.discount_id },
+          });
+  
+          if (discount) {
+            if (discount.type === 1) {
+              // Percentage discount
+              const discountValue = (totalAmount * discount.value) / 100;
+              finalAmount = totalAmount - discountValue;
+            } else if (discount.type === 2) {
+              // Fixed discount
+              finalAmount = totalAmount - discount.value;
+            }
+          }
+        }
+  
+        // 🔹 Create or update invoice
+        const [invoice, created] = await Invoice.findOrCreate({
+          where: { booking_id: booking_id },
+          defaults: {
+            customer_id: booking.customer_id,
+            discount_id: booking.discount_id || 0,
+            total_amount: totalAmount,
+            final_amount: finalAmount,
+            total_duration: totalDuration,
+            status: 1, // Pending
+          },
+        });
+  
+        if (!created) {
+          // Update existing invoice if needed
+          await invoice.update({
+            total_amount: totalAmount,
+            final_amount: finalAmount,
+            discount_id: booking.discount_id || 0,
+            total_duration: totalDuration,
+          });
+        }
+        // 🔹 Get the complete invoice with all relations
+        const completeInvoice = await Invoice.findOne({
+          where: { id: invoice.id },
+          include: [
+            {
+              model: Customer,
+              as: "customer",
+              attributes: ["id", "name", "email", "phone", "address"],
+                 include: [
+                {
+                  model: User,
+                  as: "staff",
+                  attributes: ["id", "name", "email", "phone",],
+                },
+              ]
+            },
+            {
+              model: Booking,
+              as: "booking",
+              include: [
+                {
+                  model: BookingService,
+                  as: "bookingServices",
+                  include: [
+                    {
+                      model: Service,
+                      as: "service",
+                      attributes: ["id", "title", "price", "duration"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: Discount,
+              as: "discount",
+            },
+          ],
+        });
+  
+        res.status(200).json({
+          success: true,
+          message: "Invoice generated successfully",
+          data: {
+            ...completeInvoice.toJSON(),
+            totalAmount,
+            finalAmount,
+            totalDuration,
+          },
+        });
+      } catch (error) {
+        console.error("Error generating invoice:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message,
+        });
+      }
+    },
+  
 };

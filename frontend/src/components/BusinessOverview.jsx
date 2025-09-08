@@ -66,7 +66,7 @@ function BusinessOverview({ data = {} }) {
           ...item,
           totalRevenue: parseFloat(item.totalRevenue) || 0,
           totalBookings: parseInt(item.totalBookings) || 0,
-          serviceTitle: item.serviceTitle || "Unknown Service",
+               serviceTitle: item.serviceTitle || item.packageTitle || "Unknown",
           staffName: item.staffNames || "All Staff",
           staffId: item.staffId || null,
         }))

@@ -79,7 +79,8 @@ const DiscountListing = () => {
             <th className="px-6 py-3">Discount</th>
             <th className="px-6 py-3">Start Date</th>
             <th className="px-6 py-3">End Date</th>
-            <th className="px-6 py-3 text-center">Actions</th>
+            <th className="px-6 py-3">Status</th>
+            <th className="px-6 py-3 text-center">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -105,6 +106,13 @@ const DiscountListing = () => {
                 </td>
                 <td className="px-6 py-4">
                   {new Date(d.end_date).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4">
+                  {d.status === 1 ? (
+                    <span className="text-green-600 font-semibold">Active</span>
+                  ) : (
+                    <span className="text-red-600 font-semibold">Inactive</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-center">
                   <button
