@@ -320,7 +320,7 @@ module.exports = {
         date,
         package_id:package_id||1,
         staff_id: userId,
-        service_id: serviceIds[0], // Assuming first service as primary; update logic if needed
+        service_id: serviceIds[0]||0, // Assuming first service as primary; update logic if needed
         time,
         status: 1,
       });
@@ -330,7 +330,7 @@ module.exports = {
         booking_id: booking.id,
         customer_id,
         staff_id: userId,
-        service_id: svcId,
+        service_id: svcId||[],
       }));
 
       await BookingService.bulkCreate(bookingServiceRecords);
