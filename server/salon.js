@@ -23,12 +23,12 @@ app.use(express.static(path.join(__dirname, "public")));
 require("./uilts/cron_zone");
 
 // Allowed origins for CORS
-// const allowedOrigins = process.env.ALLOWED_ORIGINS
-//   ? process.env.ALLOWED_ORIGINS.split(",")
-//   : ["https://salon.techdevise.com/", "https://salon.techdevise.com/"];
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:3200", "http://localhost:3200"];
+  : ["https://salon.techdevise.com/", "https://salon.techdevise.com/"];
+// const allowedOrigins = process.env.ALLOWED_ORIGINS
+//   ? process.env.ALLOWED_ORIGINS.split(",")
+//   : ["http://localhost:3200", "http://localhost:3200"];
 app.use(
   cors({
     origin: allowedOrigins,
