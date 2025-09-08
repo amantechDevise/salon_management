@@ -1,24 +1,30 @@
-const { Booking, Discount, Invoice, Service, Customer } = require("../models");
+const { Booking, Discount, Invoice, Service, Customer, BookingService, User } = require("../models");
 
 module.exports = {
-  // Generate invoice for a booking/visit
   generateInvoice: async (req, res) => {
     try {
       const { booking_id } = req.params;
 
-      // Get booking details with associated data
       const booking = await Booking.findOne({
         where: { id: booking_id },
         include: [
+
           {
             model: Customer,
             as: "customer",
             attributes: ["id", "name", "email", "phone", "address"],
+         
           },
           {
-            model: Service,
-            as: "service",
-            attributes: ["id", "title", "price", "duration"],
+            model: BookingService,
+            as: "bookingServices",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price", "duration"],
+              },
+            ],
           },
         ],
       });
@@ -30,10 +36,21 @@ module.exports = {
         });
       }
 
-      // Calculate total amount
-      let totalAmount = booking.service.price;
+      // ✅ Calculate totals from all services (force number)
+      let totalAmount = 0;
+      let totalDuration = 0;
 
-      // Check for discount if applicable
+      if (booking.bookingServices && booking.bookingServices.length > 0) {
+        booking.bookingServices.forEach(bs => {
+          const price = Number(bs.service?.price) || 0;
+          const duration = Number(bs.service?.duration) || 0;
+
+          totalAmount += price;
+          totalDuration += duration;
+        });
+      }
+
+      // 🔹 Check for discount if applicable
       let discount = null;
       let finalAmount = totalAmount;
 
@@ -54,7 +71,7 @@ module.exports = {
         }
       }
 
-      // Create or update invoice
+      // 🔹 Create or update invoice
       const [invoice, created] = await Invoice.findOrCreate({
         where: { booking_id: booking_id },
         defaults: {
@@ -62,6 +79,7 @@ module.exports = {
           discount_id: booking.discount_id || 0,
           total_amount: totalAmount,
           final_amount: finalAmount,
+          total_duration: totalDuration,
           status: 1, // Pending
         },
       });
@@ -72,10 +90,11 @@ module.exports = {
           total_amount: totalAmount,
           final_amount: finalAmount,
           discount_id: booking.discount_id || 0,
+          total_duration: totalDuration,
         });
       }
 
-      // Get the complete invoice with all relations
+      // 🔹 Get the complete invoice with all relations
       const completeInvoice = await Invoice.findOne({
         where: { id: invoice.id },
         include: [
@@ -83,22 +102,34 @@ module.exports = {
             model: Customer,
             as: "customer",
             attributes: ["id", "name", "email", "phone", "address"],
+               include: [
+              {
+                model: User,
+                as: "staff",
+                attributes: ["id", "name", "email", "phone",],
+              },
+            ]
           },
           {
             model: Booking,
             as: "booking",
             include: [
               {
-                model: Service,
-                as: "service",
-                attributes: ["id", "title", "price", "duration"],
+                model: BookingService,
+                as: "bookingServices",
+                include: [
+                  {
+                    model: Service,
+                    as: "service",
+                    attributes: ["id", "title", "price", "duration"],
+                  },
+                ],
               },
             ],
           },
           {
             model: Discount,
             as: "discount",
-            attributes: ["id", "code", "title", "type", "value"],
           },
         ],
       });
@@ -106,7 +137,12 @@ module.exports = {
       res.status(200).json({
         success: true,
         message: "Invoice generated successfully",
-        data: completeInvoice,
+        data: {
+          ...completeInvoice.toJSON(),
+          totalAmount,
+          finalAmount,
+          totalDuration,
+        },
       });
     } catch (error) {
       console.error("Error generating invoice:", error);
@@ -117,6 +153,7 @@ module.exports = {
       });
     }
   },
+
 
   // Get all invoices
   getAllInvoices: async (req, res) => {

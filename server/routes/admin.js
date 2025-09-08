@@ -133,16 +133,16 @@ router.get(
   authenticateToken,
   invoiceCantroller.generateInvoice
 );
-router.get(
-  "/generate_Invoice",
-  authenticateToken,
-  invoiceCantroller.getAllInvoices
-);
+// router.get(
+//   "/generate_Invoice",
+//   authenticateToken,
+//   invoiceCantroller.getAllInvoices
+// );
 
-router.get(
-  "/generate_Invoice/:id",
-  authenticateToken,
-  invoiceCantroller.getInvoiceById
-);
+// router.get(
+//   "/generate_Invoice/:id",
+//   authenticateToken,
+//   invoiceCantroller.getInvoiceById
+// );
 
 module.exports = router;

@@ -50,14 +50,14 @@ const AdminNavbar = ({ userData, onToggleSidebar }) => {
         >
           <FaBars className="text-2xl" />
         </button>
-        <h1 className="text-xl font-semibold text-gray-800 ml-4">Dashboard</h1>
+        <h1 className="2xl:text-xl  text-[0.75rem] font-semibold text-gray-800 ml-4">Dashboard</h1>
       </div>
 
       {/* Center */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
         <Link
           to={"/admin/bookings/calendar"}
-          className="text-lg font-semibold text-white bg-blue-600 rounded-full px-4 py-2"
+          className="2xl:text-lg text-[0.75rem] font-semibold text-white bg-blue-600 rounded-full px-4 py-2"
         >
           Booking Calendar
         </Link>
