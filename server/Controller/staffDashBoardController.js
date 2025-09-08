@@ -330,7 +330,7 @@ module.exports = {
         booking_id: booking.id,
         customer_id,
         staff_id: userId,
-        service_id: svcId||[],
+        service_id: svcId||0,
       }));
 
       await BookingService.bulkCreate(bookingServiceRecords);
