@@ -126,11 +126,13 @@ const BookingList = () => {
                     .join(", ") || booking.package?.title}
                 </td>
                 <td className="px-6 py-4">
-                  {(
-                    booking.bookingServices?.reduce(
-                      (total, ps) => total + Number(ps.service?.price  ||  booking.package?.price),
-                      0
-                    ) ||  booking.package?.price
+                  {Number(
+                    booking.bookingServices?.length
+                      ? booking.bookingServices.reduce(
+                          (total, ps) => total + Number(ps.service?.price ?? 0),
+                          0
+                        )
+                      : booking.package?.price ?? 0
                   ).toFixed(2)}
                 </td>
 
@@ -169,7 +171,7 @@ const BookingList = () => {
                     "N/A"
                   )}
                 </td>
-                   {/* <td className="px-6 py-4">
+                {/* <td className="px-6 py-4">
                   <Link
                     to={`/staff-Admin/generate_Invoice/${booking.id}`}
                     className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
