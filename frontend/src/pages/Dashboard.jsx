@@ -178,7 +178,7 @@ function Dashboard() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {booking.service?.title}
+                        {booking.service?.title || booking.package?.title}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {booking.staff?.name}

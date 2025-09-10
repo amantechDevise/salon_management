@@ -1,58 +1,60 @@
 const Sequelize = require('sequelize');
 module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('users', {
+    return sequelize.define('notifications', {
         id: {
             autoIncrement: true,
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true
         },
-        name: {
+        customer_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        booking_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        invoice_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        title: {
             type: DataTypes.STRING(50),
             allowNull: false,
             defaultValue: ""
         },
- 
-        email: {
-            type: DataTypes.STRING(50),
+        is_read: {
+            type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: ""
+            defaultValue: 1
         },
      
-        image: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            defaultValue: ""
-        },
-        phone: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-            defaultValue: 0
-        },
         message: {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        password: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-            defaultValue: ""
-        },
-      
-        role: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1,
-            comment: '1=>Admin,2=>Staff,'
-        },
+    
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1
-        }
+            defaultValue: 1,
+            comment: "1=active, 2=archived/deleted"
+        },
+        type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: "1=>reminder,2=>payment"
+        },
+
     }, {
         sequelize,
-        tableName: 'users',
+        tableName: 'notifications',
         timestamps: true,
         indexes: [
             {

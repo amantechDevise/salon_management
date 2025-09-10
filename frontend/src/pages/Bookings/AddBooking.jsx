@@ -100,23 +100,30 @@ function AddBooking() {
     });
   };
 
-  const fetchPackages = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/packages`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
-      setPackages(response.data.data);
-    } catch (error) {
-      console.error("Error fetching packages:", error);
-      toast.error("Failed to load packages");
-    }
-  };
+const fetchPackages = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/packages`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    });
 
-  useEffect(() => {
-    fetchPackages();
-  }, []);
+    // filter status = 1
+    const activePackages = response.data.data.filter(
+      (pkg) => pkg.status === 1
+    );
+
+    setPackages(activePackages);
+  } catch (error) {
+    console.error("Error fetching packages:", error);
+    toast.error("Failed to load packages");
+  }
+};
+
+useEffect(() => {
+  fetchPackages();
+}, []);
+
 
   // 🔹 Close dropdowns on outside click
   useEffect(() => {
@@ -351,7 +358,7 @@ function AddBooking() {
           {/* Frequency + End Date */}
           {formData.isRecurring && (
             <div className="flex flex-wrap -mx-3">
-              <div className="w-full sm:w-1/2 px-3 mb-5">
+              <div className="w-full sm:w-1/2 px-3 mb-5 ">
                 <label className="block text-base font-medium text-[#07074D] mb-2">
                   Frequency
                 </label>
@@ -359,7 +366,7 @@ function AddBooking() {
                   name="frequency"
                   value={formData.frequency}
                   onChange={handleChange}
-                  className="w-full border rounded-md py-3 px-4"
+                  className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
                   required
                 >
                   <option value="">-- Select Frequency --</option>
@@ -377,7 +384,7 @@ function AddBooking() {
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleChange}
-                  className="w-full border rounded-md py-3 px-4"
+                  className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
                   required
                 />
               </div>

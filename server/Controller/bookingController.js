@@ -225,7 +225,6 @@ module.exports = {
       }
       await BookingService.bulkCreate(bookingServiceRecords);
 
-      // 3️⃣ If recurring → create recurrence record
       if (isRecurring) {
         await RecurringBooking.create({
           booking_id: booking.id,

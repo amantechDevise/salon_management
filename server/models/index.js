@@ -66,6 +66,7 @@ db.PackageServices = require("./package_services")(sequelize, Sequelize);
 db.Discount = require("./discounts")(sequelize, Sequelize);
 db.Invoice = require("./invoices")(sequelize, Sequelize);
 db.CustomerService = require("./customerservice")(sequelize, Sequelize);
+db.Notification= require("./notifications")(sequelize, Sequelize);
 
 //
 // ✅ RELATIONSHIPS
@@ -222,6 +223,49 @@ db.Service.hasMany(db.PackageServices, {
 db.PackageServices.belongsTo(db.Service, {
   foreignKey: "service_id",
   as: "service",
+});
+
+
+
+
+// CUSTOMER ↔ NOTIFICATIONS
+db.Customer.hasMany(db.Notification, {
+  foreignKey: "customer_id",
+  as: "notifications",
+});
+db.Notification.belongsTo(db.Customer, {
+  foreignKey: "customer_id",
+  as: "customer",
+});
+
+// USER ↔ NOTIFICATIONS
+db.User.hasMany(db.Notification, {
+  foreignKey: "user_id",
+  as: "notifications",
+});
+db.Notification.belongsTo(db.User, {
+  foreignKey: "user_id",
+  as: "user",
+});
+
+// BOOKING ↔ NOTIFICATIONS
+db.Booking.hasMany(db.Notification, {
+  foreignKey: "booking_id",
+  as: "notifications",
+});
+db.Notification.belongsTo(db.Booking, {
+  foreignKey: "booking_id",
+  as: "booking",
+});
+
+// INVOICE ↔ NOTIFICATIONS
+db.Invoice.hasMany(db.Notification, {
+  foreignKey: "invoice_id",
+  as: "notifications",
+});
+db.Notification.belongsTo(db.Invoice, {
+  foreignKey: "invoice_id",
+  as: "invoice",
 });
 
 module.exports = db;

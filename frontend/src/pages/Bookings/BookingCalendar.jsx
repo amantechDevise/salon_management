@@ -128,13 +128,11 @@ const BookingCalendar = () => {
   }, [bookings]);
 
   // Custom Date Header for Month view
-  // Custom Date Header for Month view
   const DateHeader = ({ label, date: cellDate }) => {
     if (view !== Views.MONTH) return <span>{label}</span>;
     const key = moment(cellDate).format("YYYY-MM-DD");
     const count = dayCounts.get(key) || 0;
 
-    // आज की तारीख normalize
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

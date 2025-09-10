@@ -315,6 +315,10 @@ module.exports = {
             as: "customer",
             attributes: ["id", "name", "email", "image"],
           },
+            {
+            model: ServicePackages,
+            as: "package",
+          },
           {
             model: Service,
             as: "service",
@@ -399,9 +403,66 @@ module.exports = {
     }
   },
 
+updatePassword: async (req, res) => {
+  try {
+    const userId = req.user.id; // comes from auth middleware
+    const { password, newPassword, confirmNewPassword } = req.body;
+
+    // 🔹 Debug log (remove in production)
+    console.log("Password Change Request:", { userId, password, newPassword, confirmNewPassword });
+
+    // 🔹 Check empty fields
+    if (!password || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 🔹 Check confirm password
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "New passwords do not match" });
+    }
+
+    // 🔹 Fetch user
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 🔹 Validate old password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect old password" });
+    }
+
+    // 🔹 Optional: check if new password is same as old one
+    const samePassword = await bcrypt.compare(newPassword, user.password);
+    if (samePassword) {
+      return res.status(400).json({ message: "New password cannot be the same as old password" });
+    }
+
+    // 🔹 Optional: password strength check
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long" });
+    }
+
+    // 🔹 Hash and save new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update Password Error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+},
+
+
+
+
   updateProfile: async (req, res) => {
     try {
-      console.log(req.body);
 
       const userId = req.user.id;
       const { name, email, phone } = req.body;

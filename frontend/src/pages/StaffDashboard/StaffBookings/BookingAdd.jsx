@@ -64,7 +64,12 @@ function BookingAdd() {
           Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
-      setPackages(response.data.data);
+   // filter status = 1
+    const activePackages = response.data.data.filter(
+      (pkg) => pkg.status === 1
+    );
+
+    setPackages(activePackages);
     } catch (error) {
       console.error("Error fetching packages:", error);
       toast.error("Failed to load packages");

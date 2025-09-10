@@ -21,6 +21,11 @@ router.put(
   authenticateToken,
   dashboardController.updateProfile
 );
+router.put(
+  "/profile/change-password",
+  authenticateToken,
+  dashboardController.updatePassword
+);
 
 // ----------------------staffController-------------
 

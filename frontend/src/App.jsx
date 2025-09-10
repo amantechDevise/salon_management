@@ -40,6 +40,7 @@ import AddDiscount from "./pages/Discounts/add";
 import BookingCalendar from "./pages/Bookings/BookingCalendar";
 import Invoice from "./pages/Invoices/listInvoice";
 import Staff_Invoice from "./pages/StaffDashboard/Invoices/listInvoice";
+import PasswordChange from "./pages/Users/PasswordChange";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<UserProfile />} />
+            <Route path="change_password" element={<PasswordChange />} />
             <Route path="update-profile" element={<UpdateProfile />} />
             <Route path="staff" element={<ListStaff />} />
             <Route path="staff/add" element={<AddStaff />} />
