@@ -2,6 +2,7 @@ var express = require("express");
 const staffDashBoardController = require("../Controller/staffDashBoardController");
 const stafauthenticateToken = require("../middleware/staffToken");
 const ratingController = require("../Controller/ratingController");
+const staffController = require("../Controller/staffController");
 
 var staffrouter = express.Router();
 
@@ -9,6 +10,11 @@ staffrouter.get(
   "/dashboard",
   stafauthenticateToken,
   staffDashBoardController.dashboard
+);
+staffrouter.put(
+  "/profile/change-password",
+  stafauthenticateToken,
+  staffController.updatePassword
 );
 staffrouter.get(
   "/get-profile",

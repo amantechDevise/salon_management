@@ -1,42 +1,52 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+// Import toastify CSS
+import 'react-toastify/dist/ReactToastify.css';
 
-const PasswordChange = () => {
+const Password_Change = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [formData, setFormData] = useState({
-    oldPassword: "",
+    password: "",
     newPassword: "",
-    confirmPassword: "",
+    confirmNewPassword: "",
   });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    newPassword: false,
+    confirmNewPassword: false,
+  });
+
   const navigate = useNavigate();
 
-  // ✅ Handle input change
+  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error on change
-    setSuccess(""); // Clear success message on change
   };
 
-  // ✅ Submit form
+  // Toggle password visibility for a specific input
+  const toggleShowPassword = (field) => {
+    setShowPassword((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
+
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
-    if (
-      !formData.oldPassword ||
-      !formData.newPassword ||
-      !formData.confirmPassword
-    ) {
-      setError("Please fill in all fields.");
+    // Frontend validations
+    if (!formData.password || !formData.newPassword || !formData.confirmNewPassword) {
+      toast.error("Please fill in all fields.");
       return;
     }
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError("New passwords do not match.");
+    if (formData.newPassword !== formData.confirmNewPassword) {
+      toast.error("New passwords do not match.");
       return;
     }
 
@@ -44,26 +54,23 @@ const PasswordChange = () => {
 
     try {
       await axios.put(
-        `${API_BASE_URL}/staffApi/profile/password`,
+        `${API_BASE_URL}/staffApi/profile/change-password`,
         {
-          oldPassword: formData.oldPassword,
+          password: formData.password,
           newPassword: formData.newPassword,
+          confirmNewPassword: formData.confirmNewPassword,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setSuccess("Password changed successfully! Redirecting...");
-      setTimeout(() => {
-        navigate("/staff-Admin/profile");
-      }, 2000);
+
+      toast.success("Password changed successfully! Redirecting...");
+      setTimeout(() => navigate("/staff-Admin/dashboard"), 2000);
     } catch (err) {
-      console.error("Error changing password:", err);
-      setError(
+      toast.error(
         err.response?.data?.message ||
-          "Failed to change password. Please check your old password."
+        "Failed to change password. Please check your old password."
       );
     }
   };
@@ -73,67 +80,90 @@ const PasswordChange = () => {
       <div className="mx-auto w-full max-w-[50rem] bg-white rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-semibold mb-6">Change Password</h2>
 
-        <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-          {success && <div className="text-green-500 mb-4">{success}</div>}
-
-          <div className="-mx-3 flex flex-wrap">
-            <div className="w-full px-3 ">
-              <label className="mb-3 block text-base font-medium text-[#6A64F1]">
-                Old Password
-              </label>
-              <input
-                type="password"
-                name="oldPassword"
-                value={formData.oldPassword}
-                onChange={handleChange}
-                className="w-full rounded-md border border-[#6A64F1] py-3 px-6"
-              />
-            </div>
-            <div className="w-full px-3 ">
-              <label className="mb-3 block text-base font-medium text-[#6A64F1]">
-                New Password
-              </label>
-              <input
-                type="password"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-                className="w-full rounded-md border border-[#6A64F1] py-3 px-6"
-              />
-            </div>
-            <div className="w-full px-3 ">
-              <label className="mb-3 block text-base font-medium text-[#6A64F1]">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full rounded-md border border-[#6A64F1] py-3 px-6"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-6">
-            <Link
-              to="/staff-Admin/profile"
-              className="text-[#6A64F1] font-semibold hover:underline"
-            >
-              Back
-            </Link>
-            <button
-              type="submit"
-              className="bg-[#6A64F1] py-3 px-8 text-white rounded-md shadow-md"
-            >
-              Change Password
-            </button>
-          </div>
-        </form>
+       <form onSubmit={handleSubmit}>
+              <div className="-mx-3 flex flex-wrap">
+                {/* Old Password Input */}
+                <div className="w-full px-3 relative">
+                  <label className="mb-2 block text-base font-medium text-[#6A64F1]">
+                    Old Password
+                  </label>
+                  <input
+                    type={showPassword.password ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-[#6A64F1] py-3 px-6 pr-12"
+                    placeholder="Enter old password"
+                  />
+                  <span
+                    className="absolute right-6 top-1/2 mt-4 -translate-y-1/2 cursor-pointer text-gray-500"
+                    onClick={() => toggleShowPassword("password")}
+                  >
+                    {showPassword.password ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+    
+                {/* New Password Input */}
+                <div className="w-full px-3 mt-4 relative">
+                  <label className="mb-2 block text-base font-medium text-[#6A64F1]">
+                    New Password
+                  </label>
+                  <input
+                    type={showPassword.newPassword ? "text" : "password"}
+                    name="newPassword"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-[#6A64F1] py-3 px-6 pr-12"
+                    placeholder="Enter new password"
+                  />
+                  <span
+                    className="absolute right-6 top-1/2 mt-4 -translate-y-1/2 cursor-pointer text-gray-500"
+                    onClick={() => toggleShowPassword("newPassword")}
+                  >
+                    {showPassword.newPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+    
+                {/* Confirm New Password Input */}
+                <div className="w-full px-3 mt-4 relative">
+                  <label className="mb-2 block text-base font-medium text-[#6A64F1]">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type={showPassword.confirmNewPassword ? "text" : "password"}
+                    name="confirmNewPassword"
+                    value={formData.confirmNewPassword}
+                    onChange={handleChange}
+                    className="w-full rounded-md border border-[#6A64F1] py-3 px-6 pr-12"
+                    placeholder="Re-enter new password"
+                  />
+                  <span
+                    className="absolute right-6 top-1/2 mt-4 -translate-y-1/2 cursor-pointer text-gray-500"
+                    onClick={() => toggleShowPassword("confirmNewPassword")}
+                  >
+                    {showPassword.confirmNewPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+              </div>
+    
+              <div className="flex justify-between items-center mt-6">
+                <Link
+                  to="/admin/dashboard"
+                  className="text-[#6A64F1] font-semibold hover:underline"
+                >
+                  Back
+                </Link>
+                <button
+                  type="submit"
+                  className="bg-[#6A64F1] py-3 px-8 text-white rounded-md shadow-md hover:bg-[#5548c8] transition"
+                >
+                  Change Password
+                </button>
+              </div>
+            </form>
       </div>
     </div>
   );
 };
 
-export default PasswordChange;
+export default Password_Change;

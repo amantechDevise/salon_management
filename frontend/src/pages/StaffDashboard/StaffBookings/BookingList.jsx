@@ -93,7 +93,7 @@ const BookingList = () => {
             <th className="px-6 py-3">Time</th>
             <th className="px-6 py-3">Total Amount</th>
             <th className="px-6 py-3"> Payment Status</th>
-            {/* <th className="px-6 py-3">Action</th> */}
+            <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
 
@@ -172,14 +172,14 @@ const BookingList = () => {
                     "N/A"
                   )}
                 </td>
-                {/* <td className="px-6 py-4">
+                <td className="px-6 py-4">
                   <Link
                     to={`/staff-Admin/generate_Invoice/${booking.id}`}
                     className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
                   >
                     Generate Invoice
                   </Link>
-                </td> */}
+                </td>
                 {/* <td className="px-6 py-4 whitespace-nowrap">
                   <td className="px-6 py-4">
                                     <Link

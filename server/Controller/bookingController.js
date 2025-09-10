@@ -130,6 +130,7 @@ module.exports = {
         .json({ error: "An error occurred while fetching bookings." });
     }
   },
+  
   getBookings: async (req, res) => {
     try {
       const bookings = await Booking.findAll({

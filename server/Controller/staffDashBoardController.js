@@ -575,7 +575,10 @@ module.exports = {
         const booking = await Booking.findOne({
           where: { id: booking_id },
           include: [
-  
+  {
+                model: ServicePackages,
+                as: "package",
+              },
             {
               model: Customer,
               as: "customer",
@@ -680,6 +683,10 @@ module.exports = {
               model: Booking,
               as: "booking",
               include: [
+                    {
+                model: ServicePackages,
+                as: "package",
+              },
                 {
                   model: BookingService,
                   as: "bookingServices",

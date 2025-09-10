@@ -41,6 +41,7 @@ import BookingCalendar from "./pages/Bookings/BookingCalendar";
 import Invoice from "./pages/Invoices/listInvoice";
 import Staff_Invoice from "./pages/StaffDashboard/Invoices/listInvoice";
 import PasswordChange from "./pages/Users/PasswordChange";
+import Password_Change from "./pages/StaffDashboard/Users/PasswordChange";
 
 function App() {
   return (
@@ -97,13 +98,16 @@ function App() {
             <Route path="update-profile" element={<UpdatestaffProfile />} />
             <Route path="services" element={<ListServices />} />
             <Route path="packages" element={<ListStaffPackage />} />
-
+            <Route path="change_password" element={<Password_Change />} />
             <Route path="customer" element={<ListStaffCustomer />} />
             <Route path="customer/add" element={<AddstaffCustomer />} />
             <Route path="bookings" element={<BookingList />} />
             <Route path="bookings/add" element={<BookingAdd />} />
             <Route path="attendance" element={<ListAttendance />} />
-                 <Route path="generate_Invoice/:booking_id" element={<Staff_Invoice />} />
+            <Route
+              path="generate_Invoice/:booking_id"
+              element={<Staff_Invoice />}
+            />
           </Route>
           <Route
             path="/staff-Admin/feedback/:staffName/:token"

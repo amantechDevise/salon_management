@@ -150,9 +150,9 @@ const Staff_Invoice = () => {
               <tbody>
                 {booking?.bookingServices?.map((bs, idx) => (
                   <tr key={idx}>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.title}</td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.duration} mins</td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>₹{bs.service?.price}</td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.title || booking.package?.title}</td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.duration||"1.30 Hr"} </td>
+                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>₹{bs.service?.price || booking.package?.price}</td>
                   </tr>
                 ))}
               </tbody>
