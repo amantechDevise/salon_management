@@ -227,7 +227,7 @@ useEffect(() => {
               onClick={() => handleTabChange("services")}
               className={`px-4 py-2 rounded-lg font-medium ${
                 activeTab === "services"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white"
                   : "bg-gray-200 text-gray-700"
               }`}
             >
@@ -238,7 +238,7 @@ useEffect(() => {
               onClick={() => handleTabChange("package")}
               className={`px-4 py-2 rounded-lg font-medium ${
                 activeTab === "package"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white"
                   : "bg-gray-200 text-gray-700"
               }`}
             >

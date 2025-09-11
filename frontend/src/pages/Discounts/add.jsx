@@ -93,7 +93,7 @@ function AddDiscount() {
                 <button
                   type="button"
                   onClick={handleGenerateCode}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                  className="px-4 py-2 bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white rounded-md"
                 >
                   Generate
                 </button>

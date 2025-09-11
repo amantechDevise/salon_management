@@ -173,7 +173,7 @@ const ListBooking = () => {
                 <td className="px-6 py-4">
                   <Link
                     to={`/admin/generate_Invoice/${booking.id}`}
-                    className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
+                    className="bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
                   >
                     Generate Invoice
                   </Link>
