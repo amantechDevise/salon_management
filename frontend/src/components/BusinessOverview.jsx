@@ -171,9 +171,9 @@ function BusinessOverview({ data = {} }) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1 rounded capitalize ${
+              className={`px-3 py-1 rounded-full capitalize  ${
                 activeTab === tab
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-600 text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0]"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
@@ -185,7 +185,7 @@ function BusinessOverview({ data = {} }) {
           <select
             value={selectedStaff}
             onChange={(e) => setSelectedStaff(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded-full px-2 py-1 text-sm"
           >
             <option value="">All Staff</option>
             {staffList.map((s) => (

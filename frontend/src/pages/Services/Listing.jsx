@@ -85,7 +85,7 @@ const Listing = () => {
         <h2 className="text-2xl font-semibold">All Services</h2>
         <Link
           to="/admin/services/add"
-          className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
+          className="text-white  px-4 py-2 rounded-full bg-gradient-to-r from-[#8763DC] to-[#B363E0] hover:bg-gray-800 transition"
           style={{ whiteSpace: "nowrap" }}
         >
           Add Services

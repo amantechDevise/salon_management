@@ -73,9 +73,9 @@ function StatsChart({ dailyStats, weeklyStats, monthlyStats }) {
           {/* Tabs */}
           <button
             onClick={() => setActiveTab("daily")}
-            className={`px-3 py-1 rounded ${
+            className={`px-3 py-1 rounded-full ${
               activeTab === "daily"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0]"
                 : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -83,9 +83,9 @@ function StatsChart({ dailyStats, weeklyStats, monthlyStats }) {
           </button>
           <button
             onClick={() => setActiveTab("weekly")}
-            className={`px-3 py-1 rounded ${
+            className={`px-3 py-1 rounded-full ${
               activeTab === "weekly"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0]"
                 : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -93,9 +93,9 @@ function StatsChart({ dailyStats, weeklyStats, monthlyStats }) {
           </button>
           <button
             onClick={() => setActiveTab("monthly")}
-            className={`px-3 py-1 rounded ${
+            className={`px-3 py-1 rounded-full ${
               activeTab === "monthly"
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] "
                 : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -106,7 +106,7 @@ function StatsChart({ dailyStats, weeklyStats, monthlyStats }) {
           <select
             value={selectedStaff}
             onChange={(e) => setSelectedStaff(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
+            className="border rounded-full px-2 py-1 text-sm "
           >
             <option value="">All Staff</option>
             {staffList.map((s) => (
@@ -122,7 +122,7 @@ function StatsChart({ dailyStats, weeklyStats, monthlyStats }) {
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="border rounded px-2 py-1 text-sm"
+              className="border rounded-full px-2 py-1 text-sm "
             />
           )}
         </div>

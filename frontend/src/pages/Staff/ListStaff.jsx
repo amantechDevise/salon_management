@@ -124,7 +124,7 @@ const ListStaff = () => {
         </div>
         <Link
           to="/admin/staff/add"
-          className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
+          className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
           style={{ whiteSpace: "nowrap" }}
         >
           Add Staff

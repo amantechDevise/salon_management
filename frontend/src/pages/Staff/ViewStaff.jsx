@@ -93,7 +93,7 @@ function ViewStaff() {
         <div className="flex gap-4 mb-4">
           <button
             onClick={() => setActiveTab("customers")}
-            className={`px-4 py-2 rounded ${
+            className={`px-4 py-2 rounded-full bg-gradient-to-r from-[#8763DC] to-[#B363E0] ${
               activeTab === "customers"
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -103,7 +103,7 @@ function ViewStaff() {
           </button>
           <button
             onClick={() => setActiveTab("feedback")}
-            className={`px-4 py-2 rounded ${
+            className={`px-4 py-2 rounded-full bg-gradient-to-r from-[#8763DC] to-[#B363E0] ${
               activeTab === "feedback"
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-200 text-gray-700"

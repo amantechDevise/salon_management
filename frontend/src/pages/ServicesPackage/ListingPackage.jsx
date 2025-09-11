@@ -64,7 +64,7 @@ const ListingPackage = () => {
         <h2 className="text-2xl font-semibold">All Packages</h2>
         <Link
           to="/admin/packages/add"
-          className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition"
+          className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
         >
           Add Package
         </Link>

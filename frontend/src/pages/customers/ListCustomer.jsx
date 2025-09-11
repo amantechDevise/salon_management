@@ -63,7 +63,7 @@ const ListCustomer = () => {
 
         <Link
           to="/admin/customer/add"
-          className="text-white bg-black px-4 py-2 rounded hover:bg-gray-800 transition whitespace-nowrap"
+          className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition whitespace-nowrap"
         >
           Add Customer
         </Link>

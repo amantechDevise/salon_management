@@ -64,9 +64,9 @@ function Dashboard() {
         </div>
 
         {/* Total Customer */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 ">
           <Link to={"/admin/customer"}>
-            <div className="flex items-center">
+            <div className="flex items-center ">
               <div className="p-3 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
                 <FaUsers className="text-2xl" />
               </div>

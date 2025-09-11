@@ -121,7 +121,7 @@ const UserstaffProfile = () => {
             <div className="flex gap-4">
               <button
                 onClick={() => navigate("/staff-Admin/update-profile")}
-                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md shadow-md transition"
+                className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-[#8763DC] to-[#B363E0] hover:bg-indigo-700 text-white rounded-full shadow-md transition"
               >
                 <i className="ri-edit-2-line" /> Edit Profile
               </button>

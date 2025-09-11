@@ -288,7 +288,7 @@ function AddstaffCustomer() {
 
             <button
               type="submit"
-              className="hover:shadow-form rounded-md bg-[#6A64F1] 
+              className="hover:shadow-form rounded-full bg-gradient-to-r from-[#8763DC] to-[#B363E0] 
               py-3 px-8 text-center text-base font-semibold text-white outline-none"
             >
               Add

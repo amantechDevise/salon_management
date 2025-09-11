@@ -401,7 +401,7 @@ useEffect(() => {
             </Link>
             <button
               type="submit"
-              className="rounded-md bg-[#6A64F1] py-3 px-8 text-white font-semibold"
+              className="rounded-full  bg-gradient-to-r from-[#8763DC] to-[#B363E0] py-3 px-8 text-white font-semibold"
             >
               Add Booking
             </button>

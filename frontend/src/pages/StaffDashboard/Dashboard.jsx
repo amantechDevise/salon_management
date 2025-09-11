@@ -153,7 +153,7 @@ function StaffDashboard() {
             </h2>
             <button
               onClick={handleAttendance}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="px-4 py-2 bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white rounded-full "
             >
               {buttonLabel}
             </button>

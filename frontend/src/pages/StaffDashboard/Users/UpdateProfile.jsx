@@ -151,7 +151,7 @@ const UpdatestaffProfile = () => {
             </Link>
             <button
               type="submit"
-              className="bg-[#6A64F1] py-3 px-8 text-white rounded-md shadow-md"
+              className="bg-gradient-to-r from-[#8763DC] to-[#B363E0] py-3 px-8 text-white rounded-full shadow-md"
             >
               Update Profile
             </button>
