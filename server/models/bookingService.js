@@ -10,27 +10,22 @@ module.exports = function (sequelize, DataTypes) {
     staff_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 0
     },
     service_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 0
     },
      customer_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 0
     },
       booking_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: 0
     },
        receptionist_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
+        allowNull: true,
       },
   
   

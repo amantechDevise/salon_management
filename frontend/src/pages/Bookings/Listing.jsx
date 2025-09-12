@@ -75,11 +75,11 @@ const ListBooking = () => {
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Bookings</h2>
-          <Link
+        <Link
           to={"/admin/bookings/calendar"}
           className="  font-normal text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
         >
-         Show Booking 
+          Show Booking
         </Link>
         <Link
           to="/admin/bookings/add"
@@ -87,7 +87,6 @@ const ListBooking = () => {
         >
           Add Booking
         </Link>
-      
       </div>
 
       <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400">
@@ -135,15 +134,33 @@ const ListBooking = () => {
                     .join(", ") || booking.package?.title}
                 </td>
                 <td className="px-2 py-4">
-                  {(
-                    booking.bookingServices?.reduce(
-                      (total, ps) =>
-                        total +
-                        Number(ps.service?.price || booking.package?.price),
-                      0
-                    ) || 0
-                  ).toFixed(2) || booking.package?.price}
+                  {(() => {
+                    const services = booking.bookingServices || [];
+
+                    const servicePrices = services
+                      .map((ps) => ps.service?.price)
+                      .filter(
+                        (p) =>
+                          p !== undefined &&
+                          p !== null &&
+                          p !== "" &&
+                          !isNaN(Number(p))
+                      )
+                      .map((p) => Number(p));
+
+                    const servicesTotal = servicePrices.length
+                      ? servicePrices.reduce((a, b) => a + b, 0)
+                      : 0;
+
+                    const displayValue =
+                      servicesTotal > 0
+                        ? servicesTotal
+                        : Number(booking.package?.price || 0);
+
+                    return displayValue.toFixed(2);
+                  })()}
                 </td>
+
                 <td className="px-2 py-4">
                   {booking.date
                     ? new Date(booking.date).toLocaleDateString("en-GB", {

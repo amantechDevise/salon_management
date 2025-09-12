@@ -25,12 +25,12 @@ module.exports = {
         where: { id: userid, role: 2 },
         attributes: ["name", "email", "image"],
       });
- const totalStaff = await User.count({where: { role: 3 }});
+      const totalStaff = await User.count({ where: { role: 3 } });
       const totleCustomer = await Customer.count();
       const totleServise = await Service.count();
       res.status(200).json({
         message: "Dashboard data fetched",
-        data: { totleCustomer, totleServise, loginUser,totalStaff },
+        data: { totleCustomer, totleServise, loginUser, totalStaff },
       });
     } catch (error) {
       console.error(error);
@@ -41,14 +41,14 @@ module.exports = {
   // -------------------start userProfile nd update------------
 
 
-    getStaff: async (req, res) => {
+  getStaff: async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     try {
       const offset = (page - 1) * limit;
 
       const { rows, count } = await User.findAndCountAll({
-        where: { role:[3] },
+        where: { role: [3] },
         order: [["createdAt", "DESC"]],
         offset: offset,
         limit: parseInt(limit),
@@ -79,7 +79,7 @@ module.exports = {
       const imageFile = req.files ? req.files.image : null;
 
       // Check if email already exists
-      const existingUser = await User.findOne({ where: { email,role: 3 } });
+      const existingUser = await User.findOne({ where: { email, role: 3 } });
       if (existingUser) {
         return res.status(400).json({ message: "Email already in use" });
       }
@@ -97,104 +97,104 @@ module.exports = {
         image: imagePath || "",
         role: 3,
       });
-     
+
       res
         .status(201)
         .json({
           message: "Staff member added successfully",
-          data: newStaff ,
+          data: newStaff,
         });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
-    getStaffById: async (req, res) => {
-      try {
-        const { id } = req.params;
-  
-        const staff = await User.findOne({
-          where: { id, role: 3 },
-          include: [
-            {
-              model: Customer,
-              as: "customers",
-              include: [
-                {
-                  model: Service,
-                  as: "service",
-                  attributes: ["id", "title", "description", "image", "price"],
-                },
-              ],
-              order: [["createdAt", "DESC"]], // 👈 customers ko latest first
-            },
-            {
-              model: Rating,
-              as: "ratingsReceived",
-              include: [
-                {
-                  model: Customer,
-                  as: "customer",
-                  attributes: ["id", "name", "email"], // 👈 to show who gave feedback
-                },
-              ],
-            },
-          ],
-          attributes: ["id", "name", "email"],
-        });
-  
-        if (!staff) {
-          return res.status(404).json({ message: "Staff not found" });
-        }
-  
-        res.status(200).json({
-          message: "Staff details",
-          data: staff,
-        });
-      } catch (error) {
-        console.error("Error fetching staff by ID:", error);
-        res.status(500).json({ message: "Internal server error" });
+  getStaffById: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const staff = await User.findOne({
+        where: { id, role: 3 },
+        include: [
+          {
+            model: Customer,
+            as: "customers",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "description", "image", "price"],
+              },
+            ],
+            order: [["createdAt", "DESC"]], // 👈 customers ko latest first
+          },
+          {
+            model: Rating,
+            as: "ratingsReceived",
+            include: [
+              {
+                model: Customer,
+                as: "customer",
+                attributes: ["id", "name", "email"], // 👈 to show who gave feedback
+              },
+            ],
+          },
+        ],
+        attributes: ["id", "name", "email"],
+      });
+
+      if (!staff) {
+        return res.status(404).json({ message: "Staff not found" });
       }
-    },
-    updateStaffStatus: async (req, res) => {
-      try {
-        const { id } = req.params;
-        const { status } = req.body;
-  
-        const staff = await User.findOne({ where: { id } });
-        if (!staff) return res.status(404).json({ message: "Staff not found" });
-  
-        // Update status
-        staff.status = status;
-        await staff.save();
-  
-        res
-          .status(200)
-          .json({ message: "Staff status updated successfully", data: staff });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+
+      res.status(200).json({
+        message: "Staff details",
+        data: staff,
+      });
+    } catch (error) {
+      console.error("Error fetching staff by ID:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  updateStaffStatus: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const staff = await User.findOne({ where: { id } });
+      if (!staff) return res.status(404).json({ message: "Staff not found" });
+
+      // Update status
+      staff.status = status;
+      await staff.save();
+
+      res
+        .status(200)
+        .json({ message: "Staff status updated successfully", data: staff });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  deleteStaff: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const staff = await User.findOne({ where: { id, role: 3 } });
+      if (!staff) return res.status(404).json({ message: "Staff not found" });
+
+      // Delete image if exists
+      if (staff.image) {
+        const imagePath = path.join(__dirname, "..", "public", staff.image);
+        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
       }
-    },
-    deleteStaff: async (req, res) => {
-      try {
-        const { id } = req.params;
-        const staff = await User.findOne({ where: { id, role: 3 } });
-        if (!staff) return res.status(404).json({ message: "Staff not found" });
-  
-        // Delete image if exists
-        if (staff.image) {
-          const imagePath = path.join(__dirname, "..", "public", staff.image);
-          if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-        }
-  
-        await staff.destroy();
-        res.status(200).json({ message: "Staff deleted successfully" });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
-      }
-    },
+
+      await staff.destroy();
+      res.status(200).json({ message: "Staff deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 
   getProfile: async (req, res) => {
     try {
@@ -298,68 +298,68 @@ module.exports = {
 
 
   addCustomers: async (req, res) => {
-  try {
-    const { service_id, staff_id, name, email, dob, address, phone, status } =
-      req.body;
+    try {
+      const { service_id, staff_id, name, email, dob, address, phone, status } =
+        req.body;
 
-    const imageFile = req.files ? req.files.image : null;
-    let imagePath = null;
+      const imageFile = req.files ? req.files.image : null;
+      let imagePath = null;
 
-    if (imageFile) {
-      imagePath = await uploadImage(imageFile);
+      if (imageFile) {
+        imagePath = await uploadImage(imageFile);
+      }
+
+      const userId = req.staff.id; // staff (logged in user)
+      const staffIds = staff_id ? staff_id.split(",").map((id) => id.trim()) : [];
+
+      // Create or find customer by email
+      const [customer, created] = await Customer.findOrCreate({
+        where: { email },
+        defaults: {
+          name,
+          email,
+          receptionist_id: userId,
+          staff_id: staffIds[0] || 0, // assign first staff for main record
+          service_id,
+          dob,
+          address,
+          image: imagePath || "",
+          phone,
+          status: status || 1,
+          visit_count: 0,
+        },
+      });
+
+      // If customer already exists, you could update visit count (optional)
+      // if (!created) {
+      //   customer.visit_count += 1;
+      //   await customer.save();
+      // }
+
+      // Build relationships for CustomerService (customer ↔ staff)
+      const customerServices = staffIds.map((sid) => ({
+        customer_id: customer.id,
+        staff_id: sid,
+        // service_id: service_id,  // uncomment if you also want to link service
+      }));
+
+      // Save relationships
+      const createdRelationships = await CustomerService.bulkCreate(
+        customerServices
+      );
+
+      res.status(201).json({
+        message: "Customer services recorded successfully",
+        data: {
+          customer,
+          services: createdRelationships,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const userId = req.staff.id; // staff (logged in user)
-    const staffIds = staff_id ? staff_id.split(",").map((id) => id.trim()) : [];
-
-    // Create or find customer by email
-    const [customer, created] = await Customer.findOrCreate({
-      where: { email },
-      defaults: {
-        name,
-        email,
-        receptionist_id: userId,
-        staff_id: staffIds[0] || 0, // assign first staff for main record
-        service_id,
-        dob,
-        address,
-        image: imagePath || "",
-        phone,
-        status: status || 1,
-        visit_count: 0,
-      },
-    });
-
-    // If customer already exists, you could update visit count (optional)
-    // if (!created) {
-    //   customer.visit_count += 1;
-    //   await customer.save();
-    // }
-
-    // Build relationships for CustomerService (customer ↔ staff)
-    const customerServices = staffIds.map((sid) => ({
-      customer_id: customer.id,
-      staff_id: sid,
-      // service_id: service_id,  // uncomment if you also want to link service
-    }));
-
-    // Save relationships
-    const createdRelationships = await CustomerService.bulkCreate(
-      customerServices
-    );
-
-    res.status(201).json({
-      message: "Customer services recorded successfully",
-      data: {
-        customer,
-        services: createdRelationships,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-},
+  },
 
 
   // -------------------end customer ------------
@@ -410,7 +410,7 @@ module.exports = {
             model: Customer,
             as: "customer",
           },
-             {
+          {
             model: ServicePackages,
             as: "package",
             attributes: ["id", "title", "price"],
@@ -428,7 +428,7 @@ module.exports = {
           },
 
         ],
-        where: { staff_id: userId },
+        where: { receptionist_id: userId },
       });
 
       res.status(200).json({
@@ -448,7 +448,7 @@ module.exports = {
       const {
         customer_id,
         staff_id,
-          package_id,
+        package_id,
         service_id,
         date,
         time,
@@ -459,7 +459,7 @@ module.exports = {
 
       // ✅ Parse staff_id and service_id
       const serviceIds = service_id.split(",").map((id) => id.trim());
-  const staffIds = staff_id.split(",").map((id) => id.trim());
+      const staffIds = staff_id.split(",").map((id) => id.trim());
 
       // ✅ Get logged-in staff/user ID
       const userId = req.staff.id; // Depending on your auth middleware
@@ -477,16 +477,16 @@ module.exports = {
       const booking = await Booking.create({
         customer_id,
         date,
-        package_id:package_id||1,
+        package_id: package_id || 1,
         receptionist_id: userId,
-         staff_id: staffIds[0]||1, 
-        service_id: serviceIds[0]||0, // Assuming first service as primary; update logic if needed
+        staff_id: staffIds[0] || 1,
+        service_id: serviceIds[0] || 0, // Assuming first service as primary; update logic if needed
         time,
         status: 1,
       });
 
       // ✅ Create related service records
-   const bookingServiceRecords = [];
+      const bookingServiceRecords = [];
       for (const sId of staffIds) {
         for (const svcId of serviceIds) {
           bookingServiceRecords.push({
@@ -494,7 +494,7 @@ module.exports = {
             customer_id,
             receptionist_id: userId,
             staff_id: sId,
-            service_id: svcId ||[],
+            service_id: svcId || [],
           });
         }
       }
@@ -544,7 +544,7 @@ module.exports = {
       });
 
       return res.status(200).json({
-        data: { service, customer,staff },
+        data: { service, customer, staff },
       });
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -733,163 +733,167 @@ module.exports = {
 
 
 
-    generateInvoice: async (req, res) => {
-      try {
-        const { booking_id } = req.params;
-  
-        const booking = await Booking.findOne({
-          where: { id: booking_id },
-          include: [
-  {
-                model: ServicePackages,
-                as: "package",
-              },
-            {
-              model: Customer,
-              as: "customer",
-              attributes: ["id", "name", "email", "phone", "address"],
-           
-            },
-            {
-              model: BookingService,
-              as: "bookingServices",
-              include: [
-                {
-                  model: Service,
-                  as: "service",
-                  attributes: ["id", "title", "price", "duration"],
-                },
-              ],
-            },
-          ],
-        });
-  
-        if (!booking) {
-          return res.status(404).json({
-            success: false,
-            message: "Booking not found",
-          });
-        }
-  
-        // ✅ Calculate totals from all services (force number)
-        let totalAmount = 0;
-        let totalDuration = 0;
-  
-        if (booking.bookingServices && booking.bookingServices.length > 0) {
-          booking.bookingServices.forEach(bs => {
-            const price = Number(bs.service?.price) || 0;
-            const duration = Number(bs.service?.duration) || 0;
-  
-            totalAmount += price;
-            totalDuration += duration;
-          });
-        }
-  
-        // 🔹 Check for discount if applicable
-        let discount = null;
-        let finalAmount = totalAmount;
-  
-        if (booking.discount_id && booking.discount_id !== 0) {
-          discount = await Discount.findOne({
-            where: { id: booking.discount_id },
-          });
-  
-          if (discount) {
-            if (discount.type === 1) {
-              // Percentage discount
-              const discountValue = (totalAmount * discount.value) / 100;
-              finalAmount = totalAmount - discountValue;
-            } else if (discount.type === 2) {
-              // Fixed discount
-              finalAmount = totalAmount - discount.value;
-            }
-          }
-        }
-  
-        // 🔹 Create or update invoice
-        const [invoice, created] = await Invoice.findOrCreate({
-          where: { booking_id: booking_id },
-          defaults: {
-            customer_id: booking.customer_id,
-            discount_id: booking.discount_id || 0,
-            total_amount: totalAmount,
-            final_amount: finalAmount,
-            total_duration: totalDuration,
-            status: 1, // Pending
+  generateInvoice: async (req, res) => {
+    try {
+      const { booking_id } = req.params;
+
+      const booking = await Booking.findOne({
+        where: { id: booking_id },
+        include: [
+          {
+            model: ServicePackages,
+            as: "package",
+            attributes: ["id", "title", "price",],
           },
-        });
-  
-        if (!created) {
-          // Update existing invoice if needed
-          await invoice.update({
-            total_amount: totalAmount,
-            final_amount: finalAmount,
-            discount_id: booking.discount_id || 0,
-            total_duration: totalDuration,
-          });
-        }
-        // 🔹 Get the complete invoice with all relations
-        const completeInvoice = await Invoice.findOne({
-          where: { id: invoice.id },
-          include: [
-            {
-              model: Customer,
-              as: "customer",
-              attributes: ["id", "name", "email", "phone", "address"],
-                 include: [
-                {
-                  model: User,
-                  as: "staff",
-                  attributes: ["id", "name", "email", "phone",],
-                },
-              ]
-            },
-            {
-              model: Booking,
-              as: "booking",
-              include: [
-                    {
-                model: ServicePackages,
-                as: "package",
-              },
-                {
-                  model: BookingService,
-                  as: "bookingServices",
-                  include: [
-                    {
-                      model: Service,
-                      as: "service",
-                      attributes: ["id", "title", "price", "duration"],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              model: Discount,
-              as: "discount",
-            },
-          ],
-        });
-  
-        res.status(200).json({
-          success: true,
-          message: "Invoice generated successfully",
-          data: {
-            ...completeInvoice.toJSON(),
-            totalAmount,
-            finalAmount,
-            totalDuration,
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "name", "email", "phone", "address"],
+
           },
-        });
-      } catch (error) {
-        console.error("Error generating invoice:", error);
-        res.status(500).json({
+          {
+            model: BookingService,
+            as: "bookingServices",
+            include: [
+              {
+                model: Service,
+                as: "service",
+                attributes: ["id", "title", "price", "duration"],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!booking) {
+        return res.status(404).json({
           success: false,
-          message: "Internal server error",
-          error: error.message,
+          message: "Booking not found",
         });
       }
-    },
+
+       console.log(booking.package);
+       
+      // ✅ Calculate totals from all services (force number)
+      let totalAmount = 0;
+      let totalDuration = 0;
+
+if (booking.bookingServices && booking.bookingServices.length > 1) {
+  booking.bookingServices.forEach(bs => {
+    const price = Number(bs.service?.price) || 0;
+    const duration = Number(bs.service?.duration) || 0;
+    totalAmount += price;
+    totalDuration += duration;
+  });
+} else if (booking.package?.price) {
   
+  totalAmount = Number(booking.package.price);
+}
+
+      let discount = null;
+      let finalAmount = totalAmount;
+
+      if (booking.discount_id && booking.discount_id !== 0) {
+        discount = await Discount.findOne({
+          where: { id: booking.discount_id },
+        });
+
+        if (discount) {
+          if (discount.type === 1) {
+            // Percentage discount
+            const discountValue = (totalAmount * discount.value) / 100;
+            finalAmount = totalAmount - discountValue;
+          } else if (discount.type === 2) {
+            // Fixed discount
+            finalAmount = totalAmount - discount.value;
+          }
+        }
+      }
+
+      // 🔹 Create or update invoice
+      const [invoice, created] = await Invoice.findOrCreate({
+        where: { booking_id: booking_id },
+        defaults: {
+          customer_id: booking.customer_id,
+          discount_id: booking.discount_id || 0,
+          total_amount: totalAmount,
+          final_amount: finalAmount,
+          total_duration: totalDuration,
+          status: 1, // Pending
+        },
+      });
+
+      if (!created) {
+        // Update existing invoice if needed
+        await invoice.update({
+          total_amount: totalAmount,
+          final_amount: finalAmount,
+          discount_id: booking.discount_id || 0,
+          total_duration: totalDuration,
+        });
+      }
+      // 🔹 Get the complete invoice with all relations
+      const completeInvoice = await Invoice.findOne({
+        where: { id: invoice.id },
+        include: [
+          {
+            model: Customer,
+            as: "customer",
+            attributes: ["id", "name", "email", "phone", "address"],
+            include: [
+              {
+                model: User,
+                as: "staff",
+                attributes: ["id", "name", "email", "phone",],
+              },
+            ]
+          },
+          {
+            model: Booking,
+            as: "booking",
+            include: [
+              {
+                model: ServicePackages,
+                as: "package",
+              },
+              {
+                model: BookingService,
+                as: "bookingServices",
+                include: [
+                  {
+                    model: Service,
+                    as: "service",
+                    attributes: ["id", "title", "price", "duration"],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: Discount,
+            as: "discount",
+          },
+        ],
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Invoice generated successfully",
+        data: {
+          ...completeInvoice.toJSON(),
+          totalAmount,
+          finalAmount,
+          totalDuration,
+        },
+      });
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
+
 };

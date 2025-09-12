@@ -148,13 +148,33 @@ const Invoice = () => {
                 </tr>
               </thead>
               <tbody>
-                {booking?.bookingServices?.map((bs, idx) => (
-                  <tr key={idx}>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.title|| booking.package?.title}</td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>{bs.service?.duration || "1.30 Hr"} </td>
-                    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>₹{bs.service?.price || booking.package?.price}</td>
-                  </tr>
-                ))}
+            {booking?.bookingServices && booking.bookingServices.length > 0 ? (
+  booking.bookingServices.map((bs, idx) => (
+    <tr key={idx}>
+      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+        {bs.service?.title || booking.package?.title}
+      </td>
+      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+        {bs.service?.duration || booking.package?.duration || "1.30 Hr"}
+      </td>
+      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+        ₹{bs.service?.price || booking.package?.price}
+      </td>
+    </tr>
+  ))
+) : booking.package ? (
+  <tr>
+    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+      {booking.package.title}
+    </td>
+    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+      {booking.package.duration || "1.30 Hr"}
+    </td>
+    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
+      ₹{booking.package.price}
+    </td>
+  </tr>
+) : null}
               </tbody>
             </table>
           </div>

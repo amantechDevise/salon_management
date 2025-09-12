@@ -8,10 +8,11 @@ module.exports = {
       const booking = await Booking.findOne({
         where: { id: booking_id },
         include: [
-  {
-                model: ServicePackages,
-                as: "package",
-              },
+          {
+            model: ServicePackages,
+            as: "package",
+          },
+
           {
             model: Customer,
             as: "customer",
@@ -32,6 +33,7 @@ module.exports = {
         ],
       });
 
+
       if (!booking) {
         return res.status(404).json({
           success: false,
@@ -45,12 +47,14 @@ module.exports = {
 
       if (booking.bookingServices && booking.bookingServices.length > 0) {
         booking.bookingServices.forEach(bs => {
-          const price = Number(bs.service?.price) || Number(booking.package?.price);
+          const price = Number(bs.service?.price) || 0;
           const duration = Number(bs.service?.duration) || 0;
 
           totalAmount += price;
           totalDuration += duration;
         });
+      } else if (booking.package?.price) {
+        totalAmount = Number(booking.package.price);
       }
 
       // 🔹 Check for discount if applicable

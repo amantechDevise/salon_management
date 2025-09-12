@@ -17,10 +17,10 @@ const Staff_Invoice = () => {
     const fetchInvoice = async () => {
       try {
         const res = await axios.get(
-          `${API_BASE_URL}/api/generate_Invoice/${booking_id}`,
+          `${API_BASE_URL}/staffApi/generate_Invoice/${booking_id}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
             },
           }
         );

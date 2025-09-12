@@ -174,83 +174,94 @@ module.exports = {
     }
   },
 
-  addBooking: async (req, res) => {
-    try {
-      const {
-        customer_id,
-        staff_id,
-        service_id,
-        package_id,
-        date,
-        time,
-        isRecurring,
-        frequency,
-        endDate,
-      } = req.body;
+addBooking: async (req, res) => {
+  try {
+    const {
+      customer_id,
+      staff_id,
+      service_id,
+      package_id,
+      date,
+      time,
+      isRecurring,
+      frequency,
+      endDate,
+    } = req.body;
 
-      const staffIds = staff_id.split(",").map((id) => id.trim());
-      const serviceIds = service_id.split(",").map((id) => id.trim());
+    // Split aur number me convert karo, empty ko hatao
+    const staffIds = staff_id
+      ? staff_id.split(",").map((id) => parseInt(id.trim(), 10)).filter(Boolean)
+      : [];
 
-      // Find the customer first
-      const customer = await Customer.findByPk(customer_id);
-      if (!customer) {
-        return res.status(404).json({ error: "Customer not found" });
-      }
+    const serviceIds = service_id
+      ? service_id.split(",").map((id) => parseInt(id.trim(), 10)).filter(Boolean)
+      : [];
 
-      // Increment visit count
-      customer.visit_count = (customer.visit_count || 0) + 1;
-      await customer.save();
+    // Find the customer first
+    const customer = await Customer.findByPk(customer_id);
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
 
-      // 1️⃣ First booking record → just store first staff + first service
-      const booking = await Booking.create({
-        customer_id,
-        package_id:package_id||1,
-        date,
-        staff_id: staffIds[0]||1, // just first one
-        service_id: serviceIds[0]||0, // just first one
-        time,
-        status: 1,
-      });
+    // Increment visit count
+    customer.visit_count = (customer.visit_count || 0) + 1;
+    await customer.save();
 
-      // 2️⃣ Insert all combinations in bookingservice
-      const bookingServiceRecords = [];
-      for (const sId of staffIds) {
-        for (const svcId of serviceIds) {
-          bookingServiceRecords.push({
-            booking_id: booking.id,
-            customer_id,
-            staff_id: sId,
-            service_id: svcId ||[],
-          });
-        }
-      }
-      await BookingService.bulkCreate(bookingServiceRecords);
+    // 1️⃣ First booking record → just store first staff + first service
+    const booking = await Booking.create({
+      customer_id,
+      package_id: package_id || 1,
+      date,
+      staff_id: staffIds.length > 0 ? staffIds[0] : null,
+      service_id: serviceIds.length > 0 ? serviceIds[0] : null,
+      time,
+      status: 1,
+    });
 
-      if (isRecurring) {
-        await RecurringBooking.create({
+    // 2️⃣ Insert all combinations in bookingservice
+    const bookingServiceRecords = [];
+    for (const sId of staffIds) {
+      for (const svcId of serviceIds) {
+        bookingServiceRecords.push({
           booking_id: booking.id,
-          frequency,
-          endDate,
+          customer_id,
+          staff_id: sId,
+          service_id: svcId, // no [] or ''
         });
       }
+    }
 
-      res.status(201).json({
-        message: isRecurring
-          ? "Recurring booking added successfully with services"
-          : "Booking added successfully with services",
-        data: {
-          customer,
-          booking,
-          bookingServices: bookingServiceRecords,
-        },
-      });
-    } catch (error) {
-      console.error("Error adding booking:", error);
-      res.status(500).json({
-        error: "An error occurred while adding booking.",
+    if (bookingServiceRecords.length > 0) {
+      await BookingService.bulkCreate(bookingServiceRecords);
+    }
+
+    // 3️⃣ Recurring booking
+    if (isRecurring) {
+      await RecurringBooking.create({
+        booking_id: booking.id,
+        frequency,
+        endDate,
       });
     }
-  },
+
+    res.status(201).json({
+      message: isRecurring
+        ? "Recurring booking added successfully with services"
+        : "Booking added successfully with services",
+      data: {
+        customer,
+        booking,
+        bookingServices: bookingServiceRecords,
+      },
+    });
+  } catch (error) {
+    console.error("Error adding booking:", error);
+    res.status(500).json({
+      error: "An error occurred while adding booking.",
+    });
+  }
+},
+
 
   getAll: async (req, res) => {
     try {
