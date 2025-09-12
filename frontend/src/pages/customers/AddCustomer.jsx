@@ -63,18 +63,22 @@ function AddCustomer() {
 
   // Fetch staff from API
   const fetchStaff = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/staff`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
-      setStaff(response.data.data);
-    } catch (error) {
-      console.error("Error fetching staff:", error);
-      toast.error("Failed to load staff");
-    }
-  };
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/staff`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    });
+
+    // Sirf role === 3 wale staff hi set karo
+    const filteredStaff = response.data.data.filter((user) => user.role === 3);
+
+    setStaff(filteredStaff);
+  } catch (error) {
+    console.error("Error fetching staff:", error);
+    toast.error("Failed to load staff");
+  }
+};
 
   useEffect(() => {
     fetchServices();

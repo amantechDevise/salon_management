@@ -113,7 +113,7 @@ function EditProduct() {
   return (
     <div className="flex items-center justify-center p-12">
       <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-semibold mb-6">Product Update</h2>
+        <h2 className="text-2xl font-semibold mb-6">Staff / Receptionist Update</h2>
         <form onSubmit={handleSubmit}>
           <div className="-mx-3 flex flex-wrap">
             <div className="w-full px-3 sm:w-1/2">

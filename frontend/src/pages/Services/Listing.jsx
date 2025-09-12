@@ -98,6 +98,7 @@ const Listing = () => {
             <th className="px-6 py-3">SR.NO</th>
             <th className="px-6 py-3">Title</th>
             <th className="px-6 py-3">Price</th>
+            <th className="px-6 py-3">GST</th>
             <th className="px-6 py-3">Duration</th>
             <th className="px-6 py-3">Status</th>
             <th className="px-6 py-3">Action</th>
@@ -126,6 +127,7 @@ const Listing = () => {
                   {service.title}
                 </td>
                 <td className="px-6 py-4">{service.price}</td>
+                <td className="px-6 py-4">{service.gst}</td>
                 <td className="px-6 py-4">{service.duration}</td>
                 <td className="px-6 py-4">
                   <button

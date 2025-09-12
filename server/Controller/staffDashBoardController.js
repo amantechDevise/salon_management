@@ -11,9 +11,12 @@ const {
   PackageServices,
   Discount,
   Invoice,
+  Rating,
 } = require("../models");
 const { Op } = require("sequelize");
 const { uploadImage } = require("../uilts/imageUplord");
+const path = require("path");
+const fs = require("fs");
 module.exports = {
   dashboard: async (req, res) => {
     try {
@@ -22,12 +25,12 @@ module.exports = {
         where: { id: userid, role: 2 },
         attributes: ["name", "email", "image"],
       });
-
+ const totalStaff = await User.count({where: { role: 3 }});
       const totleCustomer = await Customer.count();
       const totleServise = await Service.count();
       res.status(200).json({
         message: "Dashboard data fetched",
-        data: { totleCustomer, totleServise, loginUser },
+        data: { totleCustomer, totleServise, loginUser,totalStaff },
       });
     } catch (error) {
       console.error(error);
@@ -36,6 +39,162 @@ module.exports = {
   },
 
   // -------------------start userProfile nd update------------
+
+
+    getStaff: async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    try {
+      const offset = (page - 1) * limit;
+
+      const { rows, count } = await User.findAndCountAll({
+        where: { role:[3] },
+        order: [["createdAt", "DESC"]],
+        offset: offset,
+        limit: parseInt(limit),
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+        message: "Get all Receptionist",
+        data: rows,
+        meta: {
+          totalRecords: count,
+          totalPages: totalPages,
+          currentPage: parseInt(page),
+          perPage: parseInt(limit),
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching Receptionist members:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  addStaff: async (req, res) => {
+    try {
+      const { name, email, phone } = req.body;
+
+      const imageFile = req.files ? req.files.image : null;
+
+      // Check if email already exists
+      const existingUser = await User.findOne({ where: { email,role: 3 } });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+
+      // Upload image if provided
+      let imagePath = null;
+      if (imageFile) {
+        imagePath = await uploadImage(imageFile);
+      }
+      // Create new staff
+      const newStaff = await User.create({
+        name,
+        email,
+        phone,
+        image: imagePath || "",
+        role: 3,
+      });
+     
+      res
+        .status(201)
+        .json({
+          message: "Staff member added successfully",
+          data: newStaff ,
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+    getStaffById: async (req, res) => {
+      try {
+        const { id } = req.params;
+  
+        const staff = await User.findOne({
+          where: { id, role: 3 },
+          include: [
+            {
+              model: Customer,
+              as: "customers",
+              include: [
+                {
+                  model: Service,
+                  as: "service",
+                  attributes: ["id", "title", "description", "image", "price"],
+                },
+              ],
+              order: [["createdAt", "DESC"]], // 👈 customers ko latest first
+            },
+            {
+              model: Rating,
+              as: "ratingsReceived",
+              include: [
+                {
+                  model: Customer,
+                  as: "customer",
+                  attributes: ["id", "name", "email"], // 👈 to show who gave feedback
+                },
+              ],
+            },
+          ],
+          attributes: ["id", "name", "email"],
+        });
+  
+        if (!staff) {
+          return res.status(404).json({ message: "Staff not found" });
+        }
+  
+        res.status(200).json({
+          message: "Staff details",
+          data: staff,
+        });
+      } catch (error) {
+        console.error("Error fetching staff by ID:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    },
+    updateStaffStatus: async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { status } = req.body;
+  
+        const staff = await User.findOne({ where: { id } });
+        if (!staff) return res.status(404).json({ message: "Staff not found" });
+  
+        // Update status
+        staff.status = status;
+        await staff.save();
+  
+        res
+          .status(200)
+          .json({ message: "Staff status updated successfully", data: staff });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    },
+    deleteStaff: async (req, res) => {
+      try {
+        const { id } = req.params;
+        const staff = await User.findOne({ where: { id, role: 3 } });
+        if (!staff) return res.status(404).json({ message: "Staff not found" });
+  
+        // Delete image if exists
+        if (staff.image) {
+          const imagePath = path.join(__dirname, "..", "public", staff.image);
+          if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        }
+  
+        await staff.destroy();
+        res.status(200).json({ message: "Staff deleted successfully" });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    },
 
   getProfile: async (req, res) => {
     try {
@@ -139,70 +298,69 @@ module.exports = {
 
 
   addCustomers: async (req, res) => {
-    try {
-      const { service_id, name, email, dob, address, phone, status } = req.body;
+  try {
+    const { service_id, staff_id, name, email, dob, address, phone, status } =
+      req.body;
 
-      const imageFile = req.files ? req.files.image : null;
-      let imagePath = null;
+    const imageFile = req.files ? req.files.image : null;
+    let imagePath = null;
 
-      if (imageFile) {
-        imagePath = await uploadImage(imageFile);
-      }
-
-      const userId = req.staff.id; // single staff id
-      // const serviceIds = service_id.split(",").map((id) => id.trim());
-
-      // Find or create the main customer record
-      const [customer, created] = await Customer.findOrCreate({
-        where: { email },
-        defaults: {
-          name,
-          email,
-          staff_id: userId,
-          service_id,
-          dob,
-          address,
-          image: imagePath || "",
-          phone,
-          status: status || 1,
-          visit_count: 0,
-        },
-      });
-
-      // If customer already exists, update visit count
-      // if (!created) {
-      //   customer.visit_count += 1;
-      //   await customer.save();
-      // }
-
-      // Create customer-service-staff relationships
-      const customerServices = [];
-
-      // for (const svcId of serviceIds) {
-        customerServices.push({
-          customer_id: customer.id,
-          staff_id: userId,
-          // service_id: svcId,
-        });
-      // }
-
-      // Assuming you have a CustomerService model for the relationships
-      const createdRelationships = await CustomerService.bulkCreate(
-        customerServices
-      );
-
-      res.status(201).json({
-        message: "Customer services recorded successfully",
-        data: {
-          customer,
-          services: createdRelationships,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (imageFile) {
+      imagePath = await uploadImage(imageFile);
     }
-  },
+
+    const userId = req.staff.id; // staff (logged in user)
+    const staffIds = staff_id ? staff_id.split(",").map((id) => id.trim()) : [];
+
+    // Create or find customer by email
+    const [customer, created] = await Customer.findOrCreate({
+      where: { email },
+      defaults: {
+        name,
+        email,
+        receptionist_id: userId,
+        staff_id: staffIds[0] || 0, // assign first staff for main record
+        service_id,
+        dob,
+        address,
+        image: imagePath || "",
+        phone,
+        status: status || 1,
+        visit_count: 0,
+      },
+    });
+
+    // If customer already exists, you could update visit count (optional)
+    // if (!created) {
+    //   customer.visit_count += 1;
+    //   await customer.save();
+    // }
+
+    // Build relationships for CustomerService (customer ↔ staff)
+    const customerServices = staffIds.map((sid) => ({
+      customer_id: customer.id,
+      staff_id: sid,
+      // service_id: service_id,  // uncomment if you also want to link service
+    }));
+
+    // Save relationships
+    const createdRelationships = await CustomerService.bulkCreate(
+      customerServices
+    );
+
+    res.status(201).json({
+      message: "Customer services recorded successfully",
+      data: {
+        customer,
+        services: createdRelationships,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+},
+
 
   // -------------------end customer ------------
 
@@ -301,6 +459,7 @@ module.exports = {
 
       // ✅ Parse staff_id and service_id
       const serviceIds = service_id.split(",").map((id) => id.trim());
+  const staffIds = staff_id.split(",").map((id) => id.trim());
 
       // ✅ Get logged-in staff/user ID
       const userId = req.staff.id; // Depending on your auth middleware
@@ -319,20 +478,26 @@ module.exports = {
         customer_id,
         date,
         package_id:package_id||1,
-        staff_id: userId,
+        receptionist_id: userId,
+         staff_id: staffIds[0]||1, 
         service_id: serviceIds[0]||0, // Assuming first service as primary; update logic if needed
         time,
         status: 1,
       });
 
       // ✅ Create related service records
-      const bookingServiceRecords = serviceIds.map((svcId) => ({
-        booking_id: booking.id,
-        customer_id,
-        staff_id: userId,
-        service_id: svcId||0,
-      }));
-
+   const bookingServiceRecords = [];
+      for (const sId of staffIds) {
+        for (const svcId of serviceIds) {
+          bookingServiceRecords.push({
+            booking_id: booking.id,
+            customer_id,
+            receptionist_id: userId,
+            staff_id: sId,
+            service_id: svcId ||[],
+          });
+        }
+      }
       await BookingService.bulkCreate(bookingServiceRecords);
 
       // ✅ If recurring booking, save recurrence
@@ -366,9 +531,9 @@ module.exports = {
 
   allGet: async (req, res) => {
     try {
-      console.log(req.body);
 
       const service = await Service.findAll();
+      const staff = await User.findAll({ where: { role: 3 } });
       const customer = await Customer.findAll({
         attributes: [
           [sequelize.fn("MIN", sequelize.col("id")), "id"],
@@ -379,7 +544,7 @@ module.exports = {
       });
 
       return res.status(200).json({
-        data: { service, customer },
+        data: { service, customer,staff },
       });
     } catch (error) {
       console.error("Error fetching bookings:", error);

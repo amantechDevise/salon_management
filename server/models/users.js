@@ -43,12 +43,17 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
-            comment: '1=>Admin,2=>Staff,'
+            comment: '1=>Admin,2=>Receptionist,3=>Staff'
         },
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1
+        },
+        gender: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         }
     }, {
         sequelize,

@@ -12,10 +12,13 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     },
+      receptionist_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     service_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 1
+     allowNull: true,
     },
     name: {
       type: DataTypes.STRING(50),

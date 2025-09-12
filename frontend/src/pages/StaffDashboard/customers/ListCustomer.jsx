@@ -91,15 +91,15 @@ const ListStaffCustomer = () => {
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th className="px-6 py-3">SR.NO</th>
-            {/* <th className="px-6 py-3">Service Name</th> */}
-            <th className="px-6 py-3">Name</th>
-            <th className="px-6 py-3">Email</th>
-            <th className="px-6 py-3">Phone No</th>
-            <th className="px-6 py-3">Visit Count</th>
-            <th className="px-6 py-3">Image</th>
-            <th className="px-6 py-3">Generate Link</th>
-            {/* <th className="px-6 py-3">Action</th> */}
+            <th className="px-2 py-3">SR.NO</th>
+            {/* <th className="px-2 py-3">Service Name</th> */}
+            <th className="px-2 py-3">Name</th>
+            <th className="px-2 py-3">Email</th>
+            <th className="px-2 py-3">Phone No</th>
+            <th className="px-2 py-3">Visit Count</th>
+            <th className="px-2 py-3">Image</th>
+            <th className="px-2 py-3">Generate Link</th>
+            {/* <th className="px-2 py-3">Action</th> */}
           </tr>
         </thead>
         <tbody>
@@ -119,15 +119,15 @@ const ListStaffCustomer = () => {
                 key={product.id}
                 className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
               >
-                <td className="px-6 py-4">{index + 1}</td>
-                {/* <td className="px-6 py-4">{product.service?.title || "N / A"}</td> */}
-                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <td className="px-2 py-4">{index + 1}</td>
+                {/* <td className="px-2 py-4">{product.service?.title || "N / A"}</td> */}
+                <td className="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   {product.name}
                 </td>
-                <td className="px-6 py-4">{product.email}</td>
-                <td className="px-6 py-4">{product.phone}</td>
-                <td className="px-6 py-4">{product.visit_count}</td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">{product.email}</td>
+                <td className="px-2 py-4">{product.phone}</td>
+                <td className="px-2 py-4">{product.visit_count}</td>
+                <td className="px-2 py-4">
                   {product.image ? (
                     <img
                       src={`${API_BASE_URL}${product.image}`}
@@ -142,18 +142,18 @@ const ListStaffCustomer = () => {
                     />
                   )}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   <button
                     onClick={() => handleGenerateLink(product.id)}
                     disabled={loadingLinkId === product.id}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
+                    className="bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white px-3 py-1 rounded  transition"
                   >
                     {loadingLinkId === product.id
                       ? "Generating..."
                       : "Generate Link"}
                   </button>
                 </td>
-                {/* <td className="px-6 py-4">
+                {/* <td className="px-2 py-4">
                   <button
                     onClick={() => handleDelete(product.id)}
                     className="text-red-500 hover:underline"

@@ -50,27 +50,35 @@ function AddBooking() {
   };
 
   // 🔹 Fetch dropdown data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/api/getAll`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-        });
-        setDropdownData({
-          customers: res.data.data.customer || [],
-          staff: res.data.data.Staff || [],
-          services: res.data.data.service || [],
-          package: res.data.data.package || [],
-        });
-      } catch (error) {
-        console.error("Error fetching dropdown data:", error);
-        toast.error("Failed to fetch dropdown data");
-      }
-    };
-    fetchData();
-  }, [API_BASE_URL]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/getAll`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
+
+      // sirf role === 3 staff filter karo
+      const onlyStaff = (res.data.data.Staff || []).filter(
+        (user) => user.role === 3
+      );
+
+      setDropdownData({
+        customers: res.data.data.customer || [],
+        staff: onlyStaff, // filtered staff only
+        services: res.data.data.service || [],
+        package: res.data.data.package || [],
+      });
+    } catch (error) {
+      console.error("Error fetching dropdown data:", error);
+      toast.error("Failed to fetch dropdown data");
+    }
+  };
+
+  fetchData();
+}, [API_BASE_URL]);
+
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);

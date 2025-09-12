@@ -3,17 +3,25 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 
-function AddServices() {
+function StaffAdd() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: "",
-    price: "",
-    gst: "",
-    duration: "",
+    name: "",
+    email: "",
+    phone: "",
   });
 
   const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+    });
+    setImage(null);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,35 +39,36 @@ function AddServices() {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("title", formData.title);
-    data.append("price", formData.price);
-    data.append("gst", formData.gst);
-    data.append("duration", formData.duration);
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("phone", formData.phone);
 
     if (image) {
       data.append("image", image);
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/services/add`, data, {
+      const res = await axios.post(`${API_BASE_URL}/staffApi/staff/add`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
 
-      toast.success("Services added successfully!");
-      navigate("/admin/services");
-      // Optional: Clear form
+      toast.success("Staff added successfully!");
+
+      // ✅ Clear form before navigating
       setFormData({
-        title: "",
-        price: "",
-        gst: "",
-        duration: "",
+        name: "",
+        password: "",
+        email: "",
+        phone: "",
       });
       setImage(null);
+
+      navigate("/staff-Admin/staff");
     } catch (error) {
-      toast.error("Failed to add product");
+      toast.error("Failed to add staff");
       console.error(error);
     }
   };
@@ -67,104 +76,65 @@ function AddServices() {
   return (
     <div className="flex items-center justify-center p-12">
       <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-semibold mb-6">Services Add</h2>
+        <h2 className="text-2xl font-semibold mb-6">Staff Add</h2>
         <div className="mx-auto w-full max-w-full bg-white">
           <form onSubmit={handleSubmit}>
             <div className="-mx-3 flex flex-wrap">
-              <div className="w-full sm:w-1/2 px-3 mb-5 ">
+              {/* Name */}
+              <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
-                  <label
-                    htmlFor="name"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
-                    Title
+                  <label className="mb-3 block text-base font-medium text-[#07074D]">
+                    Full Name
                   </label>
                   <input
                     type="text"
-                    name="title"
-                    value={formData.title}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
+                    autoComplete="new-name"
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                   />
                 </div>
               </div>
-              <div className="w-full sm:w-1/2 px-3 mb-5">
+
+        
+
+              {/* Email */}
+              <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
-                  <label
-                    htmlFor="price"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
-                    Price
+                  <label className="mb-3 block text-base font-medium text-[#07074D]">
+                    Email
                   </label>
                   <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
+                    type="email"
+                    name="email"
+                    autoComplete="new-email"
+                    value={formData.email}
                     onChange={handleChange}
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                   />
                 </div>
               </div>
-              <div className="w-full sm:w-1/2 px-3 mb-5">
+
+              {/* Phone */}
+              <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
-                  <label
-                    htmlFor="name"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
-                    Duration
-                  </label>
-                  <input
-                    type="text"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                  />
-                </div>
-              </div>
-               <div className="w-full px-3 sm:w-1/2">
-                <div className="mb-5">
-                  <label
-                    htmlFor="email"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
-                    GST
-                  </label>
-                  <input
-                    type="number"
-                    name="gst"
-                    value={formData.gst}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                  />
-                </div>
-              </div>
-             {/* <div className="w-full px-3 sm:w-1/2">
-                <div className="mb-5">
-                  <label
-                    htmlFor="phone"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
+                  <label className="mb-3 block text-base font-medium text-[#07074D]">
                     Phone
                   </label>
                   <input
                     type="number"
+                    autoComplete="off"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                   />
                 </div>
-              </div> */}
-            </div>
-
-            {/* <div className="-mx-3 flex flex-wrap">
-              <div className="w-full px-3 sm:w-1/2">
+              </div>
+                <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
-                  <label
-                    htmlFor="image"
-                    className="mb-3 block text-base font-medium text-[#07074D]"
-                  >
+                  <label className="mb-3 block text-base font-medium text-[#07074D]">
                     Image
                   </label>
                   <input
@@ -175,12 +145,13 @@ function AddServices() {
                   />
                 </div>
               </div>
-            </div> */}
+            </div>
 
-            <div></div>
+
+            {/* Buttons */}
             <div className="flex justify-between items-center mt-6">
               <Link
-                to="/admin/services"
+                to="/staff-Admin/staff"
                 className="text-[#6A64F1] font-semibold hover:underline"
               >
                 Back
@@ -200,4 +171,4 @@ function AddServices() {
   );
 }
 
-export default AddServices;
+export default StaffAdd;

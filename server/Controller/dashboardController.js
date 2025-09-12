@@ -20,7 +20,7 @@ module.exports = {
       });
 
       // Total counts
-      const totleUser = await User.count({ where: { role: 2 } });
+      const totleUser = await User.count({ where: { role: [2,3] } });
       const totleCustomer = await Customer.count();
       const totleServise = await Service.count();
 

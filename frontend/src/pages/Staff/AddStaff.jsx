@@ -11,17 +11,18 @@ function AddStaff() {
     password: "",
     email: "",
     phone: "",
+    role: "2", // default: Receptionist
   });
 
   const [image, setImage] = useState(null);
 
-  // ✅ Ensure form is always cleared when page opens
   useEffect(() => {
     setFormData({
       name: "",
       password: "",
       email: "",
       phone: "",
+      role: "2", // default receptionist
     });
     setImage(null);
   }, []);
@@ -43,9 +44,14 @@ function AddStaff() {
 
     const data = new FormData();
     data.append("name", formData.name);
-    data.append("password", formData.password);
     data.append("email", formData.email);
     data.append("phone", formData.phone);
+    data.append("role", formData.role);
+
+    if (formData.role === "2") {
+      // Receptionist => password required
+      data.append("password", formData.password);
+    }
 
     if (image) {
       data.append("image", image);
@@ -59,14 +65,18 @@ function AddStaff() {
         },
       });
 
-      toast.success("Staff added successfully!");
+      toast.success(
+        formData.role === "2"
+          ? "Receptionist added successfully!"
+          : "Staff added successfully!"
+      );
 
-      // ✅ Clear form before navigating
       setFormData({
         name: "",
         password: "",
         email: "",
         phone: "",
+        role: "2",
       });
       setImage(null);
 
@@ -80,7 +90,7 @@ function AddStaff() {
   return (
     <div className="flex items-center justify-center p-12">
       <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-semibold mb-6">Staff Add</h2>
+        <h2 className="text-2xl font-semibold mb-6">Add Staff / Receptionist</h2>
         <div className="mx-auto w-full max-w-full bg-white">
           <form onSubmit={handleSubmit}>
             <div className="-mx-3 flex flex-wrap">
@@ -88,7 +98,7 @@ function AddStaff() {
               <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
                   <label className="mb-3 block text-base font-medium text-[#07074D]">
-                    First Name
+                    Full Name
                   </label>
                   <input
                     type="text"
@@ -101,22 +111,42 @@ function AddStaff() {
                 </div>
               </div>
 
-              {/* Password */}
+              {/* Role Dropdown */}
               <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
                   <label className="mb-3 block text-base font-medium text-[#07074D]">
-                    Password
+                    Role
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    autoComplete="new-password"
-                    value={formData.password}
+                  <select
+                    name="role"
+                    value={formData.role}
                     onChange={handleChange}
                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                  />
+                  >
+                    <option value="2">Receptionist</option>
+                    <option value="3">Staff</option>
+                  </select>
                 </div>
               </div>
+
+              {/* Password (only show if Receptionist) */}
+              {formData.role === "2" && (
+                <div className="w-full px-3 sm:w-1/2">
+                  <div className="mb-5">
+                    <label className="mb-3 block text-base font-medium text-[#07074D]">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      autoComplete="new-password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Email */}
               <div className="w-full px-3 sm:w-1/2">
@@ -151,11 +181,7 @@ function AddStaff() {
                   />
                 </div>
               </div>
-            </div>
-
-            {/* Image */}
-            <div className="-mx-3 flex flex-wrap">
-              <div className="w-full px-3 sm:w-1/2">
+                  <div className="w-full px-3 sm:w-1/2">
                 <div className="mb-5">
                   <label className="mb-3 block text-base font-medium text-[#07074D]">
                     Image
@@ -169,6 +195,7 @@ function AddStaff() {
                 </div>
               </div>
             </div>
+
 
             {/* Buttons */}
             <div className="flex justify-between items-center mt-6">

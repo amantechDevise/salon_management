@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 
-function ViewStaff() {
+function StaffView() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const [staff, setStaff] = useState(null);
@@ -18,9 +18,9 @@ function ViewStaff() {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/staff/${id}`, {
+      const res = await axios.get(`${API_BASE_URL}/staffApi/staff/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
       const staffData = res.data.data;
@@ -64,7 +64,7 @@ function ViewStaff() {
       {/* Staff Info */}
       <div className="flex items-center justify-center p-12">
         <div className="mx-auto w-full max-w-full bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-semibold mb-6">Staff / Receptionist Details</h2>
+          <h2 className="text-2xl font-semibold mb-6">Staff  Details</h2>
 
           <div className="-mx-3 flex flex-wrap">
             <div className="w-full px-3 sm:w-1/2 mb-5">
@@ -305,4 +305,4 @@ function ViewStaff() {
   );
 }
 
-export default ViewStaff;
+export default StaffView;

@@ -42,6 +42,10 @@ import Invoice from "./pages/Invoices/listInvoice";
 import Staff_Invoice from "./pages/StaffDashboard/Invoices/listInvoice";
 import PasswordChange from "./pages/Users/PasswordChange";
 import Password_Change from "./pages/StaffDashboard/Users/PasswordChange";
+import StaffBookingCalendar from "./pages/StaffDashboard/StaffBookings/BookingCalendar";
+import StaffList from "./pages/StaffDashboard/Users/listingStaff";
+import StaffAdd from "./pages/StaffDashboard/Users/AddStaff";
+import StaffView from "./pages/StaffDashboard/Users/ViewStaff";
 
 function App() {
   return (
@@ -95,6 +99,9 @@ function App() {
           >
             <Route path="dashboard" element={<StaffDashboard />} />
             <Route path="profile" element={<UserstaffProfile />} />
+            <Route path="staff" element={<StaffList />} />
+            <Route path="staff/add" element={<StaffAdd />} />
+             <Route path="staff/:id" element={<StaffView />} />
             <Route path="update-profile" element={<UpdatestaffProfile />} />
             <Route path="services" element={<ListServices />} />
             <Route path="packages" element={<ListStaffPackage />} />
@@ -104,6 +111,7 @@ function App() {
             <Route path="bookings" element={<BookingList />} />
             <Route path="bookings/add" element={<BookingAdd />} />
             <Route path="attendance" element={<ListAttendance />} />
+            <Route path="bookings/calendar" element={<StaffBookingCalendar />} />
             <Route
               path="generate_Invoice/:booking_id"
               element={<Staff_Invoice />}

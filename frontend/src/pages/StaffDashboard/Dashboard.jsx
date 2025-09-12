@@ -4,11 +4,13 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import Avtar from "/avtar.jpg";
 import { FaUsers, FaUserTie, FaCogs, FaDollarSign } from "react-icons/fa";
+import { Link } from "react-router-dom";
 function StaffDashboard() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [attendance, setAttendance] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     totleUser: 0,
+    totalStaff:0,
     totleCustomer: 0,
     totleServise: 0,
   });
@@ -99,9 +101,25 @@ function StaffDashboard() {
     <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow p-6">
+          <Link to={"/staff-Admin/staff"}>
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                <FaUserTie className="text-2xl" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Total Staff</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {dashboardData.totalStaff}
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
         <div className="bg-white rounded-lg shadow p-6">
+               <Link to={"/staff-Admin/customer"}>
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+            <div className="p-3 rounded-full  bg-green-100 text-green-600">
               <FaUsers className="text-2xl" />
             </div>
             <div className="ml-4">
@@ -113,10 +131,12 @@ function StaffDashboard() {
               </p>
             </div>
           </div>
+          </Link>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
+               <Link to={"/staff-Admin/services"}>
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-100 text-green-600">
+            <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
               <FaCogs className="text-2xl" />
             </div>
             <div className="ml-4">
@@ -128,6 +148,7 @@ function StaffDashboard() {
               </p>
             </div>
           </div>
+          </Link>
         </div>
         {/* <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
@@ -145,7 +166,7 @@ function StaffDashboard() {
       </div>
 
       {/* Attendance Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2 bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -245,7 +266,6 @@ function StaffDashboard() {
           </div>
         </div>
 
-        {/* Room Status */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-800">Room Status</h2>
@@ -318,7 +338,7 @@ function StaffDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Quick Actions */}
       {/* <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">

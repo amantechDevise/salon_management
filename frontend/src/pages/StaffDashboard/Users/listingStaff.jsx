@@ -5,7 +5,7 @@ import { FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
-const ListStaff = () => {
+const StaffList = () => {
   const [staff, setStaff] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
@@ -20,14 +20,14 @@ const ListStaff = () => {
   // Fetch staff from API
   const fetchStaff = async (page = 1, search = "") => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/staff`, {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/staff`, {
         params: {
           page: search ? 1 : page, // if searching, always get first page
           limit: search ? 10000 : pagination.perPage, // large number to get all for search
           search: search || undefined, // send search query if present
         },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
         },
       });
 
@@ -61,9 +61,9 @@ const ListStaff = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${API_BASE_URL}/api/staff/${id}`, {
+          await axios.delete(`${API_BASE_URL}/staffApi/staff/${id}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
             },
           });
           toast.success("Staff deleted successfully!");
@@ -82,11 +82,11 @@ const ListStaff = () => {
     const newStatus = staffMember.status === 1 ? 0 : 1;
     try {
       await axios.patch(
-        `${API_BASE_URL}/api/staff/${staffMember.id}/status`,
+        `${API_BASE_URL}/staffApi/staff/${staffMember.id}/status`,
         { status: newStatus },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
           },
         }
       );
@@ -111,9 +111,7 @@ const ListStaff = () => {
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold mb-6">
-          Staff / Receptionist List
-        </h2>
+          <h2 className="text-2xl font-semibold mb-6">Staff List</h2>
         <div className="relative w-full max-w-xs">
           <input
             type="text"
@@ -125,11 +123,11 @@ const ListStaff = () => {
           <FaSearch className="absolute top-2.5 left-3 text-gray-500" />
         </div>
         <Link
-          to="/admin/staff/add"
+          to="/staff-Admin/staff/add"
           className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
           style={{ whiteSpace: "nowrap" }}
         >
-          Add Staff / Receptionist
+          Add Staff
         </Link>
       </div>
 
@@ -137,7 +135,6 @@ const ListStaff = () => {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th className="px-2 py-3">SR.NO</th>
-            <th className="px-2 py-3">Role</th>
             <th className="px-2 py-3">Name</th>
             <th className="px-2 py-3">Email</th>
             <th className="px-2 py-3">Phone No</th>
@@ -171,16 +168,6 @@ const ListStaff = () => {
                 className="odd:bg-white even:bg-gray-50 border-b"
               >
                 <td className="px-2 py-4">{index + 1}</td>
-                <td
-                  className={`px-2 py-4 font-medium ${
-                    staffMember.role === 2
-                      ? "text-blue-600"
-                      : "text-green-600" 
-                  }`}
-                >
-                  {staffMember.role === 2 ? "Receptionist" : "Staff"}
-                </td>
-
                 <td className="px-2 py-4">{staffMember.name}</td>
                 <td className="px-2 py-4">{staffMember.email}</td>
                 <td className="px-2 py-4">{staffMember.phone}</td>
@@ -215,7 +202,7 @@ const ListStaff = () => {
                 </td>
                 <td className="px-2 py-4">
                   <Link
-                    to={`/admin/staff/${staffMember.id}`}
+                    to={`/staff-Admin/staff/${staffMember.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-4"
                   >
                     View
@@ -259,4 +246,4 @@ const ListStaff = () => {
   );
 };
 
-export default ListStaff;
+export default StaffList;

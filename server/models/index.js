@@ -114,7 +114,13 @@ db.User.hasMany(db.BookingService, {
   foreignKey: "staff_id",
   as: "bookingServices",
 });
-db.BookingService.belongsTo(db.User, { foreignKey: "staff_id", as: "staff" });
+db.BookingService.belongsTo(db.User, { foreignKey: "receptionist_id", as: "staff" });
+
+db.User.hasMany(db.Booking, {
+  foreignKey: "receptionist_id",
+  as: "bookingReceptionist",
+});
+db.Booking.belongsTo(db.User, { foreignKey: "receptionist_id", as: "receptionist" });
 
 // CUSTOMER ↔ BOOKING_SERVICE
 db.Customer.hasMany(db.BookingService, {

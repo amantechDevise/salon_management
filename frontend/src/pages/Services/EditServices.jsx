@@ -12,6 +12,7 @@ function EditServices() {
     title: "",
     price: "",
     duration: "",
+    gst: "",
     status: 1, // default active
   });
 
@@ -31,6 +32,7 @@ function EditServices() {
           title: res.data.data.title,
           price: res.data.data.price,
           status: res.data.data.status,
+          gst: res.data.data.gst,
           duration: res.data.data.duration,
         });
       } catch (error) {
@@ -61,6 +63,7 @@ function EditServices() {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("price", formData.price);
+    data.append("gst", formData.gst);
     data.append("status", formData.status);
     data.append("duration", formData.duration);
 
@@ -93,6 +96,7 @@ function EditServices() {
         <div className="mx-auto w-full max-w-full bg-white">
           <form onSubmit={handleSubmit}>
             {/* Title */}
+              <div className="w-full px-3 sm:w-1/2">
             <div className="mb-5">
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Title
@@ -105,8 +109,10 @@ function EditServices() {
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
             </div>
+            </div>
 
             {/* Price */}
+              <div className="w-full px-3 sm:w-1/2">
             <div className="mb-5">
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Price
@@ -119,6 +125,8 @@ function EditServices() {
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
             </div>
+            </div>
+              <div className="w-full px-3 sm:w-1/2">
             <div className="mb-5">
               <label className="mb-3 block text-base font-medium text-[#07074D]">
                 Duration
@@ -130,6 +138,21 @@ function EditServices() {
                 onChange={handleChange}
                 className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
               />
+            </div>
+            </div>
+              <div className="w-full px-3 sm:w-1/2">
+             <div className="mb-5">
+              <label className="mb-3 block text-base font-medium text-[#07074D]">
+                GST
+              </label>
+              <input
+                type="number"
+                name="gst"
+                value={formData.gst}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+              />
+            </div>
             </div>
 
             {/* Status */}

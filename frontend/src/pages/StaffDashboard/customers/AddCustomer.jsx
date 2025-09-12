@@ -8,20 +8,24 @@ function AddstaffCustomer() {
   const navigate = useNavigate();
 
   const [services, setServices] = useState([]);
+  const [staff, setStaff] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     dob: "",
     address: "",
-    // service_id: [], // store as array
+    staff_id: [], // added staff_id array
+    // service_id: [],
   });
 
   const [image, setImage] = useState(null);
 
   // Dropdown open state
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // for services
+  const [staffDropdownOpen, setStaffDropdownOpen] = useState(false); // for staff
   const dropdownRef = useRef();
+  const staffRef = useRef();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -29,7 +33,11 @@ function AddstaffCustomer() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
+      if (staffRef.current && !staffRef.current.contains(event.target)) {
+        setStaffDropdownOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -50,39 +58,32 @@ function AddstaffCustomer() {
     setImage(e.target.files[0]);
   };
 
-  // Handle checkbox toggle for services
-  // const toggleService = (id) => {
-  //   setFormData((prev) => {
-  //     const selected = prev.service_id;
-  //     if (selected.includes(id.toString())) {
-  //       // Remove
-  //       return {
-  //         ...prev,
-  //         service_id: selected.filter((sid) => sid !== id.toString()),
-  //       };
-  //     } else {
-  //       // Add
-  //       return {
-  //         ...prev,
-  //         service_id: [...selected, id.toString()],
-  //       };
-  //     }
-  //   });
-  // };
+  // Toggle staff selection
+  const toggleStaff = (id) => {
+    setFormData((prev) => {
+      const selected = prev.staff_id;
+      if (selected.includes(id.toString())) {
+        return {
+          ...prev,
+          staff_id: selected.filter((sid) => sid !== id.toString()),
+        };
+      } else {
+        return {
+          ...prev,
+          staff_id: [...selected, id.toString()],
+        };
+      }
+    });
+  };
 
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (formData.service_id.length === 0) {
-    //   toast.error("Please select at least one service");
-    //   return;
-    // }
-
     const data = new FormData();
     Object.keys(formData).forEach((key) => {
-      if (key === "service_id") {
-        data.append(key, formData.service_id.join(","));
+      if (Array.isArray(formData[key])) {
+        data.append(key, formData[key].join(","));
       } else {
         data.append(key, formData[key]);
       }
@@ -103,13 +104,13 @@ function AddstaffCustomer() {
       toast.success("Customer added successfully!");
       navigate("/staff-Admin/customer");
 
-      // Reset form
       setFormData({
         name: "",
         email: "",
         phone: "",
         dob: "",
         address: "",
+        staff_id: [],
         // service_id: [],
       });
       setImage(null);
@@ -134,15 +135,25 @@ function AddstaffCustomer() {
     }
   };
 
+  // Fetch staff list
+  const fetchStaff = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/staffApi/staff`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("staffToken")}`,
+        },
+      });
+      setStaff(response.data.data);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      toast.error("Failed to load staff");
+    }
+  };
+
   useEffect(() => {
+    fetchStaff();
     fetchServices();
   }, []);
-
-  // Helper to show selected service names in dropdown label
-  // const selectedServicesNames = services
-  //   .filter((s) => formData.service_id.includes(s.id.toString()))
-  //   .map((s) => s.title)
-  //   .join(", ");
 
   return (
     <div className="flex items-center justify-center p-12">
@@ -218,44 +229,42 @@ function AddstaffCustomer() {
               </div>
             </div>
 
-            {/* Services */}
-            {/* <div className="w-full px-3 sm:w-1/2 relative" ref={dropdownRef}>
-              <div className="mb-5">
-                <label className="mb-3 block text-base font-medium text-[#07074D]">
-                  Services
-                </label>
-                <div
-                  className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 
-                  text-base text-[#6B7280] outline-none cursor-pointer select-none"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  {selectedServicesNames || "Select services"}
-                </div>
-
-                {dropdownOpen && (
-                  <div
-                    className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg"
-                    style={{ maxHeight: "180px" }}
-                  >
-                    {services.map((service) => (
-                      <label
-                        key={service.id}
-                        className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          value={service.id}
-                          checked={formData.service_id.includes(service.id.toString())}
-                          onChange={() => toggleService(service.id)}
-                          className="mr-3"
-                        />
-                        {service.title}
-                      </label>
-                    ))}
-                  </div>
-                )}
+            {/* Staff Dropdown */}
+            <div className="w-full sm:w-1/2 px-3 mb-5 relative" ref={staffRef}>
+              <label className="mb-3 block text-base font-medium text-[#07074D]">
+                Staff
+              </label>
+              <div
+                className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base text-[#6B7280] cursor-pointer"
+                onClick={() => setStaffDropdownOpen(!staffDropdownOpen)}
+              >
+                {formData.staff_id.length > 0
+                  ? staff
+                      .filter((s) => formData.staff_id.includes(s.id.toString()))
+                      .map((s) => s.name)
+                      .join(", ")
+                  : "Select staff"}
               </div>
-            </div> */}
+              {staffDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+                  {staff.map((s) => (
+                    <label
+                      key={s.id}
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        value={s.id}
+                        checked={formData.staff_id.includes(s.id.toString())}
+                        onChange={() => toggleStaff(s.id)}
+                        className="mr-3"
+                      />
+                      {s.name}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Address */}
             <div className="w-full px-3">

@@ -14,6 +14,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         defaultValue: 0,
       },
+      receptionist_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       staff_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

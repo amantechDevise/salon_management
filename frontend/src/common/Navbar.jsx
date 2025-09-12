@@ -54,14 +54,14 @@ const AdminNavbar = ({ userData, onToggleSidebar }) => {
       </div>
 
       {/* Center */}
-      <div className="absolute right-0 transform -translate-x-1/2">
+      {/* <div className="absolute right-0 transform -translate-x-1/2">
         <Link
           to={"/admin/bookings/calendar"}
           className="2xl:text-lg text-[0.75rem] font-semibold text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
         >
           Booking Calendar
         </Link>
-      </div>
+      </div> */}
 
       {/* Right Side */}
       <div className="flex items-center space-x-4">

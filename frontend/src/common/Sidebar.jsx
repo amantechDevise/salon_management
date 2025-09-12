@@ -47,7 +47,7 @@ function AdminSidebar({ userData, isOpen, onClose }) {
 
             <NavLink to="/admin/staff" className={navLinkClass}>
               <FaUserTie className="mr-3" />
-              All Staff
+              All Staff / Receptionist
             </NavLink>
 
             <NavLink to="/admin/customer" className={navLinkClass}>

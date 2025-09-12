@@ -37,6 +37,7 @@ const ListServices = () => {
             <th className="px-6 py-3">SR.NO</th>
             <th className="px-6 py-3">Title</th>
             <th className="px-6 py-3">Price</th>
+            <th className="px-6 py-3">Gst</th>
             <th className="px-6 py-3">Duration</th>
             {/* <th className="px-6 py-3">Image</th> */}
           </tr>
@@ -64,6 +65,7 @@ const ListServices = () => {
                   {service.title}
                 </td>
                 <td className="px-6 py-4">{service.price}</td>
+                <td className="px-6 py-4">{service.gst}</td>
                 <td className="px-6 py-4">{service.duration}</td>
                 {/* <td className="px-6 py-4">
                   {service.image ? (

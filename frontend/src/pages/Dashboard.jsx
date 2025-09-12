@@ -54,7 +54,7 @@ function Dashboard() {
                 <FaUserTie className="text-2xl" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Staff</p>
+                <p className="text-sm font-medium text-gray-500">Total Staff / Receptionist</p>
                 <p className="text-2xl font-semibold text-gray-800">
                   {dashboardData.totleUser}
                 </p>

@@ -6,7 +6,8 @@ import {
   FaConciergeBell,
   FaRegCalendarCheck,
   FaBoxes, // Packages
-  FaTags, // Discounts
+  FaTags,
+  FaUserTie, // Discounts
 } from "react-icons/fa";
 
 function StaffSidebar({ userData, isOpen, onClose }) {
@@ -44,6 +45,10 @@ function StaffSidebar({ userData, isOpen, onClose }) {
               <FaTachometerAlt className="mr-3" />
               Dashboard
             </NavLink>
+              <NavLink to="/staff-Admin/staff" className={navLinkClass}>
+              <FaUserTie className="mr-3" />
+              All Staff
+            </NavLink>
 
             <NavLink to="/staff-Admin/customer" className={navLinkClass}>
               <FaUsers className="mr-3" />
@@ -68,10 +73,10 @@ function StaffSidebar({ userData, isOpen, onClose }) {
               Bookings
             </NavLink>
 
-            <NavLink to="/staff-Admin/attendance" className={navLinkClass}>
+            {/* <NavLink to="/staff-Admin/attendance" className={navLinkClass}>
               <FaRegCalendarCheck className="mr-3" />
               Attendances
-            </NavLink>
+            </NavLink> */}
           </nav>
         </div>
 

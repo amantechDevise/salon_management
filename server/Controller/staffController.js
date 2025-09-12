@@ -22,7 +22,7 @@ module.exports = {
       if (user.status !== 1) {
         return res
           .status(403)
-          .json({ message: "Access denied: inactive staff" });
+          .json({ message: "Access denied: inactive Receptionist" });
       }
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -37,7 +37,7 @@ module.exports = {
 
       return res
         .status(200)
-        .json({ message: " Staff Login successful", token });
+        .json({ message: " Receptionist Login successful", token });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
@@ -95,7 +95,7 @@ module.exports = {
       const offset = (page - 1) * limit;
 
       const { rows, count } = await User.findAndCountAll({
-        where: { role: 2 },
+        where: { role:[2,3] },
         order: [["createdAt", "DESC"]],
         offset: offset,
         limit: parseInt(limit),
@@ -104,7 +104,7 @@ module.exports = {
       const totalPages = Math.ceil(count / limit);
 
       res.status(200).json({
-        message: "Get all Staff",
+        message: "Get all Receptionist",
         data: rows,
         meta: {
           totalRecords: count,
@@ -114,55 +114,69 @@ module.exports = {
         },
       });
     } catch (error) {
-      console.error("Error fetching staff members:", error);
+      console.error("Error fetching Receptionist members:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
 
   // -------------------------Add Staff Api
-  addStaff: async (req, res) => {
-    try {
-      const { name, email, phone, password } = req.body;
+ addStaff: async (req, res) => {
+  try {
+    const { name, email, phone, password, role } = req.body;
+    const imageFile = req.files ? req.files.image : "";
 
-      const imageFile = req.files ? req.files.image : null;
+    // check email already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
 
-      // Check if email already exists
-      const existingUser = await User.findOne({ where: { email } });
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already in use" });
+    // upload image if given
+    let imagePath = "";
+    if (imageFile) {
+      imagePath = await uploadImage(imageFile);
+    }
+
+    let hashedPassword = "";
+
+    if (parseInt(role) === 2) {
+      if (!password) {
+        return res.status(400).json({ message: "Password is required for Receptionist" });
       }
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
 
-      // Upload image if provided
-      let imagePath = null;
-      if (imageFile) {
-        imagePath = await uploadImage(imageFile);
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      // Create new staff
-      const newStaff = await User.create({
-        name,
-        email,
-        phone,
-        password: hashedPassword,
-        image: imagePath || "",
-        role: 2,
-      });
-      const token = jwt.sign(
+    const newStaff = await User.create({
+      name,
+      email,
+      phone,
+      password: hashedPassword || "",
+      image: imagePath || "",
+      role: parseInt(role),
+    });
+
+    let token = "";
+    if (parseInt(role) === 2) {
+      token = jwt.sign(
         { id: newStaff.id, email: newStaff.email },
         process.env.SECRET_KEY,
         { expiresIn: "24h" }
       );
-      res
-        .status(201)
-        .json({
-          message: "Staff member added successfully",
-          data: { newStaff, token },
-        });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
     }
-  },
+
+    res.status(201).json({
+      message:
+        parseInt(role) === 2
+          ? "Receptionist member added successfully"
+          : "Staff member added successfully",
+      data: { newStaff, token },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+},
+
 
   // -------------------------get by id staff Api
   getStaffById: async (req, res) => {
@@ -170,7 +184,7 @@ module.exports = {
       const { id } = req.params;
 
       const staff = await User.findOne({
-        where: { id, role: 2 },
+        where: { id, role: [2, 3] },
         include: [
           {
             model: Customer,
@@ -220,7 +234,7 @@ module.exports = {
       const { id } = req.params;
 
       const records = await User.findOne({
-        where: { id, role: 2 },
+        where: { id, role: [2, 3] },
         include: [
           {
             model: Attendance,
@@ -250,7 +264,7 @@ module.exports = {
       const { startDate, endDate } = req.query;
 
       const records = await User.findOne({
-        where: { id, role: 2 },
+        where: { id, role: [2, 3] },
         attributes: ["id", "name", "email"],
         include: [
           {
@@ -346,7 +360,7 @@ module.exports = {
   deleteStaff: async (req, res) => {
     try {
       const { id } = req.params;
-      const staff = await User.findOne({ where: { id, role: 2 } });
+      const staff = await User.findOne({ where: { id, role: [2, 3] } });
       if (!staff) return res.status(404).json({ message: "Staff not found" });
 
       // Delete image if exists

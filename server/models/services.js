@@ -17,12 +17,12 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
             defaultValue: 1
         },
-         duration: {
+        duration: {
             type: DataTypes.STRING(50),
             allowNull: false,
             defaultValue: 0
         },
-         description: {
+        description: {
             type: DataTypes.TEXT,
             allowNull: true
         },
@@ -31,8 +31,13 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
             defaultValue: ""
         },
-   
+
         price: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.00
+        },
+        gst: {                          // <- New GST column
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             defaultValue: 0.00

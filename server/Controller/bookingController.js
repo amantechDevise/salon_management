@@ -264,7 +264,7 @@ module.exports = {
         group: ["email"],
       });
       const Staff = await User.findAll({
-        where: { role: 2 },
+        where: { role: [2,3]},
       });
       return res.status(200).json({
         data: { service, customer, Staff },

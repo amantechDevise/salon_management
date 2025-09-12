@@ -75,26 +75,33 @@ const ListBooking = () => {
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Bookings</h2>
+          <Link
+          to={"/admin/bookings/calendar"}
+          className="2xl:text-lg text-[0.75rem] font-semibold text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
+        >
+         Show Booking 
+        </Link>
         <Link
           to="/admin/bookings/add"
           className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
         >
           Add Booking
         </Link>
+      
       </div>
 
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th className="px-6 py-3">SR.NO</th>
-            <th className="px-6 py-3">Staff</th>
-            <th className="px-6 py-3">Customer</th>
-            <th className="px-6 py-3">Service</th>
-            <th className="px-6 py-3">Total Amount</th>
-            <th className="px-6 py-3">Date</th>
-            <th className="px-6 py-3">Time</th>
-            <th className="px-6 py-3"> Payment Status</th>
-            <th className="px-6 py-3">Action</th>
+            <th className="px-2 py-3">SR.NO</th>
+            <th className="px-2 py-3">Staff</th>
+            <th className="px-2 py-3">Customer</th>
+            <th className="px-2 py-3">Service</th>
+            <th className="px-2 py-3">Total Amount</th>
+            <th className="px-2 py-3">Date</th>
+            <th className="px-2 py-3">Time</th>
+            <th className="px-2 py-3"> Payment Status</th>
+            <th className="px-2 py-3">Action</th>
           </tr>
         </thead>
 
@@ -116,26 +123,28 @@ const ListBooking = () => {
                 key={booking.id}
                 className="odd:bg-white even:bg-gray-50 border-b dark:border-gray-700"
               >
-                <td className="px-6 py-4">{index + 1}</td>
-                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                <td className="px-2 py-4">{index + 1}</td>
+                <td className="px-2 py-4 font-medium text-gray-900 dark:text-white">
                   {booking.staff?.name || "N/A"}
                 </td>
-                <td className="px-6 py-4">{booking.customer?.name || "N/A"}</td>
-                {/* <td className="px-6 py-4">{booking.service?.title || "N/A"}</td> */}
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">{booking.customer?.name || "N/A"}</td>
+                {/* <td className="px-2 py-4">{booking.service?.title || "N/A"}</td> */}
+                <td className="px-2 py-4">
                   {booking.bookingServices
                     ?.map((ps) => ps.service?.title)
-                    .join(", ") || booking.package?.title} 
+                    .join(", ") || booking.package?.title}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   {(
                     booking.bookingServices?.reduce(
-                      (total, ps) => total + Number(ps.service?.price ||  booking.package?.price),
+                      (total, ps) =>
+                        total +
+                        Number(ps.service?.price || booking.package?.price),
                       0
                     ) || 0
-                  ).toFixed(2)||  booking.package?.price}
+                  ).toFixed(2) || booking.package?.price}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   {booking.date
                     ? new Date(booking.date).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -145,7 +154,7 @@ const ListBooking = () => {
                     : "N/A"}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   {booking.time
                     ? new Date(`1970-01-01T${booking.time}`).toLocaleTimeString(
                         "en-US",
@@ -157,7 +166,7 @@ const ListBooking = () => {
                       )
                     : "N/A"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   {paymentStatus[booking.status] ? (
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -170,7 +179,7 @@ const ListBooking = () => {
                     "N/A"
                   )}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-2 py-4">
                   <Link
                     to={`/admin/generate_Invoice/${booking.id}`}
                     className="bg-gradient-to-r from-[#8763DC] to-[#B363E0] text-white px-3 py-1 rounded hover:bg-indigo-700 transition"
