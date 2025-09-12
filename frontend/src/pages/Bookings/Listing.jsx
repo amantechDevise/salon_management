@@ -77,13 +77,13 @@ const ListBooking = () => {
         <h2 className="text-2xl font-semibold">All Bookings</h2>
           <Link
           to={"/admin/bookings/calendar"}
-          className="2xl:text-lg text-[0.75rem] font-semibold text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
+          className="  font-normal text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
         >
          Show Booking 
         </Link>
         <Link
           to="/admin/bookings/add"
-          className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
+          className="text-white font-normal bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
         >
           Add Booking
         </Link>

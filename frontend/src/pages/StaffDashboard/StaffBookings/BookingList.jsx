@@ -73,22 +73,21 @@ const BookingList = () => {
   };
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
-     <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">All Bookings</h2>
-              <Link
-              to={"/staff-Admin/bookings/calendar"}
-              className="2xl:text-lg text-[0.75rem] font-semibold text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
-            >
-             Show Booking 
-            </Link>
-            <Link
-              to="/staff-Admin/bookings/add"
-              className="text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
-            >
-              Add Booking
-            </Link>
-          
-          </div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">All Bookings</h2>
+        <Link
+          to={"/staff-Admin/bookings/calendar"}
+          className="font-normal  text-white bg-gradient-to-r from-[#8763DC] to-[#B363E0] rounded-full px-4 py-2 "
+        >
+          Show Booking
+        </Link>
+        <Link
+          to="/staff-Admin/bookings/add"
+          className="text-white font-normal  bg-gradient-to-r from-[#8763DC] to-[#B363E0] px-4 py-2 rounded-full hover:bg-gray-800 transition"
+        >
+          Add Booking
+        </Link>
+      </div>
 
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -132,17 +131,21 @@ const BookingList = () => {
                     ?.map((ps) => ps.service?.title)
                     .join(", ") || booking.package?.title}
                 </td>
-            <td className="px-2 py-4">
-  {Number(
-    booking.bookingServices?.length
-      ? booking.bookingServices.reduce((total, ps) => {
-          // Use service price if available, otherwise ignore (don't use package price per service)
-          return total + (ps.service?.price ? Number(ps.service.price) : 0);
-        }, 0) || booking.package?.price || 0 // if total of services is 0, fallback to package price
-      : booking.package?.price || 0
-  ).toFixed(2)}
-</td>
-
+                <td className="px-2 py-4">
+                  {Number(
+                    booking.bookingServices?.length
+                      ? booking.bookingServices.reduce((total, ps) => {
+                          // Use service price if available, otherwise ignore (don't use package price per service)
+                          return (
+                            total +
+                            (ps.service?.price ? Number(ps.service.price) : 0)
+                          );
+                        }, 0) ||
+                          booking.package?.price ||
+                          0 // if total of services is 0, fallback to package price
+                      : booking.package?.price || 0
+                  ).toFixed(2)}
+                </td>
 
                 <td className="px-2 py-4">
                   {booking.date
