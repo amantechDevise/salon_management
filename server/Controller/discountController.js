@@ -1,4 +1,4 @@
-const { Discount } = require("../models");
+const { Discount, Customer } = require("../models");
 
 // Generate 3 letters + 3 digits code
 function generatePromoCode() {
@@ -16,6 +16,9 @@ module.exports = {
   getDiscount: async (req, res) => {
     try {
       const discounts = await Discount.findAll({
+        include:[{
+          model:Customer, as:'customer', attributes:['id','name','email']
+        }],
         order: [["createdAt", "DESC"]],
       });
       res.json({ message: "Discounts fetched", data: discounts });
@@ -25,16 +28,79 @@ module.exports = {
     }
   },
 
+applyDiscount: async (req, res) => {
+  try {
+    const { customer_id, code } = req.body;
+
+    if (!customer_id || !code) {
+      return res.status(400).json({ message: "customer_id and code are required" });
+    }
+
+    const discount = await Discount.findOne({
+      where: { code: code.toUpperCase(), status: 1 },
+    });
+
+    if (!discount) {
+      return res.status(404).json({ message: "Discount code not found" });
+    }
+
+    const now = new Date();
+    if (now < discount.start_date || now > discount.end_date) {
+      return res.status(400).json({ message: "Discount expired" });
+    }
+
+    // ✅ Single-customer discount check
+    if (discount.customer_id) {
+      if (discount.customer_id != customer_id) {
+        return res.status(403).json({ message: "This discount is only for a special customer" });
+      }
+    }
+
+    // ✅ Track usage
+    let usedBy = discount.used_by;
+    if (!Array.isArray(usedBy)) {
+      try {
+        usedBy = usedBy ? JSON.parse(usedBy) : [];
+      } catch (err) {
+        usedBy = [];
+      }
+    }
+
+    if (usedBy.includes(customer_id)) {
+      return res.status(400).json({ message: "You already used this discount" });
+    }
+
+    usedBy.push(customer_id);
+    discount.used_by = usedBy;
+    await discount.save();
+
+    res.json({
+      message: "Discount applied successfully",
+      data: {
+        code: discount.code,
+        type: discount.type,
+        value: discount.value,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+},
+
+
+
   // Add new discount
   addDiscount: async (req, res) => {
     try {
-      let { code, title, type, value, start_date, end_date, status } = req.body;
+      let { code, title, type, value, start_date, end_date, status,customer_id } = req.body;
 
       if (!code || code.trim() === "") {
         code = generatePromoCode();
       }
 
       const discount = await Discount.create({
+         customer_id: customer_id || null,
         code: code.toUpperCase(),
         title,
         type,

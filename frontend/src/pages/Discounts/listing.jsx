@@ -75,6 +75,7 @@ const DiscountListing = () => {
           <tr>
             <th className="px-6 py-3">SR.NO</th>
             <th className="px-6 py-3">Title</th>
+                 <th className="px-6 py-3">Customer Name</th>
             <th className="px-6 py-3">Code</th>
             <th className="px-6 py-3">Discount</th>
             <th className="px-6 py-3">Start Date</th>
@@ -96,6 +97,9 @@ const DiscountListing = () => {
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {d.title}
+                </td>
+                <td className="px-6 py-4 font-medium text-gray-900">
+                  {d.customer?.name || 'All Customers'}
                 </td>
                 <td className="px-6 py-4">{d.code}</td>
                 <td className="px-6 py-4">

@@ -9,6 +9,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
+      customer_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       code: {
         type: DataTypes.STRING(50), // <-- fixed
         allowNull: false,
@@ -37,6 +41,10 @@ module.exports = function (sequelize, DataTypes) {
       end_date: {
         type: DataTypes.DATE,
         allowNull: false,
+      },
+      used_by: {
+        type: DataTypes.JSON,
+       allowNull: true,
       },
 
       status: {

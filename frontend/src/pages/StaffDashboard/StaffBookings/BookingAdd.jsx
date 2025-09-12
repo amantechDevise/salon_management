@@ -18,6 +18,7 @@ function BookingAdd() {
     service_id: [],
     staff_id: [],
     package_id: "",
+       isRecurring: false,
     date: "",
     time: "",
   });
@@ -32,14 +33,18 @@ function BookingAdd() {
   const [staffDropdownOpen, setStaffDropdownOpen] = useState(false);
 
   // Handle input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "customer_id" ? Number(value) : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : name === "customer_id"
+          ? Number(value)
+          : value,
     }));
   };
-
   // Toggle service selection
   const toggleService = (id) => {
     setFormData((prev) => {
@@ -151,7 +156,11 @@ function BookingAdd() {
         },
       });
 
-      toast.success("Booking added successfully!");
+       toast.success(
+        formData.isRecurring
+          ? "Recurring booking added successfully!"
+          : "Booking added successfully!"
+      );
       navigate("/staff-Admin/bookings");
     } catch (error) {
       toast.error("Failed to add booking");
@@ -337,6 +346,56 @@ function BookingAdd() {
               )}
             </div>
           </div>
+    {/* Recurring Appointment Toggle */}
+          <div className="w-full px-3 mb-5">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="isRecurring"
+                checked={formData.isRecurring}
+                onChange={handleChange}
+              />
+              <span className="text-base font-medium text-[#07074D]">
+                Recurring Appointment?
+              </span>
+            </label>
+          </div>
+
+          {/* Frequency + End Date */}
+          {formData.isRecurring && (
+            <div className="flex flex-wrap -mx-3">
+              <div className="w-full sm:w-1/2 px-3 mb-5 ">
+                <label className="block text-base font-medium text-[#07074D] mb-2">
+                  Frequency
+                </label>
+                <select
+                  name="frequency"
+                  value={formData.frequency}
+                  onChange={handleChange}
+                  className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
+                  required
+                >
+                  <option value="">-- Select Frequency --</option>
+                  <option value="1">Weekly</option>
+                  <option value="2">Monthly</option>
+                </select>
+              </div>
+
+              <div className="w-full sm:w-1/2 px-3 mb-5">
+                <label className="block text-base font-medium text-[#07074D] mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className="w-full border border-[#e0e0e0] rounded-md py-3 px-4"
+                  required
+                />
+              </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-between items-center mt-6">

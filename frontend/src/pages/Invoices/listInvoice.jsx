@@ -12,7 +12,6 @@ const Invoice = () => {
   const invoiceRef = useRef();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch invoice data
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
@@ -34,16 +33,11 @@ const Invoice = () => {
     fetchInvoice();
   }, [booking_id]);
 
-  // Download PDF
   const handleDownloadPDF = async () => {
     if (!invoiceRef.current) return;
 
     try {
-      const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2,
-        backgroundColor: "#ffffff", // safe white background
-      });
-
+      const canvas = await html2canvas(invoiceRef.current, { scale: 2, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
 
@@ -60,36 +54,27 @@ const Invoice = () => {
   const handlePrint = () => window.print();
 
   if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen text-lg font-medium">
-        Loading Invoice...
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen text-lg font-medium">Loading Invoice...</div>;
 
   if (!invoice)
-    return (
-      <div className="flex justify-center items-center h-screen text-red-500 font-semibold">
-        Invoice not found.
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen text-red-500 font-semibold">Invoice not found.</div>;
 
-  const { customer, booking, total_amount, final_amount, discount } = invoice;
+  const { customer, booking, total_amount, final_amount } = invoice;
+  const discounts = customer?.discounts || [];
 
   return (
-    <div className="max-w-4xl mx-auto p-8 my-8" style={{ backgroundColor: "#f9f9f9" }}>
+    <div className="max-w-4xl mx-auto p-8 my-8 bg-gray-100">
       {/* Action Buttons */}
       <div className="flex justify-end gap-4 mb-6 print:hidden">
         <button
           onClick={handlePrint}
-          style={{ backgroundColor: "#1e40af", color: "#ffffff" }}
-          className="px-4 py-2 rounded-lg hover:opacity-90 transition-all"
+          className="px-4 py-2 rounded-lg bg-blue-800 text-white hover:opacity-90 transition-all"
         >
           Print
         </button>
         <button
           onClick={handleDownloadPDF}
-          style={{ backgroundColor: "#047857", color: "#ffffff" }}
-          className="px-4 py-2 rounded-lg hover:opacity-90 transition-all"
+          className="px-4 py-2 rounded-lg bg-green-700 text-white hover:opacity-90 transition-all"
         >
           Download PDF
         </button>
@@ -98,119 +83,90 @@ const Invoice = () => {
       {/* Invoice Content */}
       <div
         ref={invoiceRef}
-        className="shadow-lg rounded-2xl p-8 border"
-        style={{
-          backgroundColor: "#ffffff", // safe white
-          color: "#000000", // safe black text
-          borderColor: "#d1d5db", // gray border
-        }}
+        className="shadow-lg rounded-2xl p-8 border bg-white border-gray-300"
       >
         <div className="flex justify-between items-center mb-8">
-          <h1 style={{ color: "#111111", fontWeight: "700", fontSize: "24px" }}>
-            Salon Management
-          </h1>
-          <p style={{ color: "#333333" }}>Invoice ID: #{invoice.id}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Salon Management</h1>
+          <p className="text-gray-700">Invoice ID: #{invoice.id}</p>
         </div>
 
-        <div className="flex flex-col gap-2 mb-6">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
           {/* Staff Info */}
-          <div style={{ textAlign: "left" }}>
-            <h2 style={{ color: "#111111", fontWeight: "600", fontSize: "18px" }}>
-              Staff Information
-            </h2>
-            <p style={{ color: "#333333" }}>Name: {customer?.staff?.name}</p>
-            <p style={{ color: "#333333" }}>Email: {customer?.staff?.email}</p>
-            <p style={{ color: "#333333" }}>Phone: {customer?.staff?.phone}</p>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Staff Information</h2>
+            <p className="text-gray-700">Name: {customer?.staff?.name}</p>
+            <p className="text-gray-700">Email: {customer?.staff?.email}</p>
+            <p className="text-gray-700">Phone: {customer?.staff?.phone}</p>
           </div>
           {/* Customer Info */}
-          <div style={{ textAlign: "right" }}>
-            <h2 style={{ color: "#111111", fontWeight: "600", fontSize: "18px" }}>
-              Customer Information
-            </h2>
-            <p style={{ color: "#333333" }}>Name: {customer?.name}</p>
-            <p style={{ color: "#333333" }}>Email: {customer?.email}</p>
-            <p style={{ color: "#333333" }}>Phone: {customer?.phone}</p>
-            <p style={{ color: "#333333" }}>Address: {customer?.address}</p>
+          <div className="text-right">
+            <h2 className="text-lg font-semibold text-gray-900">Customer Information</h2>
+            <p className="text-gray-700">Name: {customer?.name}</p>
+            <p className="text-gray-700">Email: {customer?.email}</p>
+            <p className="text-gray-700">Phone: {customer?.phone}</p>
+            <p className="text-gray-700">Address: {customer?.address}</p>
           </div>
         </div>
 
         {/* Services Table */}
         <div className="mb-6">
-          <h2 style={{ color: "#111111", fontWeight: "600", fontSize: "18px" }}>Booking Services</h2>
-          <br />
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead style={{ backgroundColor: "#f3f4f6" }}>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Booking Services</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-200">
                 <tr>
-                  <th style={{ textAlign: "left", padding: "8px", border: "1px solid #d1d5db" }}>Service</th>
-                  <th style={{ textAlign: "left", padding: "8px", border: "1px solid #d1d5db" }}>Duration</th>
-                  <th style={{ textAlign: "left", padding: "8px", border: "1px solid #d1d5db" }}>Price</th>
+                  <th className="text-left p-2 border">Service</th>
+                  <th className="text-left p-2 border">Duration</th>
+                  <th className="text-left p-2 border">Price</th>
                 </tr>
               </thead>
               <tbody>
-            {booking?.bookingServices && booking.bookingServices.length > 0 ? (
-  booking.bookingServices.map((bs, idx) => (
-    <tr key={idx}>
-      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-        {bs.service?.title || booking.package?.title}
-      </td>
-      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-        {bs.service?.duration || booking.package?.duration || "1.30 Hr"}
-      </td>
-      <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-        ₹{bs.service?.price || booking.package?.price}
-      </td>
-    </tr>
-  ))
-) : booking.package ? (
-  <tr>
-    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-      {booking.package.title}
-    </td>
-    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-      {booking.package.duration || "1.30 Hr"}
-    </td>
-    <td style={{ padding: "8px", border: "1px solid #d1d5db" }}>
-      ₹{booking.package.price}
-    </td>
-  </tr>
-) : null}
+                {booking?.bookingServices?.length > 0
+                  ? booking.bookingServices.map((bs, idx) => (
+                      <tr key={idx}>
+                        <td className="p-2 border">{bs.service?.title || booking.package?.title}</td>
+                        <td className="p-2 border">{bs.service?.duration || booking.package?.duration || "1.30 Hr"}</td>
+                        <td className="p-2 border">₹{bs.service?.price || booking.package?.price}</td>
+                      </tr>
+                    ))
+                  : booking.package && (
+                      <tr>
+                        <td className="p-2 border">{booking.package.title}</td>
+                        <td className="p-2 border">{booking.package.duration || "1.30 Hr"}</td>
+                        <td className="p-2 border">₹{booking.package.price}</td>
+                      </tr>
+                    )}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Totals */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ width: "50%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", color: "#333333" }}>
+        <div className="flex justify-end">
+          <div className="w-1/2">
+            <div className="flex justify-between text-gray-700">
               <span>Subtotal:</span>
               <span>₹{total_amount}</span>
             </div>
-            {discount && (
-              <div style={{ display: "flex", justifyContent: "space-between", color: "#047857" }}>
-                <span>
-                  Discount ({discount.title} - {discount.type === 1 ? `${discount.value}%` : `₹${discount.value}`})
-                </span>
-                <span>- Applied</span>
-              </div>
-            )}
-            <br />
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontWeight: "600",
-              fontSize: "16px",
-              borderTop: "1px solid #d1d5db",
-              paddingTop: "8px"
-            }}>
+
+            {discounts.length > 0 &&
+              discounts.map((disc, idx) => (
+                <div key={idx} className="flex justify-between text-green-600">
+                  <span>
+                    Discount ({disc.title} - {disc.type === 1 ? `${disc.value}%` : `₹${disc.value}`})
+                  </span>
+                  <span>- Applied</span>
+                </div>
+              ))}
+
+            <div className="flex justify-between font-semibold text-gray-900 border-t border-gray-300 pt-2 mt-2">
               <span>Total:</span>
               <span>₹{final_amount}</span>
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: "16px", textAlign: "center", color: "#555555", fontSize: "12px" }}>
+        <div className="mt-4 text-center text-gray-500 text-sm">
           Thank you for your booking!
         </div>
       </div>

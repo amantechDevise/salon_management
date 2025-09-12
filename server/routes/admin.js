@@ -120,6 +120,11 @@ router.post(
   authenticateToken,
   discountController.addDiscount
 );
+router.post(
+  "/apply-discount",
+  authenticateToken,
+  discountController.applyDiscount
+);
 router.put(
   "/discounts/update/:id",
   authenticateToken,

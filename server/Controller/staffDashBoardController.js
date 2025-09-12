@@ -12,6 +12,7 @@ const {
   Discount,
   Invoice,
   Rating,
+  RecurringBooking,
 } = require("../models");
 const { Op } = require("sequelize");
 const { uploadImage } = require("../uilts/imageUplord");

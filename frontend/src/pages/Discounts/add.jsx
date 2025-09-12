@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ function AddDiscount() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
 
+  const [customers, setCustomers] = useState([]);
   const [formData, setFormData] = useState({
     code: "",
     title: "",
@@ -14,10 +15,29 @@ function AddDiscount() {
     value: "",
     start_date: "",
     end_date: "",
+    customer_id: "", // optional
     status: 1,
   });
 
-  // Generate promo code (3 letters + 3 numbers)
+  // Fetch customers on mount
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/customer`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        });
+        setCustomers(res.data.data || []); // assuming API returns { data: [...] }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch customers");
+      }
+    };
+    fetchCustomers();
+  }, []);
+
+  // Generate promo code
   const generatePromoCode = () => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const randomLetters = Array.from({ length: 3 }, () =>
@@ -27,7 +47,6 @@ function AddDiscount() {
     return `${randomLetters}${randomNumbers}`;
   };
 
-  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -36,23 +55,15 @@ function AddDiscount() {
     }));
   };
 
-  // Handle generate button click
   const handleGenerateCode = () => {
     const newCode = generatePromoCode();
     setFormData((prev) => ({ ...prev, code: newCode }));
     toast.info(`Generated Code: ${newCode}`);
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !formData.title ||
-      !formData.value ||
-      !formData.start_date ||
-      !formData.end_date
-    ) {
+    if (!formData.title || !formData.value || !formData.start_date || !formData.end_date) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -79,8 +90,8 @@ function AddDiscount() {
         <form onSubmit={handleSubmit}>
           <div className="-mx-3 flex flex-wrap">
             {/* Code */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">Code</label>
+            <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Code</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -88,7 +99,7 @@ function AddDiscount() {
                   value={formData.code}
                   onChange={handleChange}
                   placeholder="Leave blank to auto-generate"
-                  className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
+                  className="w-full rounded-md border border-[#e0e0e0] py-3 px-2"
                 />
                 <button
                   type="button"
@@ -101,8 +112,8 @@ function AddDiscount() {
             </div>
 
             {/* Title */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">Title</label>
+              <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Title</label>
               <input
                 type="text"
                 name="title"
@@ -114,8 +125,8 @@ function AddDiscount() {
             </div>
 
             {/* Type */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">Type</label>
+            <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Type</label>
               <select
                 name="type"
                 value={formData.type}
@@ -128,8 +139,8 @@ function AddDiscount() {
             </div>
 
             {/* Value */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">Value</label>
+          <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Value</label>
               <input
                 type="number"
                 name="value"
@@ -141,10 +152,8 @@ function AddDiscount() {
             </div>
 
             {/* Start Date */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">
-                Start Date
-              </label>
+        <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Start Date</label>
               <input
                 type="date"
                 name="start_date"
@@ -156,10 +165,8 @@ function AddDiscount() {
             </div>
 
             {/* End Date */}
-            <div className="w-full px-3 sm:w-1/2">
-              <label className="mb-3 block text-base font-medium">
-                End Date
-              </label>
+           <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">End Date</label>
               <input
                 type="date"
                 name="end_date"
@@ -168,6 +175,24 @@ function AddDiscount() {
                 required
                 className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
               />
+            </div>
+
+            {/* Optional Customer Dropdown */}
+            <div className="w-full px-3 mb-2 sm:w-1/2">
+              <label className="mb-2 block text-base font-medium">Customer (optional)</label>
+              <select
+                name="customer_id"
+                value={formData.customer_id}
+                onChange={handleChange}
+                className="w-full rounded-md border border-[#e0e0e0] py-3 px-6"
+              >
+                <option value="">All Customers</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name || c.email || `Customer #${c.id}`}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

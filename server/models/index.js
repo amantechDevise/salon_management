@@ -72,6 +72,10 @@ db.Notification= require("./notifications")(sequelize, Sequelize);
 // ✅ RELATIONSHIPS
 //
 
+db.Discount.belongsTo(db.Customer, { foreignKey: "customer_id", as: "customer" });
+
+// Ek customer ke paas multiple discounts ho sakte hain
+db.Customer.hasMany(db.Discount, { foreignKey: "customer_id", as: "discounts" });
 // USER ↔ CUSTOMER (Staff assigned to customer)
 db.User.hasMany(db.Customer, { foreignKey: "staff_id", as: "customers" });
 db.Customer.belongsTo(db.User, { foreignKey: "staff_id", as: "staff" });
